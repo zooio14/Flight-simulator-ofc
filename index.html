@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FLIGHT-SIMULATOR Prototype</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <canvas id="game"></canvas>
+
+  <div id="hud">
+    <h1>FLIGHT-SIMULATOR</h1>
+    <p><strong>W/S</strong> potência | <strong>↑ ↓</strong> pitch | <strong>← →</strong> roll | <strong>A/D</strong> yaw | <strong>R</strong> reset</p>
+    <div>Velocidade: <span id="speed">0</span> km/h</div>
+    <div>Altitude: <span id="altitude">0</span> m</div>
+    <div>Potência: <span id="throttle">0</span>%</div>
+    <div>Status: <span id="status">Na pista</span></div>
+  </div>
+
+  <div id="centerMessage">
+    <h2>Protótipo jogável</h2>
+    <p>Aumente a potência com W e puxe o nariz com ↑ para decolar.</p>
+  </div>
+
+  <script type="module" src="main.js"></script>
+</body>
+</html>
