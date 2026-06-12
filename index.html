@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Flight Simulator OFC</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <canvas id="game"></canvas>
+
+  <div id="hud">
+    <h2>FLIGHT SIMULATOR OFC</h2>
+
+    <div class="section">
+      <strong>Controles</strong><br />
+      W/S: potência<br />
+      ↑/↓: pitch | ←/→: roll<br />
+      A/D: yaw | C: câmera<br />
+      M: próxima missão | N: nova missão<br />
+      Q: qualidade | R: reset
+    </div>
+
+    <div class="section">
+      FPS: <span id="fps">60</span><br />
+      Qualidade: <span id="quality">Alta</span><br />
+      Velocidade: <span id="speed">0</span> km/h<br />
+      Altitude: <span id="altitude">0</span> m<br />
+      Potência: <span id="throttle">0</span>%<br />
+      Ângulo de ataque: <span id="aoa">0</span>°<br />
+      Razão vertical: <span id="verticalSpeed">0</span> m/s<br />
+      Status: <span id="status">Na pista</span>
+    </div>
+
+    <div class="section mission">
+      <strong>Missão</strong><br />
+      <span id="missionTitle">Nenhuma missão ativa</span><br />
+      <span id="missionText">Pressione N para iniciar uma missão.</span><br />
+      Distância: <span id="missionDistance">0</span> m<br />
+      Recompensa: <span id="missionReward">$0</span>
+    </div>
+  </div>
+
+  <div id="centerMessage">
+    <strong>Objetivo:</strong> escolha uma missão com <b>N</b> e voe de um aeroporto para outro.
+  </div>
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.160.0/build/three.module.js"
+    }
+  }
+  </script>
+
+  <script type="module" src="src/main.js"></script>
+</body>
+</html>
