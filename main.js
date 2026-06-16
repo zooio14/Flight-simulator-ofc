@@ -7,13 +7,13 @@
     return;
   }
 
-  const MAP_SIZE = 10000;
+  const MAP_SIZE = 14000;
   const HALF = MAP_SIZE / 2;
 
   const QUALITY = [
-    { name: "Ultra leve", pixel: 0.42, buildings: 35, trees: 80, clouds: 5, fog: 6800, particles: 24 },
-    { name: "Baixa", pixel: 0.62, buildings: 75, trees: 170, clouds: 9, fog: 8600, particles: 38 },
-    { name: "Alta", pixel: 0.9, buildings: 145, trees: 320, clouds: 18, fog: 12000, particles: 64 }
+    { name: "Ultra leve", pixel: 0.42, buildings: 35, trees: 80, clouds: 5, fog: 8400, particles: 24 },
+    { name: "Baixa", pixel: 0.62, buildings: 75, trees: 170, clouds: 9, fog: 10800, particles: 38 },
+    { name: "Alta", pixel: 0.9, buildings: 145, trees: 320, clouds: 18, fog: 15000, particles: 64 }
   ];
 
   const AIRCRAFT_TYPES = [
@@ -21,43 +21,52 @@
       id: "cessna",
       name: "Leve inspirado no Cessna",
       model: "cessna",
-      takeoff: 105,
-      maxSpeed: 245,
-      thrust: 42,
-      drag: 0.0026,
-      lift: 16.8,
+      takeoff: 98,
+      landingMax: 185,
+      maxSpeed: 360,
+      thrust: 66,
+      boost: 1.22,
+      drag: 0.00165,
+      lift: 18.3,
       control: 1.25,
       stallAngle: 18,
       stallSpeed: 72,
-      cameraBack: 34
+      cameraBack: 34,
+      hitboxRadius: 7
     },
     {
       id: "boeing",
       name: "Jato comercial inspirado no 737",
       model: "boeing",
-      takeoff: 185,
-      maxSpeed: 520,
-      thrust: 56,
-      drag: 0.00175,
-      lift: 13.8,
+      takeoff: 205,
+      landingMax: 315,
+      maxSpeed: 900,
+      thrust: 94,
+      boost: 1.16,
+      drag: 0.00088,
+      lift: 16.2,
       control: 0.72,
       stallAngle: 15,
       stallSpeed: 145,
-      cameraBack: 55
+      cameraBack: 55,
+      hitboxRadius: 14
     },
     {
       id: "f22",
       name: "Caça stealth inspirado no F-22",
       model: "f22",
-      takeoff: 150,
-      maxSpeed: 900,
-      thrust: 84,
-      drag: 0.00125,
-      lift: 18.2,
+      takeoff: 145,
+      landingMax: 260,
+      maxSpeed: 1850,
+      thrust: 168,
+      boost: 1.42,
+      drag: 0.00048,
+      lift: 22.8,
       control: 1.85,
       stallAngle: 24,
       stallSpeed: 120,
-      cameraBack: 42
+      cameraBack: 42,
+      hitboxRadius: 10
     }
   ];
 
@@ -112,12 +121,19 @@
   let completed = 0;
   let explosions = [];
   let plane = null;
+  let lastLanding = null;
+  let showHitboxes = false;
+  let hitboxHelpers = [];
+  let planeHitboxHelper = null;
+  let staticColliders = [];
+  let dynamicColliders = [];
 
   const el = id => document.getElementById(id);
   const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
   const dist2 = (x1, z1, x2, z2) => Math.hypot(x1 - x2, z1 - z2);
   const airport = id => AIRPORTS.find(a => a.id === id);
   const fmtMoney = value => "$" + Math.round(value).toLocaleString("en-US");
+  const wrapDegrees = value => ((value + 540) % 360) - 180;
 
   window.addEventListener("keydown", event => {
     const key = event.key.toLowerCase();
@@ -143,7 +159,82 @@
     return false;
   }
 
+  const Y_AXIS = new THREE.Vector3(0, 1, 0);
+
+  function airportWorldPosition(a, localX, localY, localZ) {
+    const p = new THREE.Vector3(localX, localY, localZ);
+    p.applyAxisAngle(Y_AXIS, -THREE.Math.degToRad(a.heading));
+    return { x: a.x + p.x, y: localY, z: a.z + p.z };
+  }
+
+  function airportLocalPosition(a, x, z) {
+    const p = new THREE.Vector3(x - a.x, 0, z - a.z);
+    p.applyAxisAngle(Y_AXIS, THREE.Math.degToRad(a.heading));
+    return p;
+  }
+
+  function isInRunwayZone(a, x, z, margin = 0) {
+    const local = airportLocalPosition(a, x, z);
+    return Math.abs(local.x) <= 74 + margin && Math.abs(local.z) <= a.length / 2 + margin;
+  }
+
+  function isAirportProtected(x, z, margin = 360) {
+    return AIRPORTS.some(a => isInRunwayZone(a, x, z, margin) || dist2(x, z, a.x, a.z) < margin * 1.25);
+  }
+
+  function addCollider(list, label, x, y, z, halfX, halfY, halfZ, damage = 1) {
+    list.push({ label, x, y, z, halfX, halfY, halfZ, damage });
+  }
+
+  function addAirportCollider(a, label, localX, localY, localZ, halfX, halfY, halfZ, damage = 1.15) {
+    const p = airportWorldPosition(a, localX, localY, localZ);
+    addCollider(staticColliders, label, p.x, p.y, p.z, halfX, halfY, halfZ, damage);
+  }
+
+  function allColliders() {
+    return staticColliders.concat(dynamicColliders);
+  }
+
+  function clearHitboxHelpers() {
+    hitboxHelpers.forEach(helper => scene.remove(helper));
+    hitboxHelpers = [];
+    if (planeHitboxHelper) {
+      scene.remove(planeHitboxHelper);
+      planeHitboxHelper = null;
+    }
+  }
+
+  function rebuildHitboxHelpers() {
+    clearHitboxHelpers();
+    if (!showHitboxes) return;
+
+    const mat = new THREE.MeshBasicMaterial({
+      color: 0xff4d4d,
+      wireframe: true,
+      transparent: true,
+      opacity: 0.45
+    });
+
+    allColliders().forEach(collider => {
+      const helper = new THREE.Mesh(
+        new THREE.BoxGeometry(collider.halfX * 2, collider.halfY * 2, collider.halfZ * 2),
+        mat
+      );
+      helper.position.set(collider.x, collider.y, collider.z);
+      scene.add(helper);
+      hitboxHelpers.push(helper);
+    });
+
+    planeHitboxHelper = new THREE.Mesh(
+      new THREE.SphereGeometry(aircraftType.hitboxRadius, 16, 10),
+      new THREE.MeshBasicMaterial({ color: 0x4dd8ff, wireframe: true, transparent: true, opacity: 0.7 })
+    );
+    scene.add(planeHitboxHelper);
+  }
+
   function addStaticWorld() {
+    staticColliders = [];
+
     const ocean = new THREE.Mesh(
       new THREE.PlaneGeometry(30000, 30000, 1, 1),
       new THREE.MeshLambertMaterial({ color: 0x1d73b7 })
@@ -250,10 +341,13 @@
     tower.position.set(145, 0, 100);
     group.add(tower);
 
+    addAirportCollider(a, "terminal do aeroporto", 225, 24, -165, 138, 32, 58, 1.2);
+    addAirportCollider(a, "torre de controle", 145, 66, 100, 34, 72, 34, 1.35);
+
     for (let i = -a.length / 2; i < a.length / 2; i += 140) {
       [-68, 68].forEach(x => {
-        const light = new THREE.Mesh(new THREE.SphereGeometry(4.5, 8, 6), yellow);
-        light.position.set(x, 4, i);
+        const light = new THREE.Mesh(new THREE.SphereGeometry(1.65, 8, 6), yellow);
+        light.position.set(x, 2.2, i);
         group.add(light);
       });
     }
@@ -269,18 +363,29 @@
     const mesh = new THREE.InstancedMesh(geometry, material, 42);
     const dummy = new THREE.Object3D();
 
-    for (let i = 0; i < 42; i++) {
+    let placed = 0;
+    let attempts = 0;
+
+    while (placed < 42 && attempts < 420) {
+      attempts++;
       const h = 200 + Math.random() * 720;
       const r = 140 + Math.random() * 420;
       const angle = Math.random() * Math.PI * 2;
       const radius = 3300 + Math.random() * 2300;
-      dummy.position.set(Math.cos(angle) * radius, h / 2, Math.sin(angle) * radius);
+      const x = Math.cos(angle) * radius;
+      const z = Math.sin(angle) * radius;
+      if (isAirportProtected(x, z, r + 620)) continue;
+
+      dummy.position.set(x, h / 2, z);
       dummy.scale.set(r, h, r);
       dummy.rotation.y = Math.random() * Math.PI;
       dummy.updateMatrix();
-      mesh.setMatrixAt(i, dummy.matrix);
+      mesh.setMatrixAt(placed, dummy.matrix);
+      addCollider(staticColliders, "montanha", x, h / 2, z, r * 0.72, h / 2, r * 0.72, 1.7);
+      placed++;
     }
 
+    mesh.count = placed;
     mesh.instanceMatrix.needsUpdate = true;
     scene.add(mesh);
   }
@@ -288,18 +393,20 @@
   function rebuildDynamicWorld() {
     dynamicObjects.forEach(object => scene.remove(object));
     dynamicObjects = [];
+    dynamicColliders = [];
+    clearHitboxHelpers();
 
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, quality.pixel));
     scene.fog.far = quality.fog;
     el("quality").textContent = quality.name;
 
     dynamicObjects.push(createBuildings(quality.buildings));
-    dynamicObjects.push(createBuildingWindows(Math.floor(quality.buildings * 5)));
 
     const trees = createTrees(quality.trees);
     dynamicObjects.push(trees.trunks, trees.tops);
 
     dynamicObjects.push(createClouds(quality.clouds));
+    rebuildHitboxHelpers();
   }
 
   function createBuildings(count) {
@@ -308,40 +415,30 @@
     const mesh = new THREE.InstancedMesh(geometry, material, count);
     const dummy = new THREE.Object3D();
 
-    for (let i = 0; i < count; i++) {
+    let placed = 0;
+    let attempts = 0;
+
+    while (placed < count && attempts < count * 12) {
+      attempts++;
       const cluster = Math.random() < 0.65;
-      const x = cluster ? (Math.random() - 0.5) * 2600 + 1800 : (Math.random() - 0.5) * 8500;
-      const z = cluster ? (Math.random() - 0.5) * 2600 - 350 : (Math.random() - 0.5) * 8500;
+      const x = cluster ? (Math.random() - 0.5) * 2600 + 1800 : (Math.random() - 0.5) * (MAP_SIZE * 0.82);
+      const z = cluster ? (Math.random() - 0.5) * 2600 - 350 : (Math.random() - 0.5) * (MAP_SIZE * 0.82);
       const h = cluster ? 35 + Math.random() * 260 : 15 + Math.random() * 90;
+      const w = 30 + Math.random() * 75;
+      const d = 30 + Math.random() * 75;
+
+      if (isAirportProtected(x, z, 440)) continue;
 
       dummy.position.set(x, h / 2, z);
-      dummy.scale.set(30 + Math.random() * 75, h, 30 + Math.random() * 75);
+      dummy.scale.set(w, h, d);
       dummy.rotation.y = Math.random() * Math.PI;
       dummy.updateMatrix();
-      mesh.setMatrixAt(i, dummy.matrix);
+      mesh.setMatrixAt(placed, dummy.matrix);
+      addCollider(dynamicColliders, "prédio", x, h / 2, z, Math.max(w, d) * 0.58, h / 2, Math.max(w, d) * 0.58, 1.25);
+      placed++;
     }
 
-    mesh.instanceMatrix.needsUpdate = true;
-    scene.add(mesh);
-    return mesh;
-  }
-
-  function createBuildingWindows(count) {
-    const geo = new THREE.PlaneGeometry(9, 4);
-    const mat = new THREE.MeshBasicMaterial({ color: 0xffe895, transparent: true, opacity: 0.58 });
-    const mesh = new THREE.InstancedMesh(geo, mat, count);
-    const dummy = new THREE.Object3D();
-
-    for (let i = 0; i < count; i++) {
-      const x = (Math.random() - 0.5) * 2600 + 1800;
-      const z = (Math.random() - 0.5) * 2600 - 390;
-      const y = 18 + Math.random() * 210;
-      dummy.position.set(x, y, z);
-      dummy.rotation.y = 0;
-      dummy.updateMatrix();
-      mesh.setMatrixAt(i, dummy.matrix);
-    }
-
+    mesh.count = placed;
     mesh.instanceMatrix.needsUpdate = true;
     scene.add(mesh);
     return mesh;
@@ -358,15 +455,13 @@
     const dummy = new THREE.Object3D();
 
     let placed = 0;
-    while (placed < count) {
-      const x = (Math.random() - 0.5) * 9500;
-      const z = (Math.random() - 0.5) * 9500;
+    let attempts = 0;
+    while (placed < count && attempts < count * 14) {
+      attempts++;
+      const x = (Math.random() - 0.5) * (MAP_SIZE * 0.9);
+      const z = (Math.random() - 0.5) * (MAP_SIZE * 0.9);
 
-      let nearAirport = false;
-      for (const a of AIRPORTS) {
-        if (Math.abs(x - a.x) < 260 && Math.abs(z - a.z) < 1200) nearAirport = true;
-      }
-      if (nearAirport) continue;
+      if (isAirportProtected(x, z, 320)) continue;
 
       const s = 0.75 + Math.random() * 1.55;
 
@@ -381,9 +476,12 @@
       dummy.updateMatrix();
       tops.setMatrixAt(placed, dummy.matrix);
 
+      addCollider(dynamicColliders, "árvore", x, 15 * s, z, 8 * s, 16 * s, 8 * s, 0.75);
       placed++;
     }
 
+    trunks.count = placed;
+    tops.count = placed;
     trunks.instanceMatrix.needsUpdate = true;
     tops.instanceMatrix.needsUpdate = true;
     scene.add(trunks, tops);
@@ -668,6 +766,7 @@
     aircraft.crashed = false;
     aircraft.exploded = false;
     aircraft.onGround = true;
+    lastLanding = null;
     plane.visible = true;
     syncPlane();
   }
@@ -678,6 +777,7 @@
     aircraftType = AIRCRAFT_TYPES[aircraftIndex];
     makePlaneModel(aircraftType);
     resetToAirport(currentAirport);
+    rebuildHitboxHelpers();
     el("message").innerHTML = "Aeronave trocada para: " + aircraftType.name;
   }
 
@@ -685,6 +785,118 @@
     return new THREE.Vector3(0, 0, -1)
       .applyEuler(new THREE.Euler(aircraft.pitch, aircraft.yaw, aircraft.roll, "YXZ"))
       .normalize();
+  }
+
+  function headingDegrees() {
+    const fwd = forwardVector();
+    return (THREE.Math.radToDeg(Math.atan2(fwd.x, -fwd.z)) + 360) % 360;
+  }
+
+  function bearingBetween(x1, z1, x2, z2) {
+    return (THREE.Math.radToDeg(Math.atan2(x2 - x1, -(z2 - z1))) + 360) % 360;
+  }
+
+  function runwayHeadingError(a) {
+    const heading = headingDegrees();
+    const oneWay = Math.abs(wrapDegrees(heading - a.heading));
+    const otherWay = Math.abs(wrapDegrees(heading - ((a.heading + 180) % 360)));
+    return Math.min(oneWay, otherWay);
+  }
+
+  function runwayContact() {
+    let nearest = null;
+    let nearestDistance = Infinity;
+
+    for (const a of AIRPORTS) {
+      const distance = dist2(aircraft.position.x, aircraft.position.z, a.x, a.z);
+      if (distance < nearestDistance) {
+        nearest = a;
+        nearestDistance = distance;
+      }
+
+      if (isInRunwayZone(a, aircraft.position.x, aircraft.position.z, 90)) {
+        return { airport: a, distance, onRunway: true, alignment: runwayHeadingError(a) };
+      }
+    }
+
+    return {
+      airport: nearest,
+      distance: nearestDistance,
+      onRunway: false,
+      alignment: nearest ? runwayHeadingError(nearest) : 180
+    };
+  }
+
+  function recordLanding(info) {
+    let score = 100;
+
+    score -= clamp(info.verticalImpact - 1.4, 0, 10) * 8.5;
+    score -= clamp(info.speedKmh - aircraftType.landingMax, 0, 360) * 0.12;
+    score -= info.bank * 22;
+    score -= info.nose * 16;
+    score -= info.alignment > 35 ? clamp(info.alignment - 35, 0, 90) * 0.35 : 0;
+    if (!info.onRunway) score -= 22;
+    if (info.hardHit) score -= 20;
+
+    score = Math.round(clamp(score, 0, 100));
+
+    let label = "Pouso suave";
+    let className = "good";
+    if (score < 38) {
+      label = info.onRunway ? "Pouso pesado" : "Fora da pista";
+      className = "bad";
+    } else if (score < 70) {
+      label = info.onRunway ? "Pouso ok" : "Pouso fora da pista";
+      className = "warn";
+    } else if (score < 90) {
+      label = "Bom pouso";
+    }
+
+    lastLanding = {
+      score,
+      label,
+      className,
+      bonus: info.onRunway ? Math.round(score * 12) : Math.round(score * 4),
+      airportId: info.airport ? info.airport.id : null,
+      text: label + " (" + score + "/100)"
+    };
+
+    el("message").innerHTML = lastLanding.text + (info.onRunway ? ". Boa!" : ". Tente alinhar na pista.");
+  }
+
+  function handleObjectCollisions(speedKmh) {
+    const planeRadius = aircraftType.hitboxRadius;
+    const colliders = allColliders();
+
+    for (const collider of colliders) {
+      const hit =
+        Math.abs(aircraft.position.x - collider.x) <= collider.halfX + planeRadius &&
+        Math.abs(aircraft.position.y - collider.y) <= collider.halfY + planeRadius &&
+        Math.abs(aircraft.position.z - collider.z) <= collider.halfZ + planeRadius;
+
+      if (!hit) continue;
+
+      const impactSpeed = Math.max(speedKmh, aircraft.velocity.length() * 3.6);
+      const damage = Math.round((18 + impactSpeed * 0.18) * collider.damage);
+      aircraft.health -= damage;
+      aircraft.crashed = true;
+      aircraft.position.addScaledVector(aircraft.velocity.clone().normalize(), -8);
+      aircraft.position.y = Math.max(3, aircraft.position.y);
+      aircraft.velocity.multiplyScalar(-0.06);
+      aircraft.angularPitch = 0;
+      aircraft.angularRoll = 0;
+      aircraft.angularYaw = 0;
+
+      el("message").innerHTML = "Colisão com " + collider.label + ". Aperte R para resetar.";
+
+      if (aircraft.health <= 0 || impactSpeed > 130 || collider.label === "montanha") {
+        explodePlane();
+      }
+
+      return true;
+    }
+
+    return false;
   }
 
   function updatePhysics(dt) {
@@ -695,8 +907,8 @@
       return;
     }
 
-    if (down("w")) aircraft.throttle += 0.55 * dt;
-    if (down("s")) aircraft.throttle -= 0.72 * dt;
+    if (down("w")) aircraft.throttle += 0.82 * dt;
+    if (down("s")) aircraft.throttle -= 0.92 * dt;
     aircraft.throttle = clamp(aircraft.throttle, 0, 1);
 
     const elevator = (down("arrowup") ? 1 : 0) - (down("arrowdown") ? 1 : 0);
@@ -708,8 +920,8 @@
     const speedKmh = speed * 3.6;
     const horizontalSpeed = Math.hypot(aircraft.velocity.x, aircraft.velocity.z);
 
-    // Motor garantido: cada avião tem força diferente, mas todos aceleram.
-    const thrustAccel = aircraft.throttle * aircraftType.thrust;
+    const boost = down("shift") ? aircraftType.boost : 1;
+    const thrustAccel = aircraft.throttle * aircraftType.thrust * boost;
     aircraft.velocity.addScaledVector(fwd, thrustAccel * dt);
 
     // Limite suave de velocidade para cada modelo.
@@ -778,7 +990,9 @@
 
     aircraft.position.addScaledVector(aircraft.velocity, dt);
 
-    handleGroundCollision(horizontalSpeed, speedKmh);
+    if (!handleObjectCollisions(speedKmh)) {
+      handleGroundCollision(horizontalSpeed, speedKmh);
+    }
     syncPlane();
   }
 
@@ -788,22 +1002,45 @@
       return;
     }
 
+    const wasAirborne = !aircraft.onGround;
     const verticalImpact = Math.abs(aircraft.velocity.y);
     const bank = Math.abs(aircraft.roll);
     const nose = Math.abs(aircraft.pitch);
+    const contact = runwayContact();
 
-    const hardHit = verticalImpact > 8.5 || bank > 0.95 || nose > 0.72 || speedKmh > aircraftType.takeoff * 2.2;
+    const tooFast = speedKmh > aircraftType.landingMax;
+    const unstableTouch = bank > 1.18 || nose > 0.95;
+    const hardHit = verticalImpact > 11.5 || unstableTouch || (tooFast && (verticalImpact > 4.2 || !contact.onRunway));
 
     if (hardHit) {
-      const damage = Math.round(verticalImpact * 9 + speedKmh * 0.22 + bank * 35 + nose * 35);
+      const damage = Math.round(verticalImpact * 7 + Math.max(0, speedKmh - aircraftType.landingMax) * 0.16 + bank * 28 + nose * 30);
       aircraft.health -= damage;
+      if (wasAirborne) {
+        recordLanding({
+          airport: contact.airport,
+          onRunway: contact.onRunway,
+          alignment: contact.alignment,
+          verticalImpact,
+          speedKmh,
+          bank,
+          nose,
+          hardHit: true
+        });
+      }
 
-      if (aircraft.health <= 0 || verticalImpact > 13 || speedKmh > aircraftType.takeoff * 2.75) {
-        explodePlane();
-      } else {
+      aircraft.position.y = 3;
+      aircraft.velocity.y = 0;
+      aircraft.velocity.x *= 0.55;
+      aircraft.velocity.z *= 0.55;
+      aircraft.pitch *= 0.55;
+      aircraft.roll *= 0.42;
+      aircraft.onGround = true;
+      aircraft.health = Math.max(5, aircraft.health);
+
+      if (damage > 52 || verticalImpact > 18 || bank > 1.45 || nose > 1.18) {
         aircraft.crashed = true;
-        aircraft.position.y = 3;
-        aircraft.velocity.multiplyScalar(0.12);
+        aircraft.velocity.multiplyScalar(0.18);
+        el("message").innerHTML = "Pouso muito pesado. O avião quebrou, mas não explodiu. Aperte R.";
       }
       return;
     }
@@ -812,7 +1049,21 @@
     aircraft.velocity.y = 0;
     aircraft.onGround = true;
 
-    const friction = aircraft.throttle > 0.05 ? 0.9925 : 0.965;
+    if (wasAirborne) {
+      recordLanding({
+        airport: contact.airport,
+        onRunway: contact.onRunway,
+        alignment: contact.alignment,
+        verticalImpact,
+        speedKmh,
+        bank,
+        nose,
+        hardHit: false
+      });
+    }
+
+    const braking = down("s") ? 0.91 : 0.965;
+    const friction = aircraft.throttle > 0.05 ? 0.992 : braking;
     aircraft.velocity.x *= friction;
     aircraft.velocity.z *= friction;
 
@@ -903,6 +1154,11 @@
       shadow.scale.setScalar(clamp(1 + aircraft.position.y / 180, 1, 10));
       shadow.visible = plane.visible;
     }
+
+    if (planeHitboxHelper) {
+      planeHitboxHelper.position.copy(aircraft.position);
+      planeHitboxHelper.visible = showHitboxes && plane.visible;
+    }
   }
 
   const speedKmh = () => aircraft.velocity.length() * 3.6;
@@ -959,17 +1215,21 @@
 
     if (
       activeMission.airborne &&
-      distance < 230 &&
+      distance < 300 &&
       aircraft.onGround &&
-      speedKmh() < aircraftType.takeoff * 1.2 &&
+      speedKmh() < aircraftType.landingMax * 1.08 &&
       !aircraft.crashed &&
       !activeMission.completed
     ) {
+      const landingBonus = lastLanding && lastLanding.airportId === activeMission.to.id ? lastLanding.bonus : 0;
       activeMission.completed = true;
       completed++;
-      money += activeMission.data.reward;
+      money += activeMission.data.reward + landingBonus;
       marker.visible = false;
-      el("message").innerHTML = "Missão concluída! Recompensa recebida. Aperte N ou M para outra missão.";
+      el("message").innerHTML =
+        "Missão concluída! Recompensa " + fmtMoney(activeMission.data.reward) +
+        (landingBonus ? " + bônus de pouso " + fmtMoney(landingBonus) : "") +
+        ". Aperte N ou M para outra missão.";
     }
   }
 
@@ -992,9 +1252,104 @@
     if (cameraMode === 1 && plane.visible) {
       const look = new THREE.Vector3(0, 1.8, -105).applyEuler(plane.rotation).add(plane.position);
       camera.lookAt(look);
+    } else if (cameraMode === 2 && plane.visible) {
+      camera.lookAt(aircraft.position.x, aircraft.position.y, aircraft.position.z);
     } else {
-      camera.lookAt(aircraft.position.x, aircraft.position.y + 1.5, aircraft.position.z - 8);
+      const lookAhead = forwardVector().multiplyScalar(95).add(aircraft.position);
+      camera.lookAt(lookAhead.x, lookAhead.y + 2.5, lookAhead.z);
     }
+  }
+
+  function currentNav() {
+    const heading = headingDegrees();
+
+    if (!activeMission || activeMission.completed) {
+      return {
+        heading,
+        bearing: null,
+        error: 0,
+        distance: 0,
+        guidance: activeMission && activeMission.completed ? "Missão concluída" : "Sem missão ativa"
+      };
+    }
+
+    const bearing = bearingBetween(aircraft.position.x, aircraft.position.z, activeMission.to.x, activeMission.to.z);
+    const error = wrapDegrees(bearing - heading);
+    const absError = Math.abs(error);
+    let guidance = "Rumo alinhado";
+
+    if (absError > 9) guidance = "Vire " + (error > 0 ? "direita " : "esquerda ") + Math.round(absError) + "°";
+    if (dist2(aircraft.position.x, aircraft.position.z, activeMission.to.x, activeMission.to.z) < 700) {
+      guidance = "Aproxime e reduza para pouso";
+    }
+
+    return {
+      heading,
+      bearing,
+      error,
+      distance: dist2(aircraft.position.x, aircraft.position.z, activeMission.to.x, activeMission.to.z),
+      guidance
+    };
+  }
+
+  function drawMiniMap() {
+    const canvas = el("miniMap");
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    const w = canvas.width;
+    const h = canvas.height;
+
+    ctx.clearRect(0, 0, w, h);
+    ctx.fillStyle = "rgba(7, 23, 33, 0.92)";
+    ctx.fillRect(0, 0, w, h);
+    ctx.strokeStyle = "rgba(255,255,255,0.2)";
+    ctx.strokeRect(0.5, 0.5, w - 1, h - 1);
+
+    const toMap = (x, z) => ({
+      x: clamp((x + HALF) / MAP_SIZE, 0, 1) * w,
+      y: clamp((z + HALF) / MAP_SIZE, 0, 1) * h
+    });
+
+    if (activeMission && !activeMission.completed) {
+      const from = toMap(aircraft.position.x, aircraft.position.z);
+      const to = toMap(activeMission.to.x, activeMission.to.z);
+      ctx.strokeStyle = "rgba(255, 216, 77, 0.75)";
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(from.x, from.y);
+      ctx.lineTo(to.x, to.y);
+      ctx.stroke();
+    }
+
+    AIRPORTS.forEach(a => {
+      const p = toMap(a.x, a.z);
+      ctx.fillStyle = activeMission && activeMission.to.id === a.id ? "#ffd84d" : "#8cffaa";
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, activeMission && activeMission.to.id === a.id ? 4.2 : 2.8, 0, Math.PI * 2);
+      ctx.fill();
+    });
+
+    const planePoint = toMap(aircraft.position.x, aircraft.position.z);
+    ctx.save();
+    ctx.translate(planePoint.x, planePoint.y);
+    ctx.rotate(THREE.Math.degToRad(headingDegrees()));
+    ctx.fillStyle = "#ffffff";
+    ctx.beginPath();
+    ctx.moveTo(0, -8);
+    ctx.lineTo(5.5, 7);
+    ctx.lineTo(0, 4);
+    ctx.lineTo(-5.5, 7);
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+  }
+
+  function updateFlightDirector() {
+    const nav = currentNav();
+    el("directorHeading").textContent = Math.round(nav.heading).toString().padStart(3, "0") + "°";
+    el("directorTarget").textContent = nav.bearing === null ? "--" : Math.round(nav.bearing).toString().padStart(3, "0") + "°";
+    el("directorGuidance").textContent = nav.guidance;
+    el("directorNeedle").style.left = 50 + clamp(nav.error / 90, -1, 1) * 46 + "%";
   }
 
   let fpsValue = 60;
@@ -1016,9 +1371,14 @@
     el("speed").textContent = Math.round(speedKmh());
     el("altitude").textContent = Math.round(altitude());
     el("throttle").textContent = Math.round(aircraft.throttle * 100);
+    el("boost").textContent = down("shift") ? "On" : "Off";
+    el("boost").className = down("shift") ? "warn" : "";
     el("aoa").textContent = THREE.Math.radToDeg(aircraft.aoa).toFixed(1);
     el("vertical").textContent = aircraft.velocity.y.toFixed(1);
+    el("heading").textContent = Math.round(headingDegrees()).toString().padStart(3, "0");
     el("health").textContent = Math.max(0, Math.round(aircraft.health));
+    updateFlightDirector();
+    drawMiniMap();
 
     let status = "Na pista";
 
@@ -1036,8 +1396,12 @@
     statusEl.textContent = status;
     statusEl.className = aircraft.crashed ? "bad" : aircraft.stall ? "warn" : altitude() > 12 ? "good" : "";
 
+    const landingEl = el("landingQuality");
+    landingEl.textContent = lastLanding ? lastLanding.text : "--";
+    landingEl.className = lastLanding ? lastLanding.className : "";
+
     if (activeMission) {
-      const distance = dist2(aircraft.position.x, aircraft.position.z, activeMission.to.x, activeMission.to.z);
+      const nav = currentNav();
 
       el("missionTitle").textContent =
         activeMission.data.title + " — " + activeMission.from.name + " → " + activeMission.to.name;
@@ -1045,11 +1409,13 @@
       el("missionText").textContent =
         activeMission.completed ? "Concluída! Aperte N/M para outra." : activeMission.data.text;
 
-      el("missionDistance").textContent = Math.round(distance);
+      el("missionDistance").textContent = Math.round(nav.distance);
+      el("targetBearing").textContent = nav.bearing === null ? "--" : Math.round(nav.bearing).toString().padStart(3, "0") + "°";
     } else {
       el("missionTitle").textContent = "Pressione N para iniciar";
       el("missionText").textContent = "Voe de um aeroporto para outro.";
       el("missionDistance").textContent = "0";
+      el("targetBearing").textContent = "--";
     }
 
     el("money").textContent = fmtMoney(money) + " | Concluídas: " + completed;
@@ -1072,6 +1438,12 @@
       qualityIndex = (qualityIndex + 1) % QUALITY.length;
       quality = QUALITY[qualityIndex];
       rebuildDynamicWorld();
+    }
+
+    if (once("h")) {
+      showHitboxes = !showHitboxes;
+      rebuildHitboxHelpers();
+      el("message").innerHTML = showHitboxes ? "Hitboxes visíveis." : "Hitboxes ocultas.";
     }
 
     if (once("n")) randomMission();

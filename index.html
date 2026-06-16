@@ -3,27 +3,28 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Flight Simulator OFC V4</title>
+  <title>Flight Simulator OFC V5</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div id="loading">
     <div>
-      <h1>Flight Simulator OFC V4</h1>
-      <p>Carregando aeronaves, mapa grande, aeroportos e física nova...</p>
+      <h1>Flight Simulator OFC V5</h1>
+      <p>Carregando aeronaves, navegação, aeroportos e física nova...</p>
     </div>
   </div>
 
   <div id="hud">
-    <h2>FLIGHT SIMULATOR OFC V4</h2>
+    <h2>FLIGHT SIMULATOR OFC V5</h2>
 
     <div class="panel">
       <b>Controles</b><br />
       W: acelerar | S: reduzir/frear<br />
+      Shift: turbo<br />
       ↑/↓: pitch | ←/→: roll<br />
       A/D: yaw<br />
       1: avião leve | 2: jato comercial | 3: caça<br />
-      C: câmera | Q: qualidade | R: reset<br />
+      C: câmera | Q: qualidade | H: hitboxes | R: reset<br />
       N: missão aleatória | M: próxima missão
     </div>
 
@@ -34,8 +35,10 @@
       Velocidade: <span id="speed">0</span> km/h<br />
       Altitude: <span id="altitude">0</span> m<br />
       Potência: <span id="throttle">0</span>%<br />
+      Turbo: <span id="boost">Off</span><br />
       AOA: <span id="aoa">0</span>°<br />
       Vertical: <span id="vertical">0</span> m/s<br />
+      Rumo: <span id="heading">000</span>°<br />
       Integridade: <span id="health">100</span>%<br />
       Status: <span id="status">Na pista</span>
     </div>
@@ -45,12 +48,27 @@
       <span id="missionTitle">Pressione N para iniciar</span><br />
       <span id="missionText">Voe de um aeroporto para outro.</span><br />
       Distância: <span id="missionDistance">0</span> m<br />
+      Alvo: <span id="targetBearing">--</span><br />
+      Pouso: <span id="landingQuality">--</span><br />
       Dinheiro: <span id="money">$0</span>
+      <canvas id="miniMap" width="190" height="190" aria-label="Mapa de navegação"></canvas>
+    </div>
+  </div>
+
+  <div id="flightDirector">
+    <div class="director-row">
+      <span>Rumo <strong id="directorHeading">000°</strong></span>
+      <span id="directorGuidance">Sem missão ativa</span>
+      <span>Alvo <strong id="directorTarget">--</strong></span>
+    </div>
+    <div class="director-bar">
+      <span class="director-center"></span>
+      <span id="directorNeedle"></span>
     </div>
   </div>
 
   <div id="message">
-    V4: 3 aeronaves, mapa maior, mais aeroportos e física de voo/stall refeita.
+    V5: navegação por missão, mapa tático, câmera revisada e avaliação de pouso.
   </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>

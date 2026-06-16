@@ -1,6 +1,6 @@
-# Flight Simulator OFC V4
+# Flight Simulator OFC V5
 
-Versão com física refeita, mapa maior, mais aeroportos e três aeronaves.
+Versão com voo mais rápido, pouso mais justo, navegação por missão, hitboxes e três aeronaves.
 
 ## Aeronaves
 
@@ -12,10 +12,19 @@ Os modelos são inspirados visualmente, não são cópias 3D oficiais.
 
 ## Melhorias
 
+- Velocidade e aceleração aumentadas
+- Turbo com Shift
+- Câmera acompanha melhor o rumo real da aeronave
+- Pouso pesado quebra o avião, mas não explode automaticamente
+- Avaliação de pouso com bônus de missão
+- Hitboxes em obstáculos principais com visualização pela tecla H
+- Colisão com prédios, árvores, montanhas, terminais e torres
+- Elementos flutuantes removidos ou reposicionados
+- Mini mapa e diretor de voo para guiar até o aeroporto alvo
 - Sistema de voo refeito
 - Stall mais controlável
 - Decolagem mais estável
-- Mapa 10 km x 10 km
+- Mapa 14 km x 14 km
 - 8 aeroportos
 - Cidade maior
 - Mais estradas, rios, árvores, montanhas e nuvens
