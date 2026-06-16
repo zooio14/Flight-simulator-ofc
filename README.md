@@ -2,7 +2,7 @@
 
 Criado por Guilherme Trecenti.
 
-Versao com tela inicial, modo livre, modo carreira, loja de avioes, mapa maior, mais aeroportos, missoes, radar de rota e camera de perseguicao mais estavel.
+Versao com tela inicial, modo livre, modo carreira, loja de avioes, mapa maior, mais aeroportos, missoes, radar de rota, camera terceira pessoa e cores de terreno mais estaveis.
 
 ## Como jogar
 
@@ -40,10 +40,10 @@ Abra o jogo, escolha um modo e use:
 - 18 missoes de passageiros, carga, emergencia e operacao militar
 - Mini mapa circular com rota da missao
 - Radar superior que orienta rota e alinhamento de pista na aproximacao
-- Camera chase estavel que acompanha o rumo sem virar junto com o pitch
+- Camera terceira pessoa presa atras do aviao, com suavizacao por rumo
 - HUD compacto quando as informacoes laterais sao escondidas
 - Nota de pouso com bonus de missao
-- Cores fixas para oceano, grama, campos, floresta, areia, pistas, ruas, rios e montanhas
+- Cores fixas para oceano, grama, campos, floresta, areia, pistas, ruas, rios e montanhas, com camadas separadas para evitar piscadas
 - Hitboxes em camadas para predios, arvores, montanhas, terminais e torres
 - Pouso pesado quebra o aviao, mas nao explode automaticamente
 - Sem limitador artificial de velocidade: mergulho aumenta velocidade com gravidade e arrasto

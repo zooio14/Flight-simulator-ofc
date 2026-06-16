@@ -131,7 +131,11 @@
   let shopOpen = false;
   let hudHidden = false;
 
-  const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
+  const renderer = new THREE.WebGLRenderer({
+    antialias: true,
+    logarithmicDepthBuffer: true,
+    powerPreference: "high-performance"
+  });
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, quality.pixel));
   renderer.outputEncoding = THREE.sRGBEncoding;
@@ -143,7 +147,7 @@
   scene.background = new THREE.Color(WORLD_COLORS.sky);
   scene.fog = new THREE.Fog(WORLD_COLORS.fog, 2100, quality.fog);
 
-  const camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 52000);
+  const camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 56000);
 
   scene.add(new THREE.HemisphereLight(0xf7fbff, 0x4a7a4c, 1.55));
   const sun = new THREE.DirectionalLight(0xfff4df, 1.85);
@@ -173,6 +177,8 @@
   const airport = id => AIRPORTS.find(a => a.id === id);
   const fmtMoney = value => "$" + Math.round(value).toLocaleString("en-US");
   const wrapDegrees = value => ((value + 540) % 360) - 180;
+  const wrapRadians = value => Math.atan2(Math.sin(value), Math.cos(value));
+  const lerpAngle = (from, to, amount) => from + wrapRadians(to - from) * amount;
   const ownsAircraft = type => gameMode === "free" || ownedAircraft.has(type.id);
   const fmtGameMoney = () => gameMode === "free" ? "Livre" : fmtMoney(money);
 
@@ -201,6 +207,26 @@
   }
 
   const Y_AXIS = new THREE.Vector3(0, 1, 0);
+  const cameraRig = {
+    ready: false,
+    yaw: Math.PI,
+    target: new THREE.Vector3()
+  };
+
+  function resetCameraRig() {
+    cameraRig.ready = false;
+    cameraRig.yaw = aircraft.yaw;
+    cameraRig.target.copy(aircraft.position);
+  }
+
+  function flatSurfaceMaterial(color, offsetFactor) {
+    return new THREE.MeshBasicMaterial({
+      color,
+      polygonOffset: true,
+      polygonOffsetFactor: offsetFactor,
+      polygonOffsetUnits: offsetFactor
+    });
+  }
 
   function airportWorldPosition(a, localX, localY, localZ) {
     const p = new THREE.Vector3(localX, localY, localZ);
@@ -284,17 +310,20 @@
 
     const ocean = new THREE.Mesh(
       new THREE.PlaneGeometry(MAP_SIZE * 2.2, MAP_SIZE * 2.2, 1, 1),
-      new THREE.MeshLambertMaterial({ color: WORLD_COLORS.ocean })
+      flatSurfaceMaterial(WORLD_COLORS.ocean, 8)
     );
     ocean.rotation.x = -Math.PI / 2;
-    ocean.position.y = -0.1;
+    ocean.position.y = -6;
+    ocean.renderOrder = 0;
     scene.add(ocean);
 
     const ground = new THREE.Mesh(
       new THREE.PlaneGeometry(MAP_SIZE, MAP_SIZE, 120, 120),
-      new THREE.MeshLambertMaterial({ color: WORLD_COLORS.grass })
+      flatSurfaceMaterial(WORLD_COLORS.grass, 7)
     );
     ground.rotation.x = -Math.PI / 2;
+    ground.position.y = 0;
+    ground.renderOrder = 1;
     scene.add(ground);
 
     createTerrainPatches();
@@ -310,41 +339,41 @@
     for (let i = 0; i < 58; i++) {
       const patch = new THREE.Mesh(
         new THREE.PlaneGeometry(650 + Math.random() * 2100, 260 + Math.random() * 1200),
-        new THREE.MeshLambertMaterial({
-          color: colors[Math.floor(Math.random() * colors.length)],
-          polygonOffset: true,
-          polygonOffsetFactor: -1
-        })
+        flatSurfaceMaterial(colors[Math.floor(Math.random() * colors.length)], 6)
       );
       patch.rotation.x = -Math.PI / 2;
       patch.rotation.z = Math.random() * Math.PI;
-      patch.position.set((Math.random() - 0.5) * (MAP_SIZE * 0.86), 0.025, (Math.random() - 0.5) * (MAP_SIZE * 0.86));
+      patch.position.set((Math.random() - 0.5) * (MAP_SIZE * 0.86), 0.35, (Math.random() - 0.5) * (MAP_SIZE * 0.86));
+      patch.renderOrder = 2;
       if (!isAirportProtected(patch.position.x, patch.position.z, 520)) scene.add(patch);
     }
   }
 
   function createRivers() {
-    const mat = new THREE.MeshLambertMaterial({ color: WORLD_COLORS.river });
+    const mat = flatSurfaceMaterial(WORLD_COLORS.river, 5);
     for (let i = 0; i < 5; i++) {
       const river = new THREE.Mesh(new THREE.PlaneGeometry(110, MAP_SIZE * 0.7), mat);
       river.rotation.x = -Math.PI / 2;
       river.rotation.z = (i - 2) * 0.24;
-      river.position.set(-6800 + i * 3400, 0.032, -2200 + i * 1350);
+      river.position.set(-6800 + i * 3400, 0.55, -2200 + i * 1350);
+      river.renderOrder = 3;
       scene.add(river);
     }
   }
 
   function createRoads() {
-    const mat = new THREE.MeshLambertMaterial({ color: WORLD_COLORS.road });
+    const mat = flatSurfaceMaterial(WORLD_COLORS.road, 4);
     for (let i = -7; i <= 7; i++) {
       const road = new THREE.Mesh(new THREE.PlaneGeometry(34, MAP_SIZE * 0.82), mat);
       road.rotation.x = -Math.PI / 2;
-      road.position.set(i * 1850, 0.035, -400);
+      road.position.set(i * 1850, 0.75, -400);
+      road.renderOrder = 4;
       scene.add(road);
 
       const cross = new THREE.Mesh(new THREE.PlaneGeometry(MAP_SIZE * 0.82, 30), mat);
       cross.rotation.x = -Math.PI / 2;
-      cross.position.set(400, 0.036, i * 1850);
+      cross.position.set(400, 0.78, i * 1850);
+      cross.renderOrder = 4;
       scene.add(cross);
     }
   }
@@ -354,10 +383,11 @@
 
     const runway = new THREE.Mesh(
       new THREE.PlaneGeometry(105, a.length, 1, 1),
-      new THREE.MeshLambertMaterial({ color: WORLD_COLORS.runway })
+      flatSurfaceMaterial(WORLD_COLORS.runway, 3)
     );
     runway.rotation.x = -Math.PI / 2;
-    runway.position.y = 0.045;
+    runway.position.y = 1.05;
+    runway.renderOrder = 5;
     group.add(runway);
 
     const white = new THREE.MeshBasicMaterial({ color: 0xffffff });
@@ -366,23 +396,26 @@
     for (let z = -a.length / 2 + 80; z < a.length / 2; z += 120) {
       const mark = new THREE.Mesh(new THREE.PlaneGeometry(5, 55), white);
       mark.rotation.x = -Math.PI / 2;
-      mark.position.set(0, 0.075, z);
+      mark.position.set(0, 1.23, z);
+      mark.renderOrder = 6;
       group.add(mark);
     }
 
     [-55, 55].forEach(x => {
       const line = new THREE.Mesh(new THREE.PlaneGeometry(3, a.length), white);
       line.rotation.x = -Math.PI / 2;
-      line.position.set(x, 0.07, 0);
+      line.position.set(x, 1.24, 0);
+      line.renderOrder = 6;
       group.add(line);
     });
 
     const taxi = new THREE.Mesh(
       new THREE.PlaneGeometry(34, a.length * 0.52),
-      new THREE.MeshLambertMaterial({ color: WORLD_COLORS.taxi })
+      flatSurfaceMaterial(WORLD_COLORS.taxi, 2)
     );
     taxi.rotation.x = -Math.PI / 2;
-    taxi.position.set(160, 0.055, 0);
+    taxi.position.set(160, 1.1, 0);
+    taxi.renderOrder = 5;
     group.add(taxi);
 
     const terminal = new THREE.Mesh(
@@ -998,6 +1031,7 @@
     lastLanding = null;
     plane.visible = true;
     syncPlane();
+    resetCameraRig();
   }
 
   function setShopOpen(open) {
@@ -1545,6 +1579,7 @@
   function startGame(mode) {
     gameMode = mode;
     gameStarted = true;
+    cameraMode = 0;
     keys = {};
     pressed = {};
     activeMission = null;
@@ -1564,6 +1599,7 @@
     }
 
     resetToAirport(AIRPORTS[0]);
+    resetCameraRig();
     setShopOpen(false);
     renderShop();
 
@@ -1669,44 +1705,68 @@
     });
   }
 
+  function thirdPersonCamera(dt) {
+    const speed = speedKmh();
+    const yawFollow = 1 - Math.pow(0.00002, dt);
+    const positionFollow = 1 - Math.pow(0.00001, dt);
+    const lookFollow = 1 - Math.pow(0.00008, dt);
+
+    cameraRig.yaw = lerpAngle(cameraRig.yaw, aircraft.yaw, yawFollow);
+
+    const backDistance = aircraftType.cameraBack + clamp(speed / 65, 0, 26);
+    const height = 10 + clamp(speed / 110, 0, 14) + clamp(altitude() / 420, 0, 10);
+    const side = Math.sin(aircraft.roll) * clamp(speed / 240, -3.5, 3.5);
+
+    const desiredOffset = new THREE.Vector3(side, height, backDistance);
+    desiredOffset.applyAxisAngle(Y_AXIS, cameraRig.yaw);
+
+    const desiredPosition = plane.visible
+      ? aircraft.position.clone().add(desiredOffset)
+      : aircraft.position.clone().add(new THREE.Vector3(0, 80, 110));
+
+    const forwardFlat = new THREE.Vector3(-Math.sin(cameraRig.yaw), 0, -Math.cos(cameraRig.yaw));
+    const desiredTarget = aircraft.position.clone()
+      .addScaledVector(forwardFlat, 70 + clamp(speed / 12, 0, 75))
+      .add(new THREE.Vector3(0, 4 + clamp(speed / 150, 0, 9), 0));
+
+    if (!cameraRig.ready || camera.position.distanceTo(desiredPosition) > 900) {
+      camera.position.copy(desiredPosition);
+      cameraRig.target.copy(desiredTarget);
+      cameraRig.ready = true;
+    } else {
+      camera.position.lerp(desiredPosition, positionFollow);
+      cameraRig.target.lerp(desiredTarget, lookFollow);
+    }
+
+    camera.up.set(0, 1, 0);
+    camera.lookAt(cameraRig.target);
+  }
+
   function updateCamera(dt) {
-    let offset;
-
     if (cameraMode === 0) {
-      offset = new THREE.Vector3(0, 10, aircraftType.cameraBack);
-      offset.applyAxisAngle(Y_AXIS, aircraft.yaw);
-      const desired = plane.visible
-        ? aircraft.position.clone().add(offset)
-        : aircraft.position.clone().add(new THREE.Vector3(0, 80, 110));
-      camera.position.lerp(desired, 1 - Math.pow(0.001, dt));
-
-      const lookAhead = new THREE.Vector3(Math.sin(aircraft.yaw), 0, -Math.cos(aircraft.yaw))
-        .multiplyScalar(105)
-        .add(aircraft.position);
-      camera.lookAt(lookAhead.x, aircraft.position.y + 4, lookAhead.z);
+      thirdPersonCamera(dt);
       return;
     }
 
+    let offset;
     if (cameraMode === 1) offset = new THREE.Vector3(0, 2.6, 9);
-    else if (cameraMode === 2) offset = new THREE.Vector3(0, 95, 15);
-    else offset = new THREE.Vector3(40, 18, 42);
+    else if (cameraMode === 2) offset = new THREE.Vector3(0, 115, 35);
+    else offset = new THREE.Vector3(48, 22, aircraftType.cameraBack * 0.8);
 
-    offset.applyEuler(plane.rotation);
+    if (cameraMode === 1) offset.applyEuler(plane.rotation);
+    else offset.applyAxisAngle(Y_AXIS, aircraft.yaw);
 
     const desired = plane.visible
       ? plane.position.clone().add(offset)
       : aircraft.position.clone().add(new THREE.Vector3(0, 80, 110));
 
-    camera.position.lerp(desired, 1 - Math.pow(0.001, dt));
+    camera.position.lerp(desired, 1 - Math.pow(0.0005, dt));
 
     if (cameraMode === 1 && plane.visible) {
       const look = new THREE.Vector3(0, 1.8, -105).applyEuler(plane.rotation).add(plane.position);
       camera.lookAt(look);
-    } else if (cameraMode === 2 && plane.visible) {
-      camera.lookAt(aircraft.position.x, aircraft.position.y, aircraft.position.z);
     } else {
-      const lookAhead = forwardVector().multiplyScalar(95).add(aircraft.position);
-      camera.lookAt(lookAhead.x, lookAhead.y + 2.5, lookAhead.z);
+      camera.lookAt(aircraft.position.x, aircraft.position.y + 4, aircraft.position.z);
     }
   }
 
