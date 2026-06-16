@@ -1,46 +1,71 @@
-# Flight Simulator OFC V6
+# Flight Simulator OFC V7
 
-Versão com mapa expandido, missões de passageiros/carga, radar de aproximação, pouso mais justo, hitboxes e três aeronaves.
+Criado por Guilherme Trecenti.
 
-## Aeronaves
+Versao com tela inicial, modo livre, modo carreira, loja de avioes, mapa maior, mais aeroportos, missoes, radar de rota e camera de perseguicao mais estavel.
 
-- 1: avião leve inspirado no Cessna
-- 2: jato comercial inspirado no Boeing 737
-- 3: caça stealth inspirado no F-22
+## Como jogar
 
-Os modelos são inspirados visualmente, não são cópias 3D oficiais.
+Abra o jogo, escolha um modo e use:
 
-## Melhorias
+- W: acelerar
+- S: reduzir/frear
+- Shift: turbo
+- Setas: pitch e roll
+- A/D: yaw
+- 1: Cessna inicial
+- 2: airliner medio
+- 3: caca final
+- L: loja de avioes
+- I: esconder/mostrar informacoes
+- C: camera
+- Q: qualidade
+- H: hitboxes
+- R: reset
+- N: missao aleatoria
+- M: proxima missao
 
-- Velocidade e aceleração aumentadas
+## Modos
+
+- Modo livre: todos os 22 avioes ficam liberados de graca.
+- Modo carreira: o jogador comeca com o Cessna velho de aeroclube, faz missoes para ganhar dinheiro e compra avioes melhores na loja.
+
+## Melhorias principais
+
+- 22 modelos de aviao, do Cessna velho ate o caca stealth inspirado no F-22
+- Precos e progressao no modo carreira
+- Loja com comprar/equipar e estatisticas de velocidade, stall e decolagem
+- Mapa aumentado para 48 km x 48 km
+- 22 aeroportos espalhados pelo mundo
+- 18 missoes de passageiros, carga, emergencia e operacao militar
+- Mini mapa circular com rota da missao
+- Radar superior que orienta rota e alinhamento de pista na aproximacao
+- Camera chase estavel que acompanha o rumo sem virar junto com o pitch
+- HUD compacto quando as informacoes laterais sao escondidas
+- Nota de pouso com bonus de missao
+- Cores fixas para oceano, grama, campos, floresta, areia, pistas, ruas, rios e montanhas
+- Hitboxes em camadas para predios, arvores, montanhas, terminais e torres
+- Pouso pesado quebra o aviao, mas nao explode automaticamente
 - Sem limitador artificial de velocidade: mergulho aumenta velocidade com gravidade e arrasto
-- Turbo com Shift
-- Câmera acompanha melhor o rumo real da aeronave
-- Stall por velocidade mínima específica de cada aeronave
-- Missões de passageiros, carga, emergência e operação militar
-- Pouso pesado quebra o avião, mas não explode automaticamente
-- Avaliação de pouso com bônus de missão
-- Hitboxes em camadas menores para prédios, árvores, montanhas e estruturas
-- Colisão com prédios, árvores, montanhas, terminais e torres
-- Gráficos revisados com iluminação mais suave, terreno variado e prédios com cores diferentes
-- Elementos flutuantes removidos ou reposicionados
-- Mini mapa circular no canto inferior direito com rota de missão
-- Radar superior muda para alinhamento de pista na aproximação final
-- Caça stealth remodelado em 3D com asas anguladas, entradas de ar e cauda dupla
-- Sistema de voo refeito
-- Stall mais controlável
-- Decolagem mais estável
-- Mapa 32 km x 32 km
-- 14 aeroportos
-- Cidade maior
-- Mais estradas, rios, árvores, montanhas e nuvens
-- Missões entre aeroportos
-- Explosão e dano em colisões
-- Física diferente para cada tipo de avião
+- Stall baseado em velocidade minima especifica de cada aeronave
+- Modelos 3D com escala e cores por aeronave
+
+## Rodar localmente
+
+```bash
+cd /Users/guilhermetrecenti/Documents/Codex/2026-06-15/voce-tem-acesso-ao-meu-repositorio/work/Flight-simulator-ofc
+python3 -m http.server 8080
+```
+
+Depois abra:
+
+```text
+http://localhost:8080
+```
 
 ## Como subir no GitHub Pages
 
-Envie para a raiz do repositório:
+Envie para a raiz do repositorio:
 
 - index.html
 - style.css
@@ -48,4 +73,4 @@ Envie para a raiz do repositório:
 
 Depois ative:
 
-Settings → Pages → Deploy from a branch → main → /(root)
+Settings -> Pages -> Deploy from a branch -> main -> /(root)

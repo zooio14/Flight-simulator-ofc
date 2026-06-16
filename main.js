@@ -7,68 +7,54 @@
     return;
   }
 
-  const MAP_SIZE = 32000;
+  const MAP_SIZE = 48000;
   const HALF = MAP_SIZE / 2;
-  const MINIMAP_RANGE = 12000;
+  const MINIMAP_RANGE = 16000;
+
+  const WORLD_COLORS = {
+    sky: 0x8fd3ff,
+    fog: 0x9bd6ff,
+    ocean: 0x287fb5,
+    grass: 0x43a35b,
+    field: 0x68ad5d,
+    forest: 0x2f7d43,
+    sand: 0xb8aa6c,
+    runway: 0x242424,
+    taxi: 0x303030,
+    road: 0x4c4d4f,
+    river: 0x2d93ca,
+    mountain: 0x78806d
+  };
 
   const QUALITY = [
-    { name: "Ultra leve", pixel: 0.42, buildings: 55, trees: 130, clouds: 7, fog: 18500, particles: 24 },
-    { name: "Baixa", pixel: 0.62, buildings: 115, trees: 260, clouds: 13, fog: 23500, particles: 38 },
-    { name: "Alta", pixel: 0.9, buildings: 220, trees: 480, clouds: 24, fog: 30500, particles: 64 }
+    { name: "Ultra leve", pixel: 0.42, buildings: 70, trees: 150, clouds: 8, fog: 23500, particles: 24 },
+    { name: "Baixa", pixel: 0.62, buildings: 140, trees: 310, clouds: 15, fog: 30000, particles: 38 },
+    { name: "Alta", pixel: 0.9, buildings: 260, trees: 560, clouds: 28, fog: 39000, particles: 64 }
   ];
 
   const AIRCRAFT_TYPES = [
-    {
-      id: "cessna",
-      name: "Leve inspirado no Cessna",
-      model: "cessna",
-      takeoff: 98,
-      landingMax: 185,
-      maxSpeed: 360,
-      thrust: 66,
-      boost: 1.22,
-      drag: 0.00165,
-      lift: 18.3,
-      control: 1.25,
-      stallAngle: 23,
-      stallSpeed: 70,
-      cameraBack: 34,
-      hitboxRadius: 7
-    },
-    {
-      id: "boeing",
-      name: "Jato comercial inspirado no 737",
-      model: "boeing",
-      takeoff: 205,
-      landingMax: 315,
-      maxSpeed: 900,
-      thrust: 94,
-      boost: 1.16,
-      drag: 0.00088,
-      lift: 16.2,
-      control: 0.72,
-      stallAngle: 20,
-      stallSpeed: 155,
-      cameraBack: 55,
-      hitboxRadius: 14
-    },
-    {
-      id: "f22",
-      name: "Caça stealth inspirado no F-22",
-      model: "f22",
-      takeoff: 145,
-      landingMax: 260,
-      maxSpeed: 1850,
-      thrust: 168,
-      boost: 1.42,
-      drag: 0.00048,
-      lift: 22.8,
-      control: 1.85,
-      stallAngle: 30,
-      stallSpeed: 105,
-      cameraBack: 42,
-      hitboxRadius: 10
-    }
+    { id: "cessna", name: "Cessna velho de aeroclube", model: "cessna", price: 0, takeoff: 98, landingMax: 180, maxSpeed: 320, thrust: 58, boost: 1.12, drag: 0.00185, lift: 17.4, control: 1.12, stallAngle: 22, stallSpeed: 72, cameraBack: 34, hitboxRadius: 7, color: 0xf3f0df, accent: 0xb43732, scale: 0.96 },
+    { id: "trainer", name: "Treinador leve OFC-120", model: "cessna", price: 2400, takeoff: 92, landingMax: 185, maxSpeed: 350, thrust: 65, boost: 1.16, drag: 0.0017, lift: 18.2, control: 1.24, stallAngle: 23, stallSpeed: 68, cameraBack: 34, hitboxRadius: 7, color: 0xffffff, accent: 0x2d6fd3, scale: 1 },
+    { id: "piper", name: "Monomotor turismo", model: "cessna", price: 5200, takeoff: 105, landingMax: 195, maxSpeed: 390, thrust: 72, boost: 1.18, drag: 0.00155, lift: 18.6, control: 1.22, stallAngle: 23, stallSpeed: 74, cameraBack: 35, hitboxRadius: 7, color: 0xe7eef3, accent: 0x2f8f59, scale: 1.04 },
+    { id: "taildragger", name: "STOL rural", model: "cessna", price: 8200, takeoff: 78, landingMax: 175, maxSpeed: 310, thrust: 70, boost: 1.2, drag: 0.0019, lift: 20.1, control: 1.34, stallAngle: 26, stallSpeed: 58, cameraBack: 32, hitboxRadius: 7, color: 0xe8e1c8, accent: 0x4f7b39, scale: 0.98 },
+    { id: "baron", name: "Bimotor executivo leve", model: "turboprop", price: 15000, takeoff: 125, landingMax: 220, maxSpeed: 510, thrust: 86, boost: 1.18, drag: 0.00125, lift: 18.9, control: 1.08, stallAngle: 23, stallSpeed: 88, cameraBack: 39, hitboxRadius: 8, color: 0xf4f5f0, accent: 0x1d4f8f, scale: 1 },
+    { id: "caravan", name: "Utilitário Caravan", model: "turboprop", price: 24000, takeoff: 130, landingMax: 230, maxSpeed: 470, thrust: 92, boost: 1.16, drag: 0.00132, lift: 19.8, control: 0.98, stallAngle: 23, stallSpeed: 85, cameraBack: 42, hitboxRadius: 9, color: 0xf7f3e8, accent: 0xc18a32, scale: 1.1 },
+    { id: "kingair", name: "King Air regional", model: "turboprop", price: 39000, takeoff: 145, landingMax: 245, maxSpeed: 610, thrust: 108, boost: 1.18, drag: 0.00105, lift: 19.2, control: 0.96, stallAngle: 23, stallSpeed: 98, cameraBack: 45, hitboxRadius: 10, color: 0xf0f4f8, accent: 0x274f9f, scale: 1.18 },
+    { id: "pc12", name: "Turboélice premium", model: "turboprop", price: 56000, takeoff: 150, landingMax: 255, maxSpeed: 700, thrust: 118, boost: 1.18, drag: 0.00096, lift: 19.5, control: 1.02, stallAngle: 24, stallSpeed: 102, cameraBack: 45, hitboxRadius: 10, color: 0xe6eced, accent: 0x5c6570, scale: 1.2 },
+    { id: "tbm", name: "Turbo rápido TBM", model: "turboprop", price: 72000, takeoff: 158, landingMax: 265, maxSpeed: 780, thrust: 132, boost: 1.2, drag: 0.00086, lift: 19.3, control: 1.08, stallAngle: 24, stallSpeed: 110, cameraBack: 45, hitboxRadius: 10, color: 0xf7f7f7, accent: 0x9c2930, scale: 1.14 },
+    { id: "learjet", name: "Jato executivo antigo", model: "business", price: 98000, takeoff: 175, landingMax: 275, maxSpeed: 820, thrust: 128, boost: 1.16, drag: 0.00082, lift: 17.4, control: 0.9, stallAngle: 22, stallSpeed: 125, cameraBack: 48, hitboxRadius: 11, color: 0xf8f8f4, accent: 0x2a5c95, scale: 0.98 },
+    { id: "citation", name: "Jato executivo moderno", model: "business", price: 130000, takeoff: 168, landingMax: 285, maxSpeed: 890, thrust: 142, boost: 1.18, drag: 0.00074, lift: 17.9, control: 0.96, stallAngle: 22, stallSpeed: 122, cameraBack: 49, hitboxRadius: 11, color: 0xffffff, accent: 0x40505f, scale: 1.02 },
+    { id: "embraer", name: "Jato regional E-Jet", model: "regional", price: 185000, takeoff: 188, landingMax: 300, maxSpeed: 870, thrust: 150, boost: 1.15, drag: 0.00078, lift: 16.8, control: 0.8, stallAngle: 21, stallSpeed: 138, cameraBack: 54, hitboxRadius: 13, color: 0xf3f6f8, accent: 0x1976b8, scale: 1.05 },
+    { id: "atr", name: "Turboélice regional ATR", model: "regional", price: 210000, takeoff: 165, landingMax: 275, maxSpeed: 620, thrust: 138, boost: 1.12, drag: 0.00102, lift: 18.9, control: 0.74, stallAngle: 21, stallSpeed: 118, cameraBack: 55, hitboxRadius: 13, color: 0xf2f2ef, accent: 0x0f7d72, scale: 1 },
+    { id: "dash8", name: "Dash regional rápido", model: "regional", price: 260000, takeoff: 172, landingMax: 285, maxSpeed: 690, thrust: 148, boost: 1.14, drag: 0.00096, lift: 18.4, control: 0.76, stallAngle: 21, stallSpeed: 126, cameraBack: 56, hitboxRadius: 13, color: 0xeceff1, accent: 0xb43a2c, scale: 1.06 },
+    { id: "crj", name: "Regional CRJ alongado", model: "regional", price: 330000, takeoff: 200, landingMax: 305, maxSpeed: 880, thrust: 158, boost: 1.15, drag: 0.00073, lift: 16.7, control: 0.72, stallAngle: 20, stallSpeed: 148, cameraBack: 57, hitboxRadius: 13, color: 0xf8f8f5, accent: 0x384a6b, scale: 1.08 },
+    { id: "a320", name: "Airliner médio A320", model: "airliner", price: 520000, takeoff: 215, landingMax: 318, maxSpeed: 910, thrust: 170, boost: 1.14, drag: 0.00072, lift: 16.3, control: 0.66, stallAngle: 20, stallSpeed: 158, cameraBack: 62, hitboxRadius: 15, color: 0xf2f4f5, accent: 0x1a7fba, scale: 1.2 },
+    { id: "boeing", name: "Jato comercial 737", model: "airliner", price: 680000, takeoff: 205, landingMax: 315, maxSpeed: 940, thrust: 184, boost: 1.16, drag: 0.00066, lift: 16.2, control: 0.72, stallAngle: 20, stallSpeed: 155, cameraBack: 64, hitboxRadius: 15, color: 0xf2f2f2, accent: 0x1c60d6, scale: 1.22 },
+    { id: "widebody", name: "Widebody longo", model: "airliner", price: 980000, takeoff: 245, landingMax: 340, maxSpeed: 980, thrust: 215, boost: 1.12, drag: 0.00062, lift: 15.7, control: 0.55, stallAngle: 19, stallSpeed: 178, cameraBack: 76, hitboxRadius: 18, color: 0xf6f6f2, accent: 0x7a4ea3, scale: 1.5 },
+    { id: "cargo", name: "Cargueiro pesado", model: "cargo", price: 1250000, takeoff: 260, landingMax: 330, maxSpeed: 820, thrust: 230, boost: 1.1, drag: 0.00078, lift: 16.4, control: 0.48, stallAngle: 19, stallSpeed: 182, cameraBack: 82, hitboxRadius: 19, color: 0xd8dde0, accent: 0x2f5c44, scale: 1.42 },
+    { id: "f16", name: "Caça leve inspirado no F-16", model: "fighter", price: 1800000, takeoff: 135, landingMax: 255, maxSpeed: 1450, thrust: 195, boost: 1.34, drag: 0.00055, lift: 21.2, control: 1.55, stallAngle: 28, stallSpeed: 112, cameraBack: 42, hitboxRadius: 10, color: 0x909aa2, accent: 0x39424b, scale: 0.98 },
+    { id: "f35", name: "Caça stealth moderno", model: "fighter", price: 2400000, takeoff: 142, landingMax: 260, maxSpeed: 1650, thrust: 220, boost: 1.38, drag: 0.0005, lift: 21.8, control: 1.7, stallAngle: 29, stallSpeed: 108, cameraBack: 43, hitboxRadius: 10, color: 0x7f8992, accent: 0x2c343c, scale: 1.02 },
+    { id: "f22", name: "Caça stealth inspirado no F-22", model: "f22", price: 3200000, takeoff: 145, landingMax: 260, maxSpeed: 1900, thrust: 248, boost: 1.42, drag: 0.00048, lift: 22.8, control: 1.85, stallAngle: 30, stallSpeed: 105, cameraBack: 44, hitboxRadius: 10, color: 0x8b959d, accent: 0x303842, scale: 1.05 }
   ];
 
   const AIRPORTS = [
@@ -85,7 +71,15 @@
     { id: "SUL", name: "Aeroporto Sul Tropical", x: 4500, z: 12800, heading: 190, length: 2000 },
     { id: "OESTE", name: "Aeroporto Oeste Rural", x: -13500, z: 4300, heading: 260, length: 1800 },
     { id: "ARQ", name: "Pista Arquipelago", x: -14200, z: -11800, heading: 35, length: 1400 },
-    { id: "PLANALTO", name: "Aeroporto Planalto Alto", x: 13600, z: 11800, heading: 320, length: 1900 }
+    { id: "PLANALTO", name: "Aeroporto Planalto Alto", x: 13600, z: 11800, heading: 320, length: 1900 },
+    { id: "CAPITAL", name: "Aeroporto Capital Norte", x: -18200, z: -4200, heading: 85, length: 3300 },
+    { id: "FLORESTA", name: "Aeroporto Floresta Verde", x: 19800, z: -6200, heading: 140, length: 1700 },
+    { id: "MINAS", name: "Aeroporto Minas Alta", x: 3200, z: 21400, heading: 10, length: 1900 },
+    { id: "PORTO", name: "Aeroporto Porto Sul", x: -6400, z: 21100, heading: 100, length: 2300 },
+    { id: "GLACIAL", name: "Aeroporto Glacial Norte", x: 9200, z: -21400, heading: 45, length: 1800 },
+    { id: "LITORAL", name: "Aeroporto Litoral Leste", x: 21400, z: -14500, heading: 15, length: 2100 },
+    { id: "FRONTEIRA", name: "Aeroporto Fronteira Oeste", x: -21300, z: 14200, heading: 300, length: 1850 },
+    { id: "BASEALTA", name: "Base Alta Militar", x: 20500, z: 19800, heading: 330, length: 2400 }
   ];
 
   const CITY_CENTERS = [
@@ -96,7 +90,14 @@
     { x: -11200, z: 9600, radius: 1900 },
     { x: 4500, z: 12800, radius: 2200 },
     { x: 11200, z: -9000, radius: 2300 },
-    { x: -9800, z: -7600, radius: 1800 }
+    { x: -9800, z: -7600, radius: 1800 },
+    { x: -18200, z: -4200, radius: 2600 },
+    { x: 19800, z: -6200, radius: 2100 },
+    { x: 3200, z: 21400, radius: 1900 },
+    { x: -6400, z: 21100, radius: 2300 },
+    { x: 21400, z: -14500, radius: 2200 },
+    { x: -21300, z: 14200, radius: 2100 },
+    { x: 20500, z: 19800, radius: 1800 }
   ];
 
   const MISSIONS = [
@@ -109,13 +110,26 @@
     { title: "Suprimento rural", type: "carga", from: "OESTE", to: "DESERTO", reward: 7300, cargo: "1.2 t", text: "Transporte suprimentos para a base no deserto." },
     { title: "Operação militar", type: "militar", from: "NAVAL", to: "DESERTO", reward: 8600, cargo: "pacote tático", text: "Use o caça e atravesse a rota rápida em baixa resistência." },
     { title: "Interceptação de teste", type: "militar", from: "NORTE", to: "SERRA", reward: 9000, cargo: "dados de voo", text: "Voo rápido de teste para o caça stealth." },
-    { title: "Resgate aeromédico", type: "emergência", from: "VALE", to: "CIDADE", reward: 8200, passengers: 2, text: "Transporte paciente e médico com pouso suave." }
+    { title: "Resgate aeromédico", type: "emergência", from: "VALE", to: "CIDADE", reward: 8200, passengers: 2, text: "Transporte paciente e médico com pouso suave." },
+    { title: "Ponte aérea capital", type: "passageiros", from: "CAPITAL", to: "METRO", reward: 11200, passengers: 156, text: "Rota movimentada entre Capital Norte e Metropolitano." },
+    { title: "Turismo floresta", type: "passageiros", from: "FLORESTA", to: "LAGO", reward: 9700, passengers: 18, text: "Leve turistas para Lago Cristal sobre áreas verdes." },
+    { title: "Minério urgente", type: "carga", from: "MINAS", to: "PORTO", reward: 11800, cargo: "2.4 t", text: "Leve peças e amostras da serra até o porto." },
+    { title: "Correio glacial", type: "carga", from: "GLACIAL", to: "NORTE", reward: 8800, cargo: "malotes", text: "Rota curta e fria entre bases do norte." },
+    { title: "Linha litoral", type: "passageiros", from: "LITORAL", to: "ARQ", reward: 13200, passengers: 74, text: "Cruze o litoral até o arquipélago." },
+    { title: "Fronteira médica", type: "emergência", from: "FRONTEIRA", to: "CAPITAL", reward: 12500, passengers: 3, text: "Transporte equipe médica para a capital." },
+    { title: "Treino militar avançado", type: "militar", from: "BASEALTA", to: "NAVAL", reward: 14800, cargo: "plano de voo", text: "Rota militar de alta velocidade até a base naval." },
+    { title: "Volta do mundo OFC", type: "passageiros", from: "CAPITAL", to: "BASEALTA", reward: 18000, passengers: 210, text: "Grande rota do mapa expandido para aviões de alto nível." }
   ];
 
   let qualityIndex = 2;
   let quality = QUALITY[qualityIndex];
   let aircraftIndex = 0;
   let aircraftType = AIRCRAFT_TYPES[aircraftIndex];
+  let gameStarted = false;
+  let gameMode = null;
+  let ownedAircraft = new Set([AIRCRAFT_TYPES[0].id]);
+  let shopOpen = false;
+  let hudHidden = false;
 
   const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
   renderer.setSize(window.innerWidth, window.innerHeight);
@@ -126,8 +140,8 @@
   document.body.appendChild(renderer.domElement);
 
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x8fd3ff);
-  scene.fog = new THREE.Fog(0x9bd6ff, 2100, quality.fog);
+  scene.background = new THREE.Color(WORLD_COLORS.sky);
+  scene.fog = new THREE.Fog(WORLD_COLORS.fog, 2100, quality.fog);
 
   const camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 52000);
 
@@ -159,6 +173,8 @@
   const airport = id => AIRPORTS.find(a => a.id === id);
   const fmtMoney = value => "$" + Math.round(value).toLocaleString("en-US");
   const wrapDegrees = value => ((value + 540) % 360) - 180;
+  const ownsAircraft = type => gameMode === "free" || ownedAircraft.has(type.id);
+  const fmtGameMoney = () => gameMode === "free" ? "Livre" : fmtMoney(money);
 
   window.addEventListener("keydown", event => {
     const key = event.key.toLowerCase();
@@ -268,7 +284,7 @@
 
     const ocean = new THREE.Mesh(
       new THREE.PlaneGeometry(MAP_SIZE * 2.2, MAP_SIZE * 2.2, 1, 1),
-      new THREE.MeshLambertMaterial({ color: 0x287fb5 })
+      new THREE.MeshLambertMaterial({ color: WORLD_COLORS.ocean })
     );
     ocean.rotation.x = -Math.PI / 2;
     ocean.position.y = -0.1;
@@ -276,7 +292,7 @@
 
     const ground = new THREE.Mesh(
       new THREE.PlaneGeometry(MAP_SIZE, MAP_SIZE, 120, 120),
-      new THREE.MeshLambertMaterial({ color: 0x43a35b })
+      new THREE.MeshLambertMaterial({ color: WORLD_COLORS.grass })
     );
     ground.rotation.x = -Math.PI / 2;
     scene.add(ground);
@@ -289,27 +305,26 @@
   }
 
   function createTerrainPatches() {
-    const colors = [0x3b9254, 0x58ad5d, 0x6eb86a, 0x4b9a63];
+    const colors = [WORLD_COLORS.field, WORLD_COLORS.forest, WORLD_COLORS.grass, WORLD_COLORS.sand];
 
     for (let i = 0; i < 58; i++) {
       const patch = new THREE.Mesh(
         new THREE.PlaneGeometry(650 + Math.random() * 2100, 260 + Math.random() * 1200),
         new THREE.MeshLambertMaterial({
           color: colors[Math.floor(Math.random() * colors.length)],
-          transparent: true,
-          opacity: 0.22,
-          depthWrite: false
+          polygonOffset: true,
+          polygonOffsetFactor: -1
         })
       );
       patch.rotation.x = -Math.PI / 2;
       patch.rotation.z = Math.random() * Math.PI;
-      patch.position.set((Math.random() - 0.5) * (MAP_SIZE * 0.86), 0.018, (Math.random() - 0.5) * (MAP_SIZE * 0.86));
+      patch.position.set((Math.random() - 0.5) * (MAP_SIZE * 0.86), 0.025, (Math.random() - 0.5) * (MAP_SIZE * 0.86));
       if (!isAirportProtected(patch.position.x, patch.position.z, 520)) scene.add(patch);
     }
   }
 
   function createRivers() {
-    const mat = new THREE.MeshLambertMaterial({ color: 0x2d93ca });
+    const mat = new THREE.MeshLambertMaterial({ color: WORLD_COLORS.river });
     for (let i = 0; i < 5; i++) {
       const river = new THREE.Mesh(new THREE.PlaneGeometry(110, MAP_SIZE * 0.7), mat);
       river.rotation.x = -Math.PI / 2;
@@ -320,7 +335,7 @@
   }
 
   function createRoads() {
-    const mat = new THREE.MeshLambertMaterial({ color: 0x4c4d4f });
+    const mat = new THREE.MeshLambertMaterial({ color: WORLD_COLORS.road });
     for (let i = -7; i <= 7; i++) {
       const road = new THREE.Mesh(new THREE.PlaneGeometry(34, MAP_SIZE * 0.82), mat);
       road.rotation.x = -Math.PI / 2;
@@ -339,7 +354,7 @@
 
     const runway = new THREE.Mesh(
       new THREE.PlaneGeometry(105, a.length, 1, 1),
-      new THREE.MeshLambertMaterial({ color: 0x242424 })
+      new THREE.MeshLambertMaterial({ color: WORLD_COLORS.runway })
     );
     runway.rotation.x = -Math.PI / 2;
     runway.position.y = 0.045;
@@ -364,7 +379,7 @@
 
     const taxi = new THREE.Mesh(
       new THREE.PlaneGeometry(34, a.length * 0.52),
-      new THREE.MeshLambertMaterial({ color: 0x303030 })
+      new THREE.MeshLambertMaterial({ color: WORLD_COLORS.taxi })
     );
     taxi.rotation.x = -Math.PI / 2;
     taxi.position.set(160, 0.055, 0);
@@ -413,7 +428,7 @@
 
   function createMountains() {
     const geometry = new THREE.ConeGeometry(1, 1, 6);
-    const material = new THREE.MeshLambertMaterial({ color: 0x78806d });
+    const material = new THREE.MeshLambertMaterial({ color: WORLD_COLORS.mountain });
     const mountainCount = 74;
     const mesh = new THREE.InstancedMesh(geometry, material, mountainCount);
     const dummy = new THREE.Object3D();
@@ -624,9 +639,9 @@
       scene.remove(plane);
     }
 
-    if (type.model === "boeing") plane = createBoeingLike();
-    else if (type.model === "f22") plane = createF22Like();
-    else plane = createCessnaLike();
+    if (type.model === "f22" || type.model === "fighter") plane = createF22Like(type);
+    else if (["airliner", "regional", "business", "cargo", "boeing"].includes(type.model)) plane = createBoeingLike(type);
+    else plane = createCessnaLike(type);
 
     scene.add(plane);
     return plane;
@@ -643,12 +658,17 @@
     group.userData.shadow = shadow;
   }
 
-  function createCessnaLike() {
+  function createCessnaLike(type) {
     const g = new THREE.Group();
-    const white = new THREE.MeshLambertMaterial({ color: 0xf7f7f7 });
-    const red = new THREE.MeshLambertMaterial({ color: 0xdd2020 });
+    const mainColor = type.color || 0xf7f7f7;
+    const accentColor = type.accent || 0xdd2020;
+    const white = new THREE.MeshLambertMaterial({ color: mainColor });
+    const red = new THREE.MeshLambertMaterial({ color: accentColor });
     const dark = new THREE.MeshBasicMaterial({ color: 0x111111 });
     const glass = new THREE.MeshBasicMaterial({ color: 0x174a78, transparent: true, opacity: 0.75 });
+    const isTwin = type.model === "turboprop";
+    const isStol = type.id === "taildragger";
+    const scale = type.scale || 1;
 
     const body = new THREE.Mesh(new THREE.BoxGeometry(2.2, 2.1, 13.5), white);
     g.add(body);
@@ -657,7 +677,7 @@
     stripe.position.y = -0.65;
     g.add(stripe);
 
-    const wing = new THREE.Mesh(new THREE.BoxGeometry(24, 0.22, 3.6), white);
+    const wing = new THREE.Mesh(new THREE.BoxGeometry(isTwin ? 29 : 24, 0.22, isTwin ? 4.2 : 3.6), white);
     wing.position.set(0, 0.95, -1.2);
     g.add(wing);
 
@@ -693,92 +713,138 @@
       g.add(sideWindow);
     });
 
+    const props = [];
     const prop = new THREE.Mesh(new THREE.BoxGeometry(0.16, 6.3, 0.16), dark);
     prop.position.z = -9.85;
     g.add(prop);
-    g.userData.prop = prop;
+    props.push(prop);
 
-    addWheels(g, 1.2);
-    addShadow(g, 7);
+    if (isTwin) {
+      const engineMat = new THREE.MeshLambertMaterial({ color: accentColor });
+      [-1, 1].forEach(side => {
+        const nacelle = new THREE.Mesh(new THREE.BoxGeometry(1.35, 1.05, 2.45), engineMat);
+        nacelle.position.set(side * 7.25, 0.2, -2.6);
+        g.add(nacelle);
+
+        const sideProp = new THREE.Mesh(new THREE.BoxGeometry(0.14, 5.4, 0.14), dark);
+        sideProp.position.set(side * 7.25, 0.2, -4.05);
+        g.add(sideProp);
+        props.push(sideProp);
+      });
+    }
+
+    if (isStol) {
+      const gearMat = new THREE.MeshLambertMaterial({ color: 0x222222 });
+      [-1, 1].forEach(side => {
+        const tire = new THREE.Mesh(new THREE.CylinderGeometry(0.82, 0.82, 0.5, 14), gearMat);
+        tire.rotation.z = Math.PI / 2;
+        tire.position.set(side * 2.1, -1.65, -1.2);
+        g.add(tire);
+      });
+    } else {
+      addWheels(g, 1.2);
+    }
+
+    g.userData.props = props;
+    addShadow(g, 7 * scale);
+    g.scale.setScalar(scale);
     return g;
   }
 
-  function createBoeingLike() {
+  function createBoeingLike(type) {
     const g = new THREE.Group();
-    const white = new THREE.MeshLambertMaterial({ color: 0xf2f2f2 });
-    const blue = new THREE.MeshLambertMaterial({ color: 0x1c60d6 });
+    const mainColor = type.color || 0xf2f2f2;
+    const accentColor = type.accent || 0x1c60d6;
+    const white = new THREE.MeshLambertMaterial({ color: mainColor });
+    const blue = new THREE.MeshLambertMaterial({ color: accentColor });
     const dark = new THREE.MeshBasicMaterial({ color: 0x111111 });
     const glass = new THREE.MeshBasicMaterial({ color: 0x174a78, transparent: true, opacity: 0.78 });
+    const isCargo = type.model === "cargo";
+    const isBusiness = type.model === "business";
+    const isRegional = type.model === "regional";
+    const scale = type.scale || 1.15;
+    const fuselageLength = isCargo ? 29 : isBusiness ? 19 : isRegional ? 22 : 24;
+    const fuselageRadius = isCargo ? 1.85 : isBusiness ? 1.2 : 1.55;
+    const wingSpan = isCargo ? 41 : isBusiness ? 24 : isRegional ? 31 : 34;
 
-    const fuselage = new THREE.Mesh(new THREE.CylinderGeometry(1.55, 1.55, 24, 24), white);
+    const fuselage = new THREE.Mesh(new THREE.CylinderGeometry(fuselageRadius, fuselageRadius, fuselageLength, 24), white);
     fuselage.rotation.x = Math.PI / 2;
     g.add(fuselage);
 
-    const stripe = new THREE.Mesh(new THREE.BoxGeometry(2.9, 0.28, 18), blue);
+    const stripe = new THREE.Mesh(new THREE.BoxGeometry(fuselageRadius * 1.9, 0.28, fuselageLength * 0.75), blue);
     stripe.position.y = -0.25;
     g.add(stripe);
 
-    const nose = new THREE.Mesh(new THREE.SphereGeometry(1.55, 20, 10), white);
+    const nose = new THREE.Mesh(new THREE.SphereGeometry(fuselageRadius, 20, 10), white);
     nose.scale.set(1, 1, 0.75);
-    nose.position.z = -12.4;
+    nose.position.z = -fuselageLength / 2 - 0.4;
     g.add(nose);
 
-    const tailCone = new THREE.Mesh(new THREE.ConeGeometry(1.55, 3.5, 20), white);
+    const tailCone = new THREE.Mesh(new THREE.ConeGeometry(fuselageRadius, 3.5, 20), white);
     tailCone.rotation.x = -Math.PI / 2;
-    tailCone.position.z = 13.6;
+    tailCone.position.z = fuselageLength / 2 + 1.6;
     g.add(tailCone);
 
-    const wing = new THREE.Mesh(new THREE.BoxGeometry(34, 0.28, 5.2), white);
+    const wing = new THREE.Mesh(new THREE.BoxGeometry(wingSpan, 0.28, isBusiness ? 3.7 : 5.2), white);
     wing.position.z = -1.5;
     wing.rotation.z = 0.04;
     g.add(wing);
 
-    const engineMat = new THREE.MeshLambertMaterial({ color: 0x444b55 });
+    const engineMat = new THREE.MeshLambertMaterial({ color: isCargo ? 0x394148 : 0x444b55 });
     [-1, 1].forEach(side => {
-      const engine = new THREE.Mesh(new THREE.CylinderGeometry(0.9, 0.9, 2.2, 18), engineMat);
+      const engine = new THREE.Mesh(new THREE.CylinderGeometry(isBusiness ? 0.65 : 0.9, isBusiness ? 0.65 : 0.9, isBusiness ? 1.8 : 2.2, 18), engineMat);
       engine.rotation.x = Math.PI / 2;
-      engine.position.set(side * 8.5, -1.15, -3.2);
+      engine.position.set(side * (isBusiness ? 3.4 : 8.5), isBusiness ? 0.08 : -1.15, isBusiness ? 7.4 : -3.2);
       g.add(engine);
     });
 
-    const tail = new THREE.Mesh(new THREE.BoxGeometry(10, 0.25, 2.8), white);
-    tail.position.z = 10.6;
+    const tail = new THREE.Mesh(new THREE.BoxGeometry(isBusiness ? 7 : 10, 0.25, 2.8), white);
+    tail.position.z = fuselageLength / 2 - 1.4;
     g.add(tail);
 
     const rudder = new THREE.Mesh(new THREE.BoxGeometry(0.5, 5.2, 3.2), blue);
-    rudder.position.set(0, 2.8, 10.6);
+    rudder.position.set(0, 2.8, fuselageLength / 2 - 1.4);
     g.add(rudder);
 
     const cockpit = new THREE.Mesh(new THREE.BoxGeometry(2.3, 0.7, 0.25), glass);
-    cockpit.position.set(0, 0.8, -11.5);
+    cockpit.position.set(0, 0.8, -fuselageLength / 2 + 0.5);
     g.add(cockpit);
 
     const windowMat = new THREE.MeshBasicMaterial({ color: 0x163d5f, transparent: true, opacity: 0.78 });
     [-1, 1].forEach(side => {
       for (let i = 0; i < 9; i++) {
         const window = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.22, 0.34), windowMat);
-        window.position.set(side * 1.58, 0.72, -7.6 + i * 1.45);
+        window.position.set(side * (fuselageRadius + 0.04), 0.72, -fuselageLength * 0.32 + i * (fuselageLength * 0.52 / 8));
         g.add(window);
       }
     });
+
+    if (isCargo) {
+      const door = new THREE.Mesh(new THREE.BoxGeometry(fuselageRadius * 1.7, 0.06, 3.6), dark);
+      door.position.set(0, -fuselageRadius - 0.04, -fuselageLength * 0.2);
+      g.add(door);
+    }
 
     const fakeProp = new THREE.Object3D();
     g.add(fakeProp);
     g.userData.prop = fakeProp;
 
     addWheels(g, 1.55);
-    addShadow(g, 12);
-    g.scale.set(1.15, 1.15, 1.15);
+    addShadow(g, 12 * scale);
+    g.scale.setScalar(scale);
     return g;
   }
 
-  function createF22Like() {
+  function createF22Like(type) {
     const g = new THREE.Group();
-    const grey = new THREE.MeshLambertMaterial({ color: 0x8b959d, side: THREE.DoubleSide });
+    const mainColor = type.color || 0x8b959d;
+    const accentColor = type.accent || 0x303842;
+    const grey = new THREE.MeshLambertMaterial({ color: mainColor, side: THREE.DoubleSide });
     const panelGrey = new THREE.MeshLambertMaterial({ color: 0x69747c, side: THREE.DoubleSide });
     const darkGrey = new THREE.MeshLambertMaterial({ color: 0x48515a });
-    const edgeDark = new THREE.MeshLambertMaterial({ color: 0x303842 });
+    const edgeDark = new THREE.MeshLambertMaterial({ color: accentColor });
     const glass = new THREE.MeshBasicMaterial({ color: 0x183b59, transparent: true, opacity: 0.8 });
+    const scale = type.scale || 1.05;
 
     function planform(points, material, y) {
       const shape = new THREE.Shape();
@@ -871,8 +937,8 @@
     g.add(fakeProp);
     g.userData.prop = fakeProp;
 
-    addShadow(g, 10);
-    g.scale.set(1.05, 1.05, 1.05);
+    addShadow(g, 10 * scale);
+    g.scale.setScalar(scale);
     return g;
   }
 
@@ -934,13 +1000,36 @@
     syncPlane();
   }
 
+  function setShopOpen(open) {
+    shopOpen = open;
+    document.body.classList.toggle("shop-open", shopOpen);
+    renderShop();
+  }
+
+  function setHudHidden(hidden) {
+    hudHidden = hidden;
+    document.body.classList.toggle("hud-hidden", hudHidden);
+    const button = el("hudToggle");
+    if (button) button.textContent = hudHidden ? "Mostrar info" : "Esconder info";
+  }
+
   function switchAircraft(index) {
+    const target = AIRCRAFT_TYPES[index];
+    if (!target) return;
+
+    if (!ownsAircraft(target)) {
+      el("message").innerHTML = "Esse avião ainda não foi comprado no modo carreira.";
+      setShopOpen(true);
+      return;
+    }
+
     const currentAirport = activeMission ? activeMission.from : AIRPORTS[0];
     aircraftIndex = index;
     aircraftType = AIRCRAFT_TYPES[aircraftIndex];
     makePlaneModel(aircraftType);
     resetToAirport(currentAirport);
     rebuildHitboxHelpers();
+    renderShop();
     el("message").innerHTML = "Aeronave trocada para: " + aircraftType.name;
   }
 
@@ -1335,7 +1424,11 @@
     plane.rotation.x = aircraft.pitch;
     plane.rotation.z = aircraft.roll;
 
-    if (plane.userData.prop) {
+    if (plane.userData.props) {
+      plane.userData.props.forEach(prop => {
+        prop.rotation.z += 0.18 + aircraft.throttle * 1.7;
+      });
+    } else if (plane.userData.prop) {
       plane.userData.prop.rotation.z += 0.18 + aircraft.throttle * 1.7;
     }
 
@@ -1424,14 +1517,16 @@
       !activeMission.completed
     ) {
       const landingBonus = lastLanding && lastLanding.airportId === activeMission.to.id ? lastLanding.bonus : 0;
+      const payout = activeMission.data.reward + landingBonus;
       activeMission.completed = true;
       completed++;
-      money += activeMission.data.reward + landingBonus;
+      if (gameMode !== "free") money += payout;
       marker.visible = false;
       el("message").innerHTML =
         "Missão concluída! " + missionManifest(activeMission.data) + ". Recompensa " + fmtMoney(activeMission.data.reward) +
         (landingBonus ? " + bônus de pouso " + fmtMoney(landingBonus) : "") +
         ". Aperte N ou M para outra missão.";
+      renderShop();
     }
   }
 
@@ -1447,11 +1542,152 @@
     return mission.title + ": " + missionManifest(mission) + " de " + missionState.from.name + " para " + missionState.to.name + ".";
   }
 
+  function startGame(mode) {
+    gameMode = mode;
+    gameStarted = true;
+    keys = {};
+    pressed = {};
+    activeMission = null;
+    missionIndex = -1;
+    completed = 0;
+    money = 0;
+    marker.visible = false;
+    lastLanding = null;
+
+    if (gameMode === "free") {
+      ownedAircraft = new Set(AIRCRAFT_TYPES.map(type => type.id));
+    } else {
+      ownedAircraft = new Set([AIRCRAFT_TYPES[0].id]);
+      aircraftIndex = 0;
+      aircraftType = AIRCRAFT_TYPES[0];
+      makePlaneModel(aircraftType);
+    }
+
+    resetToAirport(AIRPORTS[0]);
+    setShopOpen(false);
+    renderShop();
+
+    const startScreen = el("startScreen");
+    if (startScreen) startScreen.style.display = "none";
+
+    el("message").innerHTML = gameMode === "free"
+      ? "Modo livre iniciado: todos os aviões estão liberados."
+      : "Modo carreira iniciado: comece com o Cessna velho, faça missões e compre aviões na loja.";
+  }
+
+  function buyAircraft(index) {
+    const type = AIRCRAFT_TYPES[index];
+    if (!type) return;
+
+    if (gameMode === "free") {
+      switchAircraft(index);
+      return;
+    }
+
+    if (ownedAircraft.has(type.id)) {
+      switchAircraft(index);
+      return;
+    }
+
+    if (money < type.price) {
+      el("message").innerHTML = "Dinheiro insuficiente para comprar " + type.name + ". Faça mais missões.";
+      renderShop();
+      return;
+    }
+
+    money -= type.price;
+    ownedAircraft.add(type.id);
+    switchAircraft(index);
+    el("message").innerHTML = "Compra feita: " + type.name + ". Saldo: " + fmtMoney(money) + ".";
+    renderShop();
+  }
+
+  function renderShop() {
+    const list = el("shopList");
+    if (!list) return;
+
+    const mode = el("shopMode");
+    const bank = el("shopMoney");
+    if (mode) {
+      mode.textContent = gameMode === "free"
+        ? "Modo livre: todos os aviões são grátis."
+        : gameMode === "career"
+          ? "Modo carreira: compre aviões com dinheiro das missões."
+          : "Escolha um modo para começar.";
+    }
+    if (bank) bank.textContent = fmtGameMoney();
+
+    list.innerHTML = "";
+
+    AIRCRAFT_TYPES.forEach((type, index) => {
+      const owned = ownsAircraft(type);
+      const active = index === aircraftIndex;
+      const item = document.createElement("div");
+      item.className = "shop-item" + (active ? " active" : "");
+
+      const info = document.createElement("div");
+      const title = document.createElement("div");
+      title.className = "shop-title";
+
+      const swatch = document.createElement("span");
+      swatch.className = "shop-color";
+      swatch.style.backgroundColor = "#" + type.color.toString(16).padStart(6, "0");
+
+      const name = document.createElement("span");
+      name.textContent = (index + 1).toString().padStart(2, "0") + " - " + type.name;
+      title.append(swatch, name);
+
+      const meta = document.createElement("div");
+      meta.className = "shop-meta";
+      meta.innerHTML =
+        "Preço: <span class=\"shop-price\">" + (gameMode === "free" ? "Grátis" : fmtMoney(type.price)) + "</span><br>" +
+        "Máx: " + type.maxSpeed + " km/h | Stall: " + type.stallSpeed + " km/h | Decolagem: " + type.takeoff + " km/h";
+
+      info.append(title, meta);
+
+      const action = document.createElement("button");
+      action.type = "button";
+      action.className = "shop-action";
+
+      if (!gameStarted) {
+        action.textContent = "Bloqueado";
+        action.disabled = true;
+      } else if (active) {
+        action.textContent = "Em uso";
+        action.disabled = true;
+      } else if (owned) {
+        action.textContent = "Equipar";
+        action.addEventListener("click", () => switchAircraft(index));
+      } else {
+        action.textContent = "Comprar";
+        action.disabled = money < type.price;
+        action.addEventListener("click", () => buyAircraft(index));
+      }
+
+      item.append(info, action);
+      list.appendChild(item);
+    });
+  }
+
   function updateCamera(dt) {
     let offset;
 
-    if (cameraMode === 0) offset = new THREE.Vector3(0, 10, aircraftType.cameraBack);
-    else if (cameraMode === 1) offset = new THREE.Vector3(0, 2.6, 9);
+    if (cameraMode === 0) {
+      offset = new THREE.Vector3(0, 10, aircraftType.cameraBack);
+      offset.applyAxisAngle(Y_AXIS, aircraft.yaw);
+      const desired = plane.visible
+        ? aircraft.position.clone().add(offset)
+        : aircraft.position.clone().add(new THREE.Vector3(0, 80, 110));
+      camera.position.lerp(desired, 1 - Math.pow(0.001, dt));
+
+      const lookAhead = new THREE.Vector3(Math.sin(aircraft.yaw), 0, -Math.cos(aircraft.yaw))
+        .multiplyScalar(105)
+        .add(aircraft.position);
+      camera.lookAt(lookAhead.x, aircraft.position.y + 4, lookAhead.z);
+      return;
+    }
+
+    if (cameraMode === 1) offset = new THREE.Vector3(0, 2.6, 9);
     else if (cameraMode === 2) offset = new THREE.Vector3(0, 95, 15);
     else offset = new THREE.Vector3(40, 18, 42);
 
@@ -1664,6 +1900,7 @@
       fpsLast = now;
     }
 
+    el("modeLabel").textContent = !gameStarted ? "Menu" : gameMode === "free" ? "Livre" : "Carreira";
     el("aircraftName").textContent = aircraftType.name;
     el("fps").textContent = fpsValue;
     el("speed").textContent = Math.round(speedKmh());
@@ -1679,11 +1916,12 @@
     updateFlightDirector();
     drawMiniMap();
 
-    let status = "Na pista";
+    let status = gameStarted ? "Na pista" : "Menu inicial";
 
     const lowSpeedWarning = !aircraft.onGround && speedKmh() < aircraftType.stallSpeed * 1.18;
 
-    if (aircraft.exploded) status = "Explodiu! Aperte R";
+    if (!gameStarted) status = "Escolha um modo";
+    else if (aircraft.exploded) status = "Explodiu! Aperte R";
     else if (aircraft.crashed) status = "Acidente! Aperte R";
     else if (aircraft.stall) status = "STALL abaixo de " + aircraftType.stallSpeed + " km/h";
     else if (lowSpeedWarning) status = "Velocidade baixa";
@@ -1725,13 +1963,23 @@
       el("targetBearing").textContent = "--";
     }
 
-    el("money").textContent = fmtMoney(money) + " | Concluídas: " + completed;
+    el("money").textContent = gameMode === "free"
+      ? "Livre | Concluídas: " + completed
+      : fmtMoney(money) + " | Concluídas: " + completed;
+
+    el("compactSpeed").textContent = Math.round(speedKmh()) + " km/h";
+    el("compactAircraft").textContent = aircraftType.name;
+    el("compactAltitude").textContent = Math.round(altitude()) + " m";
+    el("compactThrottle").textContent = Math.round(aircraft.throttle * 100) + "%";
+    el("compactLanding").textContent = lastLanding ? lastLanding.text : status;
   }
 
   function shortcuts() {
     if (once("1")) switchAircraft(0);
-    if (once("2")) switchAircraft(1);
-    if (once("3")) switchAircraft(2);
+    if (once("2")) switchAircraft(15);
+    if (once("3")) switchAircraft(AIRCRAFT_TYPES.length - 1);
+    if (once("l")) setShopOpen(!shopOpen);
+    if (once("i")) setHudHidden(!hudHidden);
 
     if (once("r")) {
       if (activeMission) resetToAirport(activeMission.from);
@@ -1757,10 +2005,29 @@
     if (once("m")) nextMission();
   }
 
+  function setupUi() {
+    const startFree = el("startFree");
+    const startCareer = el("startCareer");
+    const shopToggle = el("shopToggle");
+    const shopClose = el("shopClose");
+    const hudToggle = el("hudToggle");
+
+    if (startFree) startFree.addEventListener("click", () => startGame("free"));
+    if (startCareer) startCareer.addEventListener("click", () => startGame("career"));
+    if (shopToggle) shopToggle.addEventListener("click", () => setShopOpen(!shopOpen));
+    if (shopClose) shopClose.addEventListener("click", () => setShopOpen(false));
+    if (hudToggle) hudToggle.addEventListener("click", () => setHudHidden(!hudHidden));
+
+    setHudHidden(false);
+    setShopOpen(false);
+    renderShop();
+  }
+
   addStaticWorld();
   rebuildDynamicWorld();
   makePlaneModel(aircraftType);
   resetToAirport(AIRPORTS[0]);
+  setupUi();
 
   let last = performance.now();
 
@@ -1768,9 +2035,11 @@
     const dt = Math.min((now - last) / 1000, 0.033);
     last = now;
 
-    shortcuts();
-    updatePhysics(dt);
-    updateMission();
+    if (gameStarted) {
+      shortcuts();
+      updatePhysics(dt);
+      updateMission();
+    }
     updateExplosions(dt);
     updateCamera(dt);
     updateHUD();
