@@ -29,8 +29,8 @@
       drag: 0.00165,
       lift: 18.3,
       control: 1.25,
-      stallAngle: 18,
-      stallSpeed: 72,
+      stallAngle: 23,
+      stallSpeed: 70,
       cameraBack: 34,
       hitboxRadius: 7
     },
@@ -46,8 +46,8 @@
       drag: 0.00088,
       lift: 16.2,
       control: 0.72,
-      stallAngle: 15,
-      stallSpeed: 145,
+      stallAngle: 20,
+      stallSpeed: 155,
       cameraBack: 55,
       hitboxRadius: 14
     },
@@ -63,8 +63,8 @@
       drag: 0.00048,
       lift: 22.8,
       control: 1.85,
-      stallAngle: 24,
-      stallSpeed: 120,
+      stallAngle: 30,
+      stallSpeed: 105,
       cameraBack: 42,
       hitboxRadius: 10
     }
@@ -98,16 +98,19 @@
   const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, quality.pixel));
+  renderer.outputEncoding = THREE.sRGBEncoding;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.03;
   document.body.appendChild(renderer.domElement);
 
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x80dcff);
-  scene.fog = new THREE.Fog(0x80dcff, 1800, quality.fog);
+  scene.background = new THREE.Color(0x8fd3ff);
+  scene.fog = new THREE.Fog(0x9bd6ff, 2100, quality.fog);
 
   const camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 26000);
 
-  scene.add(new THREE.HemisphereLight(0xffffff, 0x397739, 2.08));
-  const sun = new THREE.DirectionalLight(0xffffff, 2.35);
+  scene.add(new THREE.HemisphereLight(0xf7fbff, 0x4a7a4c, 1.55));
+  const sun = new THREE.DirectionalLight(0xfff4df, 1.85);
   sun.position.set(1200, 2200, 800);
   scene.add(sun);
 
@@ -191,6 +194,12 @@
     addCollider(staticColliders, label, p.x, p.y, p.z, halfX, halfY, halfZ, damage);
   }
 
+  function addLayeredCollider(list, label, x, z, layers, damage = 1) {
+    layers.forEach(layer => {
+      addCollider(list, label, x, layer.y, z, layer.halfX, layer.halfY, layer.halfZ, damage);
+    });
+  }
+
   function allColliders() {
     return staticColliders.concat(dynamicColliders);
   }
@@ -237,7 +246,7 @@
 
     const ocean = new THREE.Mesh(
       new THREE.PlaneGeometry(30000, 30000, 1, 1),
-      new THREE.MeshLambertMaterial({ color: 0x1d73b7 })
+      new THREE.MeshLambertMaterial({ color: 0x287fb5 })
     );
     ocean.rotation.x = -Math.PI / 2;
     ocean.position.y = -0.1;
@@ -245,19 +254,40 @@
 
     const ground = new THREE.Mesh(
       new THREE.PlaneGeometry(MAP_SIZE, MAP_SIZE, 80, 80),
-      new THREE.MeshLambertMaterial({ color: 0x319b43 })
+      new THREE.MeshLambertMaterial({ color: 0x43a35b })
     );
     ground.rotation.x = -Math.PI / 2;
     scene.add(ground);
 
+    createTerrainPatches();
     createRoads();
     createRivers();
     AIRPORTS.forEach(createAirport);
     createMountains();
   }
 
+  function createTerrainPatches() {
+    const colors = [0x3b9254, 0x58ad5d, 0x6eb86a, 0x4b9a63];
+
+    for (let i = 0; i < 28; i++) {
+      const patch = new THREE.Mesh(
+        new THREE.PlaneGeometry(420 + Math.random() * 1100, 180 + Math.random() * 620),
+        new THREE.MeshLambertMaterial({
+          color: colors[Math.floor(Math.random() * colors.length)],
+          transparent: true,
+          opacity: 0.22,
+          depthWrite: false
+        })
+      );
+      patch.rotation.x = -Math.PI / 2;
+      patch.rotation.z = Math.random() * Math.PI;
+      patch.position.set((Math.random() - 0.5) * (MAP_SIZE * 0.86), 0.018, (Math.random() - 0.5) * (MAP_SIZE * 0.86));
+      if (!isAirportProtected(patch.position.x, patch.position.z, 520)) scene.add(patch);
+    }
+  }
+
   function createRivers() {
-    const mat = new THREE.MeshLambertMaterial({ color: 0x2b8fd8 });
+    const mat = new THREE.MeshLambertMaterial({ color: 0x2d93ca });
     for (let i = 0; i < 3; i++) {
       const river = new THREE.Mesh(new THREE.PlaneGeometry(90, 5200), mat);
       river.rotation.x = -Math.PI / 2;
@@ -268,7 +298,7 @@
   }
 
   function createRoads() {
-    const mat = new THREE.MeshLambertMaterial({ color: 0x3a3a3a });
+    const mat = new THREE.MeshLambertMaterial({ color: 0x4c4d4f });
     for (let i = -4; i <= 4; i++) {
       const road = new THREE.Mesh(new THREE.PlaneGeometry(28, 7200), mat);
       road.rotation.x = -Math.PI / 2;
@@ -341,8 +371,10 @@
     tower.position.set(145, 0, 100);
     group.add(tower);
 
-    addAirportCollider(a, "terminal do aeroporto", 225, 24, -165, 138, 32, 58, 1.2);
-    addAirportCollider(a, "torre de controle", 145, 66, 100, 34, 72, 34, 1.35);
+    addAirportCollider(a, "terminal do aeroporto", 225, 21, -165, 120, 21, 41, 1.2);
+    addAirportCollider(a, "terminal do aeroporto", 225, 32, -212, 121, 10, 2.4, 1.2);
+    addAirportCollider(a, "torre de controle", 145, 52, 100, 11, 52, 11, 1.35);
+    addAirportCollider(a, "torre de controle", 145, 113, 100, 27, 13, 27, 1.35);
 
     for (let i = -a.length / 2; i < a.length / 2; i += 140) {
       [-68, 68].forEach(x => {
@@ -359,7 +391,7 @@
 
   function createMountains() {
     const geometry = new THREE.ConeGeometry(1, 1, 6);
-    const material = new THREE.MeshLambertMaterial({ color: 0x737861 });
+    const material = new THREE.MeshLambertMaterial({ color: 0x78806d });
     const mesh = new THREE.InstancedMesh(geometry, material, 42);
     const dummy = new THREE.Object3D();
 
@@ -381,7 +413,11 @@
       dummy.rotation.y = Math.random() * Math.PI;
       dummy.updateMatrix();
       mesh.setMatrixAt(placed, dummy.matrix);
-      addCollider(staticColliders, "montanha", x, h / 2, z, r * 0.72, h / 2, r * 0.72, 1.7);
+      addLayeredCollider(staticColliders, "montanha", x, z, [
+        { y: h * 0.22, halfX: r * 0.58, halfY: h * 0.22, halfZ: r * 0.58 },
+        { y: h * 0.58, halfX: r * 0.36, halfY: h * 0.17, halfZ: r * 0.36 },
+        { y: h * 0.83, halfX: r * 0.2, halfY: h * 0.15, halfZ: r * 0.2 }
+      ], 1.7);
       placed++;
     }
 
@@ -411,12 +447,32 @@
 
   function createBuildings(count) {
     const geometry = new THREE.BoxGeometry(1, 1, 1);
-    const material = new THREE.MeshLambertMaterial({ color: 0xaab7c0 });
-    const mesh = new THREE.InstancedMesh(geometry, material, count);
+    const material = new THREE.MeshLambertMaterial({ color: 0xffffff });
+    const baseMesh = new THREE.InstancedMesh(geometry, material, count);
+    const midMesh = new THREE.InstancedMesh(geometry, material, count);
+    const topMesh = new THREE.InstancedMesh(geometry, material, count);
+    const group = new THREE.Group();
+    group.add(baseMesh, midMesh, topMesh);
     const dummy = new THREE.Object3D();
+    const buildingColors = [0xb7c4cc, 0xcfd7d2, 0xaeb8c1, 0xc5bba8, 0xb9c7af, 0xd8d4c6];
 
     let placed = 0;
+    let midPlaced = 0;
+    let topPlaced = 0;
     let attempts = 0;
+
+    function setBuildingLayer(mesh, index, x, y, z, w, h, d, color) {
+      dummy.position.set(x, y, z);
+      dummy.scale.set(w, h, d);
+      dummy.rotation.y = 0;
+      dummy.updateMatrix();
+      mesh.setMatrixAt(index, dummy.matrix);
+      mesh.setColorAt(index, color);
+    }
+
+    function addBuildingColliderLayer(x, y, z, w, h, d) {
+      addCollider(dynamicColliders, "prédio", x, y, z, w * 0.46, h * 0.5, d * 0.46, 1.25);
+    }
 
     while (placed < count && attempts < count * 12) {
       attempts++;
@@ -429,26 +485,50 @@
 
       if (isAirportProtected(x, z, 440)) continue;
 
-      dummy.position.set(x, h / 2, z);
-      dummy.scale.set(w, h, d);
-      dummy.rotation.y = Math.random() * Math.PI;
-      dummy.updateMatrix();
-      mesh.setMatrixAt(placed, dummy.matrix);
-      addCollider(dynamicColliders, "prédio", x, h / 2, z, Math.max(w, d) * 0.58, h / 2, Math.max(w, d) * 0.58, 1.25);
+      const color = new THREE.Color(buildingColors[Math.floor(Math.random() * buildingColors.length)]);
+      const tall = h > 105;
+      const baseH = tall ? h * 0.46 : h * 0.76;
+      const midH = tall ? h * 0.34 : h * 0.24;
+      const topH = tall ? h - baseH - midH : 0;
+      const baseW = w;
+      const baseD = d;
+      const midW = w * (tall ? 0.76 : 0.84);
+      const midD = d * (tall ? 0.76 : 0.84);
+      const topW = w * 0.54;
+      const topD = d * 0.54;
+
+      setBuildingLayer(baseMesh, placed, x, baseH / 2, z, baseW, baseH, baseD, color);
+      addBuildingColliderLayer(x, baseH / 2, z, baseW, baseH, baseD);
+
+      setBuildingLayer(midMesh, midPlaced, x, baseH + midH / 2, z, midW, midH, midD, color);
+      addBuildingColliderLayer(x, baseH + midH / 2, z, midW, midH, midD);
+      midPlaced++;
+
+      if (tall) {
+        setBuildingLayer(topMesh, topPlaced, x, baseH + midH + topH / 2, z, topW, topH, topD, color);
+        addBuildingColliderLayer(x, baseH + midH + topH / 2, z, topW, topH, topD);
+        topPlaced++;
+      }
+
       placed++;
     }
 
-    mesh.count = placed;
-    mesh.instanceMatrix.needsUpdate = true;
-    scene.add(mesh);
-    return mesh;
+    baseMesh.count = placed;
+    midMesh.count = midPlaced;
+    topMesh.count = topPlaced;
+    [baseMesh, midMesh, topMesh].forEach(mesh => {
+      mesh.instanceMatrix.needsUpdate = true;
+      if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
+    });
+    scene.add(group);
+    return group;
   }
 
   function createTrees(count) {
     const trunkGeometry = new THREE.CylinderGeometry(1.2, 1.6, 10, 6);
     const topGeometry = new THREE.ConeGeometry(7, 20, 8);
-    const trunkMaterial = new THREE.MeshLambertMaterial({ color: 0x75461f });
-    const topMaterial = new THREE.MeshLambertMaterial({ color: 0x0f642c });
+    const trunkMaterial = new THREE.MeshLambertMaterial({ color: 0x7a5129 });
+    const topMaterial = new THREE.MeshLambertMaterial({ color: 0x1f7a3a });
 
     const trunks = new THREE.InstancedMesh(trunkGeometry, trunkMaterial, count);
     const tops = new THREE.InstancedMesh(topGeometry, topMaterial, count);
@@ -476,7 +556,10 @@
       dummy.updateMatrix();
       tops.setMatrixAt(placed, dummy.matrix);
 
-      addCollider(dynamicColliders, "árvore", x, 15 * s, z, 8 * s, 16 * s, 8 * s, 0.75);
+      addLayeredCollider(dynamicColliders, "árvore", x, z, [
+        { y: 5 * s, halfX: 1.8 * s, halfY: 5 * s, halfZ: 1.8 * s },
+        { y: 20 * s, halfX: 5.4 * s, halfY: 9 * s, halfZ: 5.4 * s }
+      ], 0.75);
       placed++;
     }
 
@@ -491,7 +574,7 @@
   function createClouds(count) {
     const group = new THREE.Group();
     const geometry = new THREE.SphereGeometry(1, 10, 8);
-    const material = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.75, depthWrite: false });
+    const material = new THREE.MeshBasicMaterial({ color: 0xf6fbff, transparent: true, opacity: 0.62, depthWrite: false });
 
     for (let i = 0; i < count; i++) {
       const cloud = new THREE.Group();
@@ -528,7 +611,7 @@
   function addShadow(group, radius) {
     const shadow = new THREE.Mesh(
       new THREE.CircleGeometry(radius, 28),
-      new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.18, depthWrite: false })
+      new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.14, depthWrite: false })
     );
     shadow.rotation.x = -Math.PI / 2;
     shadow.position.y = 0.08;
@@ -744,6 +827,7 @@
     angularYaw: 0,
     angularRoll: 0,
     aoa: 0,
+    stallPressure: 0,
     stall: false,
     crashed: false,
     exploded: false,
@@ -762,6 +846,7 @@
     aircraft.angularYaw = 0;
     aircraft.angularRoll = 0;
     aircraft.aoa = 0;
+    aircraft.stallPressure = 0;
     aircraft.stall = false;
     aircraft.crashed = false;
     aircraft.exploded = false;
@@ -947,21 +1032,39 @@
     const aoaDeg = THREE.Math.radToDeg(aoa);
     const absAoa = Math.abs(aoaDeg);
 
-    // Stall refeito: não mata o avião imediatamente, mas reduz lift e controle.
+    // Stall por velocidade: cada aeronave tem seu limite mínimo antes de perder sustentação.
     const stallSpeedMS = aircraftType.stallSpeed / 3.6;
-    const stallByAngle = horizontalSpeed > stallSpeedMS * 0.75 && absAoa > aircraftType.stallAngle;
-    const stallBySpeed = !aircraft.onGround && horizontalSpeed < stallSpeedMS && aircraft.pitch > 0.18;
-    aircraft.stall = stallByAngle || stallBySpeed;
+    const airspeedRatio = speed / stallSpeedMS;
+    const belowStallSpeed = !aircraft.onGround && speed < stallSpeedMS;
+    const nearStallSpeed = !aircraft.onGround && speed < stallSpeedMS * 1.18;
+    const pullingHard = elevator > 0 || aircraft.pitch > 0.18;
+    const hardAngle = absAoa > aircraftType.stallAngle && pullingHard;
+    let stallDemand = 0;
+
+    if (belowStallSpeed) {
+      const speedDeficit = clamp((1 - airspeedRatio) / 0.42, 0, 1);
+      stallDemand = 0.38 + speedDeficit * 0.62;
+      if (pullingHard) stallDemand = clamp(stallDemand + 0.18, 0, 1);
+    }
+
+    if (nearStallSpeed && hardAngle) {
+      const angleDemand = clamp((absAoa - aircraftType.stallAngle) / 18, 0, 1);
+      stallDemand = Math.max(stallDemand, 0.32 + angleDemand * 0.48);
+    }
+
+    const stallResponse = stallDemand > aircraft.stallPressure ? 1.85 : 3.3;
+    aircraft.stallPressure += (stallDemand - aircraft.stallPressure) * clamp(stallResponse * dt, 0, 1);
+    aircraft.stall = aircraft.stallPressure > 0.68;
 
     const speedLift = clamp((horizontalSpeed - stallSpeedMS * 0.45) / (stallSpeedMS * 1.15), 0, 1.75);
     const angleLift = clamp(0.55 + aircraft.pitch * 1.25 + aoa * 0.95, -0.25, 1.55);
-    const stallLiftPenalty = aircraft.stall ? 0.42 : 1;
+    const stallLiftPenalty = 1 - aircraft.stallPressure * 0.42;
     const liftAccel = speedLift * angleLift * aircraftType.lift * stallLiftPenalty;
 
     aircraft.velocity.y += liftAccel * dt;
 
     const authorityBase = clamp(horizontalSpeed / (stallSpeedMS * 0.9), 0.18, 1.55);
-    const stallControlPenalty = aircraft.stall ? 0.45 : 1;
+    const stallControlPenalty = 1 - aircraft.stallPressure * 0.34;
     const authority = authorityBase * aircraftType.control * stallControlPenalty;
 
     aircraft.angularPitch += elevator * 1.25 * authority * dt;
@@ -972,9 +1075,9 @@
     aircraft.angularYaw += Math.sin(aircraft.roll) * 0.34 * authority * dt;
 
     if (aircraft.stall) {
-      aircraft.angularPitch -= 0.82 * dt;
-      aircraft.angularRoll += Math.sin(performance.now() * 0.006) * 0.85 * dt;
-      aircraft.angularYaw += Math.cos(performance.now() * 0.005) * 0.32 * dt;
+      aircraft.angularPitch -= 0.48 * dt;
+      aircraft.angularRoll += Math.sin(performance.now() * 0.006) * 0.45 * dt;
+      aircraft.angularYaw += Math.cos(performance.now() * 0.005) * 0.18 * dt;
     }
 
     aircraft.angularPitch *= Math.pow(0.16, dt);
@@ -1369,6 +1472,7 @@
     el("aircraftName").textContent = aircraftType.name;
     el("fps").textContent = fpsValue;
     el("speed").textContent = Math.round(speedKmh());
+    el("stallSpeed").textContent = aircraftType.stallSpeed;
     el("altitude").textContent = Math.round(altitude());
     el("throttle").textContent = Math.round(aircraft.throttle * 100);
     el("boost").textContent = down("shift") ? "On" : "Off";
@@ -1382,9 +1486,12 @@
 
     let status = "Na pista";
 
+    const lowSpeedWarning = !aircraft.onGround && speedKmh() < aircraftType.stallSpeed * 1.18;
+
     if (aircraft.exploded) status = "Explodiu! Aperte R";
     else if (aircraft.crashed) status = "Acidente! Aperte R";
-    else if (aircraft.stall) status = "STALL! Baixe o nariz e ganhe velocidade";
+    else if (aircraft.stall) status = "STALL abaixo de " + aircraftType.stallSpeed + " km/h";
+    else if (lowSpeedWarning) status = "Velocidade baixa";
     else if (altitude() > 12) status = "Voando";
     else if (speedKmh() > aircraftType.takeoff * 0.75) status = "Pronto para decolar";
 
@@ -1394,7 +1501,7 @@
 
     const statusEl = el("status");
     statusEl.textContent = status;
-    statusEl.className = aircraft.crashed ? "bad" : aircraft.stall ? "warn" : altitude() > 12 ? "good" : "";
+    statusEl.className = aircraft.crashed ? "bad" : aircraft.stall || lowSpeedWarning ? "warn" : altitude() > 12 ? "good" : "";
 
     const landingEl = el("landingQuality");
     landingEl.textContent = lastLanding ? lastLanding.text : "--";

@@ -15,10 +15,12 @@ Os modelos são inspirados visualmente, não são cópias 3D oficiais.
 - Velocidade e aceleração aumentadas
 - Turbo com Shift
 - Câmera acompanha melhor o rumo real da aeronave
+- Stall por velocidade mínima específica de cada aeronave
 - Pouso pesado quebra o avião, mas não explode automaticamente
 - Avaliação de pouso com bônus de missão
-- Hitboxes em obstáculos principais com visualização pela tecla H
+- Hitboxes em camadas menores para prédios, árvores, montanhas e estruturas
 - Colisão com prédios, árvores, montanhas, terminais e torres
+- Gráficos revisados com iluminação mais suave, terreno variado e prédios com cores diferentes
 - Elementos flutuantes removidos ou reposicionados
 - Mini mapa e diretor de voo para guiar até o aeroporto alvo
 - Sistema de voo refeito
