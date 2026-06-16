@@ -3,19 +3,19 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Flight Simulator OFC V5</title>
+  <title>Flight Simulator OFC V6</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div id="loading">
     <div>
-      <h1>Flight Simulator OFC V5</h1>
-      <p>Carregando aeronaves, navegação, aeroportos e física nova...</p>
+      <h1>Flight Simulator OFC V6</h1>
+      <p>Carregando mapa expandido, missões e radar de aproximação...</p>
     </div>
   </div>
 
   <div id="hud">
-    <h2>FLIGHT SIMULATOR OFC V5</h2>
+    <h2>FLIGHT SIMULATOR OFC V6</h2>
 
     <div class="panel">
       <b>Controles</b><br />
@@ -48,11 +48,11 @@
       <b>Missão</b><br />
       <span id="missionTitle">Pressione N para iniciar</span><br />
       <span id="missionText">Voe de um aeroporto para outro.</span><br />
+      Manifesto: <span id="missionManifest">--</span><br />
       Distância: <span id="missionDistance">0</span> m<br />
       Alvo: <span id="targetBearing">--</span><br />
       Pouso: <span id="landingQuality">--</span><br />
       Dinheiro: <span id="money">$0</span>
-      <canvas id="miniMap" width="190" height="190" aria-label="Mapa de navegação"></canvas>
     </div>
   </div>
 
@@ -68,8 +68,13 @@
     </div>
   </div>
 
+  <div id="mapOrb" aria-label="Radar de navegação">
+    <canvas id="miniMap" width="240" height="240" aria-label="Mapa de navegação"></canvas>
+    <span id="mapLabel">RADAR</span>
+  </div>
+
   <div id="message">
-    V5: navegação por missão, mapa tático, câmera revisada e avaliação de pouso.
+    V6: mapa expandido, missões de passageiros, radar final e caça remodelado.
   </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>

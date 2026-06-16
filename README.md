@@ -1,6 +1,6 @@
-# Flight Simulator OFC V5
+# Flight Simulator OFC V6
 
-Versão com voo mais rápido, pouso mais justo, navegação por missão, hitboxes e três aeronaves.
+Versão com mapa expandido, missões de passageiros/carga, radar de aproximação, pouso mais justo, hitboxes e três aeronaves.
 
 ## Aeronaves
 
@@ -13,21 +13,25 @@ Os modelos são inspirados visualmente, não são cópias 3D oficiais.
 ## Melhorias
 
 - Velocidade e aceleração aumentadas
+- Sem limitador artificial de velocidade: mergulho aumenta velocidade com gravidade e arrasto
 - Turbo com Shift
 - Câmera acompanha melhor o rumo real da aeronave
 - Stall por velocidade mínima específica de cada aeronave
+- Missões de passageiros, carga, emergência e operação militar
 - Pouso pesado quebra o avião, mas não explode automaticamente
 - Avaliação de pouso com bônus de missão
 - Hitboxes em camadas menores para prédios, árvores, montanhas e estruturas
 - Colisão com prédios, árvores, montanhas, terminais e torres
 - Gráficos revisados com iluminação mais suave, terreno variado e prédios com cores diferentes
 - Elementos flutuantes removidos ou reposicionados
-- Mini mapa e diretor de voo para guiar até o aeroporto alvo
+- Mini mapa circular no canto inferior direito com rota de missão
+- Radar superior muda para alinhamento de pista na aproximação final
+- Caça stealth remodelado em 3D com asas anguladas, entradas de ar e cauda dupla
 - Sistema de voo refeito
 - Stall mais controlável
 - Decolagem mais estável
-- Mapa 14 km x 14 km
-- 8 aeroportos
+- Mapa 32 km x 32 km
+- 14 aeroportos
 - Cidade maior
 - Mais estradas, rios, árvores, montanhas e nuvens
 - Missões entre aeroportos

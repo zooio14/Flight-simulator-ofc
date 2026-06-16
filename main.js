@@ -7,13 +7,14 @@
     return;
   }
 
-  const MAP_SIZE = 14000;
+  const MAP_SIZE = 32000;
   const HALF = MAP_SIZE / 2;
+  const MINIMAP_RANGE = 12000;
 
   const QUALITY = [
-    { name: "Ultra leve", pixel: 0.42, buildings: 35, trees: 80, clouds: 5, fog: 8400, particles: 24 },
-    { name: "Baixa", pixel: 0.62, buildings: 75, trees: 170, clouds: 9, fog: 10800, particles: 38 },
-    { name: "Alta", pixel: 0.9, buildings: 145, trees: 320, clouds: 18, fog: 15000, particles: 64 }
+    { name: "Ultra leve", pixel: 0.42, buildings: 55, trees: 130, clouds: 7, fog: 18500, particles: 24 },
+    { name: "Baixa", pixel: 0.62, buildings: 115, trees: 260, clouds: 13, fog: 23500, particles: 38 },
+    { name: "Alta", pixel: 0.9, buildings: 220, trees: 480, clouds: 24, fog: 30500, particles: 64 }
   ];
 
   const AIRCRAFT_TYPES = [
@@ -71,23 +72,44 @@
   ];
 
   const AIRPORTS = [
-    { id: "OFC", name: "Aeroporto Central OFC", x: 0, z: 1350, heading: 180, length: 2100 },
-    { id: "ILHA", name: "Aeroporto Ilha Azul", x: -3600, z: -3000, heading: 45, length: 1300 },
-    { id: "SERRA", name: "Aeroporto Serra Norte", x: 3650, z: -3300, heading: 315, length: 1450 },
-    { id: "CIDADE", name: "Aeroporto Cidade Leste", x: 3150, z: 1900, heading: 90, length: 1700 },
-    { id: "DESERTO", name: "Base Deserto Sul", x: -2900, z: 3200, heading: 270, length: 1600 },
-    { id: "NAVAL", name: "Base Naval Costa", x: 0, z: -4300, heading: 0, length: 1500 },
-    { id: "VALE", name: "Aeroporto Vale Verde", x: -4300, z: 200, heading: 135, length: 1200 },
-    { id: "METRO", name: "Aeroporto Metropolitano", x: 4200, z: 250, heading: 90, length: 2300 }
+    { id: "OFC", name: "Aeroporto Central OFC", x: 0, z: 1800, heading: 180, length: 2600 },
+    { id: "ILHA", name: "Aeroporto Ilha Azul", x: -9800, z: -7600, heading: 45, length: 1900 },
+    { id: "SERRA", name: "Aeroporto Serra Norte", x: 11200, z: -9000, heading: 315, length: 2100 },
+    { id: "CIDADE", name: "Aeroporto Cidade Leste", x: 7200, z: 3800, heading: 90, length: 2600 },
+    { id: "DESERTO", name: "Base Deserto Sul", x: -11200, z: 9600, heading: 270, length: 2300 },
+    { id: "NAVAL", name: "Base Naval Costa", x: 0, z: -12200, heading: 0, length: 2200 },
+    { id: "VALE", name: "Aeroporto Vale Verde", x: -10500, z: 900, heading: 135, length: 1700 },
+    { id: "METRO", name: "Aeroporto Metropolitano", x: 11800, z: 800, heading: 90, length: 3000 },
+    { id: "NORTE", name: "Aeroporto Norte Frio", x: -2300, z: -14500, heading: 20, length: 1800 },
+    { id: "LAGO", name: "Aeroporto Lago Cristal", x: 6700, z: -13200, heading: 60, length: 1600 },
+    { id: "SUL", name: "Aeroporto Sul Tropical", x: 4500, z: 12800, heading: 190, length: 2000 },
+    { id: "OESTE", name: "Aeroporto Oeste Rural", x: -13500, z: 4300, heading: 260, length: 1800 },
+    { id: "ARQ", name: "Pista Arquipelago", x: -14200, z: -11800, heading: 35, length: 1400 },
+    { id: "PLANALTO", name: "Aeroporto Planalto Alto", x: 13600, z: 11800, heading: 320, length: 1900 }
+  ];
+
+  const CITY_CENTERS = [
+    { x: 1900, z: -450, radius: 3300 },
+    { x: 7200, z: 3800, radius: 2500 },
+    { x: 11800, z: 800, radius: 2900 },
+    { x: -10500, z: 900, radius: 2100 },
+    { x: -11200, z: 9600, radius: 1900 },
+    { x: 4500, z: 12800, radius: 2200 },
+    { x: 11200, z: -9000, radius: 2300 },
+    { x: -9800, z: -7600, radius: 1800 }
   ];
 
   const MISSIONS = [
-    { title: "Voo escola", from: "OFC", to: "VALE", reward: 1400, text: "Voo curto para treinar decolagem e pouso." },
-    { title: "Voo regional", from: "OFC", to: "ILHA", reward: 2600, text: "Cruze o mapa até Ilha Azul." },
-    { title: "Carga expressa", from: "ILHA", to: "SERRA", reward: 3300, text: "Leve carga leve até Serra Norte." },
-    { title: "Executivo VIP", from: "SERRA", to: "CIDADE", reward: 4200, text: "Pouse com suavidade na Cidade Leste." },
-    { title: "Operação militar", from: "NAVAL", to: "DESERTO", reward: 5200, text: "Use o caça e atravesse a rota rápida." },
-    { title: "Linha comercial", from: "METRO", to: "OFC", reward: 6200, text: "Rota de jato comercial até a base central." }
+    { title: "Voo escola", type: "treino", from: "OFC", to: "VALE", reward: 1800, passengers: 1, text: "Instrutor a bordo para treinar navegação e pouso." },
+    { title: "Buscar passageiros", type: "passageiros", from: "OFC", to: "METRO", reward: 5200, passengers: 34, text: "Embarque passageiros no terminal central e leve até o Metropolitano." },
+    { title: "Linha comercial longa", type: "passageiros", from: "METRO", to: "ARQ", reward: 9800, passengers: 128, text: "Rota longa sobre o mapa novo até a pista do arquipélago." },
+    { title: "Traslado executivo", type: "passageiros", from: "CIDADE", to: "PLANALTO", reward: 7600, passengers: 6, text: "Leve passageiros VIP até o aeroporto alto com pouso alinhado." },
+    { title: "Conexão Lago", type: "passageiros", from: "LAGO", to: "SUL", reward: 6400, passengers: 22, text: "Voo regional entre Lago Cristal e Sul Tropical." },
+    { title: "Carga expressa", type: "carga", from: "ILHA", to: "SERRA", reward: 6800, cargo: "840 kg", text: "Leve carga leve até Serra Norte com rota longa." },
+    { title: "Suprimento rural", type: "carga", from: "OESTE", to: "DESERTO", reward: 7300, cargo: "1.2 t", text: "Transporte suprimentos para a base no deserto." },
+    { title: "Operação militar", type: "militar", from: "NAVAL", to: "DESERTO", reward: 8600, cargo: "pacote tático", text: "Use o caça e atravesse a rota rápida em baixa resistência." },
+    { title: "Interceptação de teste", type: "militar", from: "NORTE", to: "SERRA", reward: 9000, cargo: "dados de voo", text: "Voo rápido de teste para o caça stealth." },
+    { title: "Resgate aeromédico", type: "emergência", from: "VALE", to: "CIDADE", reward: 8200, passengers: 2, text: "Transporte paciente e médico com pouso suave." }
   ];
 
   let qualityIndex = 2;
@@ -107,7 +129,7 @@
   scene.background = new THREE.Color(0x8fd3ff);
   scene.fog = new THREE.Fog(0x9bd6ff, 2100, quality.fog);
 
-  const camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 26000);
+  const camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 52000);
 
   scene.add(new THREE.HemisphereLight(0xf7fbff, 0x4a7a4c, 1.55));
   const sun = new THREE.DirectionalLight(0xfff4df, 1.85);
@@ -245,7 +267,7 @@
     staticColliders = [];
 
     const ocean = new THREE.Mesh(
-      new THREE.PlaneGeometry(30000, 30000, 1, 1),
+      new THREE.PlaneGeometry(MAP_SIZE * 2.2, MAP_SIZE * 2.2, 1, 1),
       new THREE.MeshLambertMaterial({ color: 0x287fb5 })
     );
     ocean.rotation.x = -Math.PI / 2;
@@ -253,7 +275,7 @@
     scene.add(ocean);
 
     const ground = new THREE.Mesh(
-      new THREE.PlaneGeometry(MAP_SIZE, MAP_SIZE, 80, 80),
+      new THREE.PlaneGeometry(MAP_SIZE, MAP_SIZE, 120, 120),
       new THREE.MeshLambertMaterial({ color: 0x43a35b })
     );
     ground.rotation.x = -Math.PI / 2;
@@ -269,9 +291,9 @@
   function createTerrainPatches() {
     const colors = [0x3b9254, 0x58ad5d, 0x6eb86a, 0x4b9a63];
 
-    for (let i = 0; i < 28; i++) {
+    for (let i = 0; i < 58; i++) {
       const patch = new THREE.Mesh(
-        new THREE.PlaneGeometry(420 + Math.random() * 1100, 180 + Math.random() * 620),
+        new THREE.PlaneGeometry(650 + Math.random() * 2100, 260 + Math.random() * 1200),
         new THREE.MeshLambertMaterial({
           color: colors[Math.floor(Math.random() * colors.length)],
           transparent: true,
@@ -288,26 +310,26 @@
 
   function createRivers() {
     const mat = new THREE.MeshLambertMaterial({ color: 0x2d93ca });
-    for (let i = 0; i < 3; i++) {
-      const river = new THREE.Mesh(new THREE.PlaneGeometry(90, 5200), mat);
+    for (let i = 0; i < 5; i++) {
+      const river = new THREE.Mesh(new THREE.PlaneGeometry(110, MAP_SIZE * 0.7), mat);
       river.rotation.x = -Math.PI / 2;
-      river.rotation.z = (i - 1) * 0.35;
-      river.position.set(-1200 + i * 1400, 0.032, -600 + i * 900);
+      river.rotation.z = (i - 2) * 0.24;
+      river.position.set(-6800 + i * 3400, 0.032, -2200 + i * 1350);
       scene.add(river);
     }
   }
 
   function createRoads() {
     const mat = new THREE.MeshLambertMaterial({ color: 0x4c4d4f });
-    for (let i = -4; i <= 4; i++) {
-      const road = new THREE.Mesh(new THREE.PlaneGeometry(28, 7200), mat);
+    for (let i = -7; i <= 7; i++) {
+      const road = new THREE.Mesh(new THREE.PlaneGeometry(34, MAP_SIZE * 0.82), mat);
       road.rotation.x = -Math.PI / 2;
-      road.position.set(1250 + i * 330, 0.035, -300);
+      road.position.set(i * 1850, 0.035, -400);
       scene.add(road);
 
-      const cross = new THREE.Mesh(new THREE.PlaneGeometry(7200, 24), mat);
+      const cross = new THREE.Mesh(new THREE.PlaneGeometry(MAP_SIZE * 0.82, 30), mat);
       cross.rotation.x = -Math.PI / 2;
-      cross.position.set(1250, 0.036, -300 + i * 330);
+      cross.position.set(400, 0.036, i * 1850);
       scene.add(cross);
     }
   }
@@ -392,18 +414,19 @@
   function createMountains() {
     const geometry = new THREE.ConeGeometry(1, 1, 6);
     const material = new THREE.MeshLambertMaterial({ color: 0x78806d });
-    const mesh = new THREE.InstancedMesh(geometry, material, 42);
+    const mountainCount = 74;
+    const mesh = new THREE.InstancedMesh(geometry, material, mountainCount);
     const dummy = new THREE.Object3D();
 
     let placed = 0;
     let attempts = 0;
 
-    while (placed < 42 && attempts < 420) {
+    while (placed < mountainCount && attempts < mountainCount * 14) {
       attempts++;
       const h = 200 + Math.random() * 720;
       const r = 140 + Math.random() * 420;
       const angle = Math.random() * Math.PI * 2;
-      const radius = 3300 + Math.random() * 2300;
+      const radius = MAP_SIZE * 0.26 + Math.random() * (MAP_SIZE * 0.34);
       const x = Math.cos(angle) * radius;
       const z = Math.sin(angle) * radius;
       if (isAirportProtected(x, z, r + 620)) continue;
@@ -476,9 +499,10 @@
 
     while (placed < count && attempts < count * 12) {
       attempts++;
-      const cluster = Math.random() < 0.65;
-      const x = cluster ? (Math.random() - 0.5) * 2600 + 1800 : (Math.random() - 0.5) * (MAP_SIZE * 0.82);
-      const z = cluster ? (Math.random() - 0.5) * 2600 - 350 : (Math.random() - 0.5) * (MAP_SIZE * 0.82);
+      const cluster = Math.random() < 0.78;
+      const center = CITY_CENTERS[Math.floor(Math.random() * CITY_CENTERS.length)];
+      const x = cluster ? center.x + (Math.random() - 0.5) * center.radius : (Math.random() - 0.5) * (MAP_SIZE * 0.86);
+      const z = cluster ? center.z + (Math.random() - 0.5) * center.radius : (Math.random() - 0.5) * (MAP_SIZE * 0.86);
       const h = cluster ? 35 + Math.random() * 260 : 15 + Math.random() * 90;
       const w = 30 + Math.random() * 75;
       const d = 30 + Math.random() * 75;
@@ -585,7 +609,7 @@
         puff.position.set((j - puffs / 2) * 50, Math.random() * 18, Math.random() * 26);
         cloud.add(puff);
       }
-      cloud.position.set((Math.random() - 0.5) * 10500, 680 + Math.random() * 1100, (Math.random() - 0.5) * 10500);
+      cloud.position.set((Math.random() - 0.5) * (MAP_SIZE * 0.88), 680 + Math.random() * 1300, (Math.random() - 0.5) * (MAP_SIZE * 0.88));
       cloud.rotation.y = Math.random() * Math.PI;
       group.add(cloud);
     }
@@ -663,6 +687,12 @@
     canopy.position.set(0, 1.12, -3.25);
     g.add(canopy);
 
+    [-1, 1].forEach(side => {
+      const sideWindow = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.45, 1.15), glass);
+      sideWindow.position.set(side * 1.12, 0.58, -2.6);
+      g.add(sideWindow);
+    });
+
     const prop = new THREE.Mesh(new THREE.BoxGeometry(0.16, 6.3, 0.16), dark);
     prop.position.z = -9.85;
     g.add(prop);
@@ -723,6 +753,15 @@
     cockpit.position.set(0, 0.8, -11.5);
     g.add(cockpit);
 
+    const windowMat = new THREE.MeshBasicMaterial({ color: 0x163d5f, transparent: true, opacity: 0.78 });
+    [-1, 1].forEach(side => {
+      for (let i = 0; i < 9; i++) {
+        const window = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.22, 0.34), windowMat);
+        window.position.set(side * 1.58, 0.72, -7.6 + i * 1.45);
+        g.add(window);
+      }
+    });
+
     const fakeProp = new THREE.Object3D();
     g.add(fakeProp);
     g.userData.prop = fakeProp;
@@ -735,59 +774,98 @@
 
   function createF22Like() {
     const g = new THREE.Group();
-    const grey = new THREE.MeshLambertMaterial({ color: 0x8c969e });
-    const darkGrey = new THREE.MeshLambertMaterial({ color: 0x59626b });
-    const glass = new THREE.MeshBasicMaterial({ color: 0x1b415f, transparent: true, opacity: 0.78 });
+    const grey = new THREE.MeshLambertMaterial({ color: 0x8b959d, side: THREE.DoubleSide });
+    const panelGrey = new THREE.MeshLambertMaterial({ color: 0x69747c, side: THREE.DoubleSide });
+    const darkGrey = new THREE.MeshLambertMaterial({ color: 0x48515a });
+    const edgeDark = new THREE.MeshLambertMaterial({ color: 0x303842 });
+    const glass = new THREE.MeshBasicMaterial({ color: 0x183b59, transparent: true, opacity: 0.8 });
 
-    const body = new THREE.Mesh(new THREE.BoxGeometry(3.0, 1.1, 15.5), grey);
-    body.position.y = 0.2;
-    g.add(body);
+    function planform(points, material, y) {
+      const shape = new THREE.Shape();
+      shape.moveTo(points[0][0], points[0][1]);
+      for (let i = 1; i < points.length; i++) shape.lineTo(points[i][0], points[i][1]);
+      shape.closePath();
+      const mesh = new THREE.Mesh(new THREE.ShapeGeometry(shape), material);
+      mesh.rotation.x = Math.PI / 2;
+      mesh.position.y = y;
+      return mesh;
+    }
+
+    const mainPlanform = planform([
+      [0, -12.2],
+      [-3.2, -7.8],
+      [-12.8, -3.0],
+      [-8.4, 2.2],
+      [-2.6, 1.2],
+      [-1.5, 7.9],
+      [0, 8.9],
+      [1.5, 7.9],
+      [2.6, 1.2],
+      [8.4, 2.2],
+      [12.8, -3.0],
+      [3.2, -7.8]
+    ], grey, 0.18);
+    g.add(mainPlanform);
+
+    const fuselage = new THREE.Mesh(new THREE.BoxGeometry(3.0, 0.95, 15.8), grey);
+    fuselage.position.set(0, 0.35, -0.9);
+    g.add(fuselage);
+
+    const spine = new THREE.Mesh(new THREE.BoxGeometry(1.35, 0.55, 10.8), panelGrey);
+    spine.position.set(0, 0.92, -1.8);
+    g.add(spine);
 
     const nose = new THREE.Mesh(new THREE.ConeGeometry(1.35, 4.8, 4), grey);
     nose.rotation.x = Math.PI / 2;
-    nose.position.z = -10.1;
+    nose.position.z = -11.3;
+    nose.position.y = 0.36;
     nose.rotation.z = Math.PI / 4;
     g.add(nose);
 
-    const mainWing = new THREE.Mesh(new THREE.BoxGeometry(24, 0.18, 4.6), grey);
-    mainWing.position.z = -1.6;
-    mainWing.rotation.y = 0;
-    g.add(mainWing);
+    const leftChine = new THREE.Mesh(new THREE.BoxGeometry(5.7, 0.18, 1.15), panelGrey);
+    leftChine.position.set(-3.15, 0.36, -6.6);
+    leftChine.rotation.y = -0.28;
+    g.add(leftChine);
 
-    const wingSweepL = new THREE.Mesh(new THREE.BoxGeometry(11, 0.16, 5), grey);
-    wingSweepL.position.set(-7, 0.02, -0.2);
-    wingSweepL.rotation.y = 0.45;
-    g.add(wingSweepL);
-
-    const wingSweepR = wingSweepL.clone();
-    wingSweepR.position.x = 7;
-    wingSweepR.rotation.y = -0.45;
-    g.add(wingSweepR);
-
-    const tailL = new THREE.Mesh(new THREE.BoxGeometry(0.35, 4.2, 2.4), darkGrey);
-    tailL.position.set(-2.1, 2.0, 5.8);
-    tailL.rotation.z = -0.32;
-    g.add(tailL);
-
-    const tailR = tailL.clone();
-    tailR.position.x = 2.1;
-    tailR.rotation.z = 0.32;
-    g.add(tailR);
-
-    const rearWing = new THREE.Mesh(new THREE.BoxGeometry(10, 0.16, 2.2), grey);
-    rearWing.position.z = 5.7;
-    g.add(rearWing);
-
-    const canopy = new THREE.Mesh(new THREE.SphereGeometry(1.05, 16, 8), glass);
-    canopy.scale.set(0.85, 0.34, 1.55);
-    canopy.position.set(0, 1.02, -4.7);
-    g.add(canopy);
+    const rightChine = leftChine.clone();
+    rightChine.position.x = 3.15;
+    rightChine.rotation.y = 0.28;
+    g.add(rightChine);
 
     [-1, 1].forEach(side => {
-      const exhaust = new THREE.Mesh(new THREE.BoxGeometry(1.1, 0.75, 1), darkGrey);
-      exhaust.position.set(side * 0.8, 0, 8.1);
+      const intake = new THREE.Mesh(new THREE.BoxGeometry(1.45, 0.65, 3.6), edgeDark);
+      intake.position.set(side * 2.15, 0.18, -4.8);
+      intake.rotation.y = side * 0.16;
+      g.add(intake);
+
+      const stabilizer = new THREE.Mesh(new THREE.BoxGeometry(5.5, 0.16, 2.1), grey);
+      stabilizer.position.set(side * 4.8, 0.15, 5.9);
+      stabilizer.rotation.y = side * 0.22;
+      g.add(stabilizer);
+
+      const tail = new THREE.Mesh(new THREE.BoxGeometry(0.42, 4.1, 2.6), darkGrey);
+      tail.position.set(side * 2.4, 2.0, 5.6);
+      tail.rotation.z = side * 0.38;
+      tail.rotation.y = side * 0.12;
+      g.add(tail);
+
+      const exhaust = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.72, 1.4), edgeDark);
+      exhaust.position.set(side * 0.85, 0.1, 8.2);
       g.add(exhaust);
     });
+
+    const canopy = new THREE.Mesh(new THREE.SphereGeometry(1.05, 16, 8), glass);
+    canopy.scale.set(0.86, 0.26, 1.7);
+    canopy.position.set(0, 1.17, -5.6);
+    g.add(canopy);
+
+    const bayLine = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.06, 4.5), edgeDark);
+    bayLine.position.set(0, -0.14, -0.2);
+    g.add(bayLine);
+
+    const noseSensor = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.1, 0.62), edgeDark);
+    noseSensor.position.set(0, 0.72, -13.2);
+    g.add(noseSensor);
 
     const fakeProp = new THREE.Object3D();
     g.add(fakeProp);
@@ -912,6 +990,24 @@
     };
   }
 
+  function approachCourseForAirport(a) {
+    const inbound = bearingBetween(aircraft.position.x, aircraft.position.z, a.x, a.z);
+    const courseA = a.heading;
+    const courseB = (a.heading + 180) % 360;
+    return Math.abs(wrapDegrees(inbound - courseA)) <= Math.abs(wrapDegrees(inbound - courseB)) ? courseA : courseB;
+  }
+
+  function runwayApproachData(a) {
+    const course = approachCourseForAirport(a);
+    const local = airportLocalPosition(a, aircraft.position.x, aircraft.position.z);
+    const reverse = Math.abs(wrapDegrees(course - a.heading)) > 90;
+    return {
+      course,
+      lateral: reverse ? -local.x : local.x,
+      along: reverse ? -local.z : local.z
+    };
+  }
+
   function recordLanding(info) {
     let score = 100;
 
@@ -1009,13 +1105,7 @@
     const thrustAccel = aircraft.throttle * aircraftType.thrust * boost;
     aircraft.velocity.addScaledVector(fwd, thrustAccel * dt);
 
-    // Limite suave de velocidade para cada modelo.
-    const maxMS = aircraftType.maxSpeed / 3.6;
-    if (speed > maxMS) {
-      aircraft.velocity.multiplyScalar(1 - 0.45 * dt);
-    }
-
-    // Arrasto estável.
+    // Sem limitador artificial: potência, gravidade e arrasto definem a velocidade.
     const drag = aircraftType.drag * speed * speed + 0.018 * speed;
     if (speed > 0.01) {
       aircraft.velocity.addScaledVector(aircraft.velocity.clone().normalize(), -drag * dt);
@@ -1292,6 +1382,7 @@
       data: mission,
       from: airport(mission.from),
       to: airport(mission.to),
+      boarded: false,
       airborne: false,
       completed: false
     };
@@ -1299,6 +1390,7 @@
     resetToAirport(activeMission.from);
     marker.visible = true;
     marker.position.set(activeMission.to.x, 12, activeMission.to.z);
+    el("message").innerHTML = missionBrief(activeMission) + " Pare no terminal e decole quando estiver pronto.";
   }
 
   function nextMission() {
@@ -1312,11 +1404,18 @@
   function updateMission() {
     if (!activeMission) return;
 
-    if (altitude() > 30) activeMission.airborne = true;
-
     const distance = dist2(aircraft.position.x, aircraft.position.z, activeMission.to.x, activeMission.to.z);
+    const fromDistance = dist2(aircraft.position.x, aircraft.position.z, activeMission.from.x, activeMission.from.z);
+
+    if (!activeMission.boarded && aircraft.onGround && fromDistance < 420 && aircraft.throttle < 0.12) {
+      activeMission.boarded = true;
+      el("message").innerHTML = missionBrief(activeMission) + " Embarque concluído. Decole e siga o radar.";
+    }
+
+    if (activeMission.boarded && altitude() > 30) activeMission.airborne = true;
 
     if (
+      activeMission.boarded &&
       activeMission.airborne &&
       distance < 300 &&
       aircraft.onGround &&
@@ -1330,10 +1429,22 @@
       money += activeMission.data.reward + landingBonus;
       marker.visible = false;
       el("message").innerHTML =
-        "Missão concluída! Recompensa " + fmtMoney(activeMission.data.reward) +
+        "Missão concluída! " + missionManifest(activeMission.data) + ". Recompensa " + fmtMoney(activeMission.data.reward) +
         (landingBonus ? " + bônus de pouso " + fmtMoney(landingBonus) : "") +
         ". Aperte N ou M para outra missão.";
     }
+  }
+
+  function missionManifest(mission) {
+    if (!mission) return "--";
+    if (mission.passengers) return mission.passengers + " passageiros";
+    if (mission.cargo) return "Carga: " + mission.cargo;
+    return mission.type || "voo livre";
+  }
+
+  function missionBrief(missionState) {
+    const mission = missionState.data;
+    return mission.title + ": " + missionManifest(mission) + " de " + missionState.from.name + " para " + missionState.to.name + ".";
   }
 
   function updateCamera(dt) {
@@ -1376,13 +1487,39 @@
       };
     }
 
-    const bearing = bearingBetween(aircraft.position.x, aircraft.position.z, activeMission.to.x, activeMission.to.z);
+    const target = activeMission.to;
+    const distance = dist2(aircraft.position.x, aircraft.position.z, target.x, target.z);
+    const approachDistance = Math.max(3400, target.length * 2.2);
+
+    if (distance < approachDistance) {
+      const approach = runwayApproachData(target);
+      const headingError = wrapDegrees(approach.course - heading);
+      const lateralError = clamp(approach.lateral / 520, -1, 1) * 45;
+      const directorError = clamp(headingError + lateralError, -90, 90);
+      let guidance = "Final: alinhe com a pista " + Math.round(approach.course).toString().padStart(3, "0") + "°";
+
+      if (Math.abs(approach.lateral) > 260) guidance = "Centralize no eixo da pista";
+      if (distance < 900) guidance = "Reduza, nivele e toque suave";
+
+      return {
+        mode: "approach",
+        heading,
+        bearing: approach.course,
+        course: approach.course,
+        lateral: approach.lateral,
+        error: directorError,
+        distance,
+        guidance
+      };
+    }
+
+    const bearing = bearingBetween(aircraft.position.x, aircraft.position.z, target.x, target.z);
     const error = wrapDegrees(bearing - heading);
     const absError = Math.abs(error);
     let guidance = "Rumo alinhado";
 
     if (absError > 9) guidance = "Vire " + (error > 0 ? "direita " : "esquerda ") + Math.round(absError) + "°";
-    if (dist2(aircraft.position.x, aircraft.position.z, activeMission.to.x, activeMission.to.z) < 700) {
+    if (distance < 700) {
       guidance = "Aproxime e reduza para pouso";
     }
 
@@ -1390,7 +1527,7 @@
       heading,
       bearing,
       error,
-      distance: dist2(aircraft.position.x, aircraft.position.z, activeMission.to.x, activeMission.to.z),
+      distance,
       guidance
     };
   }
@@ -1401,40 +1538,90 @@
     const ctx = canvas.getContext("2d");
     const w = canvas.width;
     const h = canvas.height;
+    const cx = w / 2;
+    const cy = h / 2;
+    const radius = Math.min(w, h) / 2 - 8;
 
     ctx.clearRect(0, 0, w, h);
-    ctx.fillStyle = "rgba(7, 23, 33, 0.92)";
-    ctx.fillRect(0, 0, w, h);
-    ctx.strokeStyle = "rgba(255,255,255,0.2)";
-    ctx.strokeRect(0.5, 0.5, w - 1, h - 1);
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+    ctx.clip();
 
-    const toMap = (x, z) => ({
-      x: clamp((x + HALF) / MAP_SIZE, 0, 1) * w,
-      y: clamp((z + HALF) / MAP_SIZE, 0, 1) * h
+    ctx.fillStyle = "rgba(5, 18, 28, 0.96)";
+    ctx.fillRect(0, 0, w, h);
+
+    ctx.strokeStyle = "rgba(102, 202, 255, 0.15)";
+    ctx.lineWidth = 1;
+    [0.35, 0.68, 1].forEach(scale => {
+      ctx.beginPath();
+      ctx.arc(cx, cy, radius * scale, 0, Math.PI * 2);
+      ctx.stroke();
     });
+    ctx.beginPath();
+    ctx.moveTo(cx, cy - radius);
+    ctx.lineTo(cx, cy + radius);
+    ctx.moveTo(cx - radius, cy);
+    ctx.lineTo(cx + radius, cy);
+    ctx.stroke();
+
+    function toRadar(x, z, clampToEdge = true) {
+      const dx = x - aircraft.position.x;
+      const dz = z - aircraft.position.z;
+      const distance = Math.hypot(dx, dz);
+      const scale = radius / MINIMAP_RANGE;
+      const limit = clampToEdge && distance > MINIMAP_RANGE ? MINIMAP_RANGE / distance : 1;
+      return {
+        x: cx + dx * scale * limit,
+        y: cy + dz * scale * limit,
+        distance,
+        clipped: distance > MINIMAP_RANGE
+      };
+    }
 
     if (activeMission && !activeMission.completed) {
-      const from = toMap(aircraft.position.x, aircraft.position.z);
-      const to = toMap(activeMission.to.x, activeMission.to.z);
-      ctx.strokeStyle = "rgba(255, 216, 77, 0.75)";
-      ctx.lineWidth = 1.5;
+      const target = toRadar(activeMission.to.x, activeMission.to.z);
+      ctx.strokeStyle = "rgba(255, 216, 77, 0.85)";
+      ctx.lineWidth = 2.2;
       ctx.beginPath();
-      ctx.moveTo(from.x, from.y);
-      ctx.lineTo(to.x, to.y);
+      ctx.moveTo(cx, cy);
+      ctx.lineTo(target.x, target.y);
       ctx.stroke();
+
+      ctx.fillStyle = activeMission.boarded ? "#ffd84d" : "#66caff";
+      ctx.beginPath();
+      ctx.arc(target.x, target.y, target.clipped ? 5 : 7, 0, Math.PI * 2);
+      ctx.fill();
+
+      const runway = activeMission.to;
+      const runwayPoint = toRadar(runway.x, runway.z);
+      if (!runwayPoint.clipped) {
+        const angle = THREE.Math.degToRad(runway.heading);
+        const len = clamp(runway.length / MINIMAP_RANGE * radius, 12, 32);
+        const dx = Math.sin(angle) * len;
+        const dy = -Math.cos(angle) * len;
+        ctx.strokeStyle = "rgba(255, 255, 255, 0.8)";
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(runwayPoint.x - dx, runwayPoint.y - dy);
+        ctx.lineTo(runwayPoint.x + dx, runwayPoint.y + dy);
+        ctx.stroke();
+      }
     }
 
     AIRPORTS.forEach(a => {
-      const p = toMap(a.x, a.z);
+      const p = toRadar(a.x, a.z, false);
+      if (p.distance > MINIMAP_RANGE) return;
       ctx.fillStyle = activeMission && activeMission.to.id === a.id ? "#ffd84d" : "#8cffaa";
       ctx.beginPath();
       ctx.arc(p.x, p.y, activeMission && activeMission.to.id === a.id ? 4.2 : 2.8, 0, Math.PI * 2);
       ctx.fill();
     });
 
-    const planePoint = toMap(aircraft.position.x, aircraft.position.z);
+    ctx.restore();
+
     ctx.save();
-    ctx.translate(planePoint.x, planePoint.y);
+    ctx.translate(cx, cy);
     ctx.rotate(THREE.Math.degToRad(headingDegrees()));
     ctx.fillStyle = "#ffffff";
     ctx.beginPath();
@@ -1445,12 +1632,20 @@
     ctx.closePath();
     ctx.fill();
     ctx.restore();
+
+    ctx.strokeStyle = "rgba(255,255,255,0.35)";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+    ctx.stroke();
   }
 
   function updateFlightDirector() {
     const nav = currentNav();
     el("directorHeading").textContent = Math.round(nav.heading).toString().padStart(3, "0") + "°";
-    el("directorTarget").textContent = nav.bearing === null ? "--" : Math.round(nav.bearing).toString().padStart(3, "0") + "°";
+    el("directorTarget").textContent = nav.bearing === null
+      ? "--"
+      : (nav.mode === "approach" ? "Pista " : "Alvo ") + Math.round(nav.bearing).toString().padStart(3, "0") + "°";
     el("directorGuidance").textContent = nav.guidance;
     el("directorNeedle").style.left = 50 + clamp(nav.error / 90, -1, 1) * 46 + "%";
   }
@@ -1514,13 +1709,18 @@
         activeMission.data.title + " — " + activeMission.from.name + " → " + activeMission.to.name;
 
       el("missionText").textContent =
-        activeMission.completed ? "Concluída! Aperte N/M para outra." : activeMission.data.text;
+        activeMission.completed ? "Concluída! Aperte N/M para outra." :
+          activeMission.boarded ? activeMission.data.text : "Aguardando embarque no aeroporto de origem.";
 
+      el("missionManifest").textContent = missionManifest(activeMission.data);
       el("missionDistance").textContent = Math.round(nav.distance);
-      el("targetBearing").textContent = nav.bearing === null ? "--" : Math.round(nav.bearing).toString().padStart(3, "0") + "°";
+      el("targetBearing").textContent = nav.bearing === null
+        ? "--"
+        : (nav.mode === "approach" ? "Pista " : "") + Math.round(nav.bearing).toString().padStart(3, "0") + "°";
     } else {
       el("missionTitle").textContent = "Pressione N para iniciar";
       el("missionText").textContent = "Voe de um aeroporto para outro.";
+      el("missionManifest").textContent = "--";
       el("missionDistance").textContent = "0";
       el("targetBearing").textContent = "--";
     }
