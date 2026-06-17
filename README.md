@@ -1,12 +1,12 @@
-# Flight Simulator OFC V7
+# Flight Simulator OFC V8
 
 Criado por Guilherme Trecenti.
 
-Versao com tela inicial, modo livre, modo carreira, loja de avioes, mapa maior, mais aeroportos, missoes, radar de rota, camera terceira pessoa e cores de terreno mais estaveis.
+Versao com login de piloto, carreira salva no navegador, modo livre, loja de avioes, mapa maior, cidades urbanas e rurais, fisica de voo melhorada, radar com rota de aproximacao e camera terceira pessoa.
 
 ## Como jogar
 
-Abra o jogo, escolha um modo e use:
+Abra o jogo, coloque o nome do piloto, escolha um modo e use:
 
 - W: acelerar
 - S: reduzir/frear
@@ -33,21 +33,25 @@ Abra o jogo, escolha um modo e use:
 ## Melhorias principais
 
 - 22 modelos de aviao, do Cessna velho ate o caca stealth inspirado no F-22
-- Precos e progressao no modo carreira
+- Precos rebalanceados: avioes baratos sao mais dificeis e avioes caros sao mais estaveis
+- Carreira salva automaticamente por nome de piloto no navegador
 - Loja com comprar/equipar e estatisticas de velocidade, stall e decolagem
 - Mapa aumentado para 48 km x 48 km
 - 22 aeroportos espalhados pelo mundo
+- Cidades urbanas com torres, parques e ruas
+- Vilas rurais com casas, celeiros, silos e campos
 - 18 missoes de passageiros, carga, emergencia e operacao militar
-- Mini mapa circular com rota da missao
-- Radar superior que orienta rota e alinhamento de pista na aproximacao
+- Mini mapa circular com rota ate um ponto de aproximacao antes da pista
+- Radar superior que orienta o jeito mais facil de chegar alinhado para pousar
 - Camera terceira pessoa presa atras do aviao, com suavizacao por rumo
 - HUD compacto quando as informacoes laterais sao escondidas
 - Nota de pouso com bonus de missao
 - Cores fixas para oceano, grama, campos, floresta, areia, pistas, ruas, rios e montanhas, com camadas separadas para evitar piscadas
-- Hitboxes em camadas para predios, arvores, montanhas, terminais e torres
+- Hitboxes com mais camadas para predios, arvores, montanhas, terminais, torres, casas, celeiros e silos
 - Pouso pesado quebra o aviao, mas nao explode automaticamente
-- Sem limitador artificial de velocidade: mergulho aumenta velocidade com gravidade e arrasto
-- Stall baseado em velocidade minima especifica de cada aeronave
+- Fisica melhorada: nariz para cima perde energia, mergulho ganha velocidade, arrasto segura a velocidade maxima
+- Decolagem mais dificil: o aviao precisa chegar perto da velocidade certa para sair do chao
+- Stall baseado em velocidade minima especifica de cada aeronave, um pouco mais exigente
 - Modelos 3D com escala e cores por aeronave
 
 ## Rodar localmente

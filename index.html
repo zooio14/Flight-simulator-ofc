@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Flight Simulator OFC V7</title>
+  <title>Flight Simulator OFC V8</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div id="loading">
     <div>
-      <h1>Flight Simulator OFC V7</h1>
-      <p>Carregando mundo, loja, carreira e aeroportos...</p>
+      <h1>Flight Simulator OFC V8</h1>
+      <p>Carregando fisica, carreira salva, cidades e radar...</p>
     </div>
   </div>
 
@@ -18,10 +18,18 @@
     <div class="start-content">
       <p class="start-kicker">Criado por Guilherme Trecenti</p>
       <h1>Flight Simulator OFC</h1>
-      <p class="start-subtitle">Escolha como quer voar.</p>
+      <p class="start-subtitle">Entre com seu piloto e escolha como quer voar.</p>
+      <div class="login-panel">
+        <label for="pilotName">Piloto</label>
+        <div class="login-row">
+          <input id="pilotName" type="text" maxlength="24" placeholder="Seu nome" autocomplete="nickname" />
+          <button id="loginButton" type="button">Entrar</button>
+        </div>
+        <p id="profileStatus">Seu modo carreira sera salvo neste navegador.</p>
+      </div>
       <div class="start-actions">
-        <button id="startFree" type="button">Jogar livre</button>
-        <button id="startCareer" type="button">Modo carreira</button>
+        <button id="startFree" type="button" disabled>Jogar livre</button>
+        <button id="startCareer" type="button" disabled>Modo carreira</button>
       </div>
     </div>
   </div>
@@ -32,7 +40,7 @@
   </div>
 
   <div id="hud">
-    <h2>FLIGHT SIMULATOR OFC V7</h2>
+    <h2>FLIGHT SIMULATOR OFC V8</h2>
 
     <div class="panel">
       <b>Controles</b><br />
@@ -47,6 +55,7 @@
     </div>
 
     <div class="panel">
+      Piloto: <span id="playerLabel">--</span><br />
       Modo: <span id="modeLabel">Menu</span><br />
       Avião: <span id="aircraftName">Leve</span><br />
       FPS: <span id="fps">0</span><br />
@@ -115,7 +124,7 @@
   </div>
 
   <div id="message">
-    V7: escolha modo livre ou carreira para começar.
+    V8: login, carreira salva, cidades, fisica melhorada e radar de aproximação.
   </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>

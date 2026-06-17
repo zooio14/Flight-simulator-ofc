@@ -57,6 +57,37 @@
     { id: "f22", name: "Caça stealth inspirado no F-22", model: "f22", price: 3200000, takeoff: 145, landingMax: 260, maxSpeed: 1900, thrust: 248, boost: 1.42, drag: 0.00048, lift: 22.8, control: 1.85, stallAngle: 30, stallSpeed: 105, cameraBack: 44, hitboxRadius: 10, color: 0x8b959d, accent: 0x303842, scale: 1.05 }
   ];
 
+  const AIRCRAFT_TUNING = [
+    ["cessna", 0, 330, 112, 82, 62, 0.92, 0.78, 0.00172],
+    ["trainer", 1800, 365, 112, 78, 73, 1.02, 0.88, 0.00156],
+    ["piper", 3900, 405, 126, 84, 82, 1.04, 0.9, 0.00143],
+    ["taildragger", 6200, 330, 96, 68, 78, 1.06, 0.86, 0.0017],
+    ["baron", 10500, 535, 150, 98, 99, 1.1, 0.96, 0.00112],
+    ["caravan", 17000, 500, 154, 96, 105, 1.08, 0.95, 0.00118],
+    ["kingair", 29000, 650, 168, 110, 124, 1.16, 1.02, 0.00095],
+    ["pc12", 42000, 740, 172, 114, 134, 1.2, 1.08, 0.00086],
+    ["tbm", 56000, 850, 178, 122, 150, 1.24, 1.1, 0.00078],
+    ["learjet", 76000, 890, 196, 138, 150, 1.26, 1.08, 0.00072],
+    ["citation", 98000, 940, 190, 134, 164, 1.3, 1.12, 0.00067],
+    ["embraer", 145000, 915, 215, 150, 174, 1.34, 1.06, 0.00069],
+    ["atr", 168000, 650, 190, 132, 158, 1.28, 1.02, 0.00091],
+    ["dash8", 205000, 720, 198, 140, 168, 1.34, 1.04, 0.00085],
+    ["crj", 260000, 930, 225, 162, 184, 1.38, 1.08, 0.00065],
+    ["a320", 420000, 955, 242, 172, 196, 1.46, 1.1, 0.00062],
+    ["boeing", 520000, 980, 235, 168, 210, 1.5, 1.12, 0.00058],
+    ["widebody", 740000, 1010, 278, 190, 242, 1.58, 1.02, 0.00054],
+    ["cargo", 920000, 860, 292, 198, 258, 1.55, 0.96, 0.00066],
+    ["f16", 1250000, 1650, 158, 124, 235, 1.62, 1.34, 0.00047],
+    ["f35", 1500000, 1820, 164, 120, 258, 1.72, 1.42, 0.00043],
+    ["f22", 1800000, 2050, 168, 118, 288, 1.82, 1.52, 0.0004]
+  ];
+
+  AIRCRAFT_TUNING.forEach(([id, price, maxSpeed, takeoff, stallSpeed, thrust, stability, control, drag]) => {
+    const type = AIRCRAFT_TYPES.find(aircraft => aircraft.id === id);
+    if (!type) return;
+    Object.assign(type, { price, maxSpeed, takeoff, stallSpeed, thrust, stability, control, drag });
+  });
+
   const AIRPORTS = [
     { id: "OFC", name: "Aeroporto Central OFC", x: 0, z: 1800, heading: 180, length: 2600 },
     { id: "ILHA", name: "Aeroporto Ilha Azul", x: -9800, z: -7600, heading: 45, length: 1900 },
@@ -100,6 +131,17 @@
     { x: 20500, z: 19800, radius: 1800 }
   ];
 
+  const RURAL_CENTERS = [
+    { x: -15600, z: 7200, radius: 1800 },
+    { x: -7200, z: 13200, radius: 1600 },
+    { x: 8600, z: 15400, radius: 1900 },
+    { x: 15600, z: 6200, radius: 1700 },
+    { x: -16400, z: -12600, radius: 1500 },
+    { x: 14800, z: -15800, radius: 1800 },
+    { x: -4200, z: -18200, radius: 1600 },
+    { x: 5200, z: -5200, radius: 1500 }
+  ];
+
   const MISSIONS = [
     { title: "Voo escola", type: "treino", from: "OFC", to: "VALE", reward: 1800, passengers: 1, text: "Instrutor a bordo para treinar navegação e pouso." },
     { title: "Buscar passageiros", type: "passageiros", from: "OFC", to: "METRO", reward: 5200, passengers: 34, text: "Embarque passageiros no terminal central e leve até o Metropolitano." },
@@ -125,6 +167,7 @@
   let quality = QUALITY[qualityIndex];
   let aircraftIndex = 0;
   let aircraftType = AIRCRAFT_TYPES[aircraftIndex];
+  let playerName = "";
   let gameStarted = false;
   let gameMode = null;
   let ownedAircraft = new Set([AIRCRAFT_TYPES[0].id]);
@@ -181,6 +224,8 @@
   const lerpAngle = (from, to, amount) => from + wrapRadians(to - from) * amount;
   const ownsAircraft = type => gameMode === "free" || ownedAircraft.has(type.id);
   const fmtGameMoney = () => gameMode === "free" ? "Livre" : fmtMoney(money);
+  const careerKey = name => "flight-simulator-ofc-career-" + name.trim().toLowerCase().replace(/[^a-z0-9_-]/g, "-");
+  const maxSpeedMS = () => aircraftType.maxSpeed / 3.6;
 
   window.addEventListener("keydown", event => {
     const key = event.key.toLowerCase();
@@ -508,6 +553,8 @@
     el("quality").textContent = quality.name;
 
     dynamicObjects.push(createBuildings(quality.buildings));
+    dynamicObjects.push(createUrbanLandmarks(Math.max(5, Math.floor(quality.buildings * 0.055))));
+    dynamicObjects.push(createRuralSettlements(Math.max(14, Math.floor(quality.trees * 0.075))));
 
     const trees = createTrees(quality.trees);
     dynamicObjects.push(trees.trunks, trees.tops);
@@ -542,7 +589,15 @@
     }
 
     function addBuildingColliderLayer(x, y, z, w, h, d) {
-      addCollider(dynamicColliders, "prédio", x, y, z, w * 0.46, h * 0.5, d * 0.46, 1.25);
+      if (h > 72) {
+        const layers = Math.min(4, Math.ceil(h / 72));
+        const layerH = h / layers;
+        for (let i = 0; i < layers; i++) {
+          addCollider(dynamicColliders, "prédio", x, y - h / 2 + layerH * (i + 0.5), z, w * 0.45, layerH * 0.5, d * 0.45, 1.25);
+        }
+      } else {
+        addCollider(dynamicColliders, "prédio", x, y, z, w * 0.46, h * 0.5, d * 0.46, 1.25);
+      }
     }
 
     while (placed < count && attempts < count * 12) {
@@ -592,6 +647,111 @@
       mesh.instanceMatrix.needsUpdate = true;
       if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
     });
+    scene.add(group);
+    return group;
+  }
+
+  function createUrbanLandmarks(count) {
+    const group = new THREE.Group();
+    const matTower = new THREE.MeshLambertMaterial({ color: 0x9aa8b5 });
+    const matGlass = new THREE.MeshBasicMaterial({ color: 0x5db8dd, transparent: true, opacity: 0.55 });
+    const matPark = flatSurfaceMaterial(0x2f8b4c, 5);
+    const matRoad = flatSurfaceMaterial(WORLD_COLORS.road, 4);
+
+    for (let i = 0; i < count; i++) {
+      const center = CITY_CENTERS[i % CITY_CENTERS.length];
+      const x = center.x + (Math.random() - 0.5) * center.radius * 0.55;
+      const z = center.z + (Math.random() - 0.5) * center.radius * 0.55;
+      if (isAirportProtected(x, z, 560)) continue;
+
+      const plaza = new THREE.Mesh(new THREE.PlaneGeometry(360, 260), matPark);
+      plaza.rotation.x = -Math.PI / 2;
+      plaza.position.set(x, 0.42, z);
+      plaza.rotation.z = Math.random() * Math.PI;
+      plaza.renderOrder = 3;
+      group.add(plaza);
+
+      const roadA = new THREE.Mesh(new THREE.PlaneGeometry(34, 720), matRoad);
+      roadA.rotation.x = -Math.PI / 2;
+      roadA.position.set(x, 0.86, z);
+      roadA.rotation.z = plaza.rotation.z;
+      roadA.renderOrder = 4;
+      group.add(roadA);
+
+      const height = 120 + Math.random() * 260;
+      const tower = new THREE.Mesh(new THREE.BoxGeometry(70, height, 70), matTower);
+      tower.position.set(x + 110, height / 2, z - 80);
+      group.add(tower);
+      const glass = new THREE.Mesh(new THREE.BoxGeometry(72, height * 0.72, 4), matGlass);
+      glass.position.set(x + 110, height * 0.54, z - 116);
+      group.add(glass);
+
+      addLayeredCollider(dynamicColliders, "torre urbana", x + 110, z - 80, [
+        { y: height * 0.14, halfX: 32, halfY: height * 0.14, halfZ: 32 },
+        { y: height * 0.38, halfX: 30, halfY: height * 0.12, halfZ: 30 },
+        { y: height * 0.62, halfX: 26, halfY: height * 0.12, halfZ: 26 },
+        { y: height * 0.86, halfX: 20, halfY: height * 0.12, halfZ: 20 }
+      ], 1.35);
+    }
+
+    scene.add(group);
+    return group;
+  }
+
+  function createRuralSettlements(count) {
+    const group = new THREE.Group();
+    const houseMat = new THREE.MeshLambertMaterial({ color: 0xd7c39b });
+    const roofMat = new THREE.MeshLambertMaterial({ color: 0x8c3f2c });
+    const barnMat = new THREE.MeshLambertMaterial({ color: 0xa94438 });
+    const siloMat = new THREE.MeshLambertMaterial({ color: 0xc9cfd1 });
+    const fieldMat = flatSurfaceMaterial(WORLD_COLORS.sand, 6);
+
+    for (let i = 0; i < count; i++) {
+      const center = RURAL_CENTERS[i % RURAL_CENTERS.length];
+      const x = center.x + (Math.random() - 0.5) * center.radius;
+      const z = center.z + (Math.random() - 0.5) * center.radius;
+      if (isAirportProtected(x, z, 460)) continue;
+
+      const field = new THREE.Mesh(new THREE.PlaneGeometry(420, 280), fieldMat);
+      field.rotation.x = -Math.PI / 2;
+      field.rotation.z = Math.random() * Math.PI;
+      field.position.set(x, 0.4, z);
+      field.renderOrder = 2;
+      group.add(field);
+
+      const house = new THREE.Mesh(new THREE.BoxGeometry(42, 24, 34), houseMat);
+      house.position.set(x - 58, 12, z - 32);
+      group.add(house);
+      const roof = new THREE.Mesh(new THREE.ConeGeometry(33, 18, 4), roofMat);
+      roof.position.set(x - 58, 35, z - 32);
+      roof.rotation.y = Math.PI / 4;
+      group.add(roof);
+
+      const barn = new THREE.Mesh(new THREE.BoxGeometry(72, 34, 54), barnMat);
+      barn.position.set(x + 54, 17, z + 42);
+      group.add(barn);
+
+      const silo = new THREE.Mesh(new THREE.CylinderGeometry(13, 13, 58, 16), siloMat);
+      silo.position.set(x + 116, 29, z + 36);
+      group.add(silo);
+
+      addLayeredCollider(dynamicColliders, "casa rural", x - 58, z - 32, [
+        { y: 10, halfX: 20, halfY: 10, halfZ: 16 },
+        { y: 25, halfX: 18, halfY: 7, halfZ: 14 },
+        { y: 38, halfX: 12, halfY: 6, halfZ: 10 }
+      ], 1);
+      addLayeredCollider(dynamicColliders, "celeiro", x + 54, z + 42, [
+        { y: 10, halfX: 34, halfY: 10, halfZ: 25 },
+        { y: 27, halfX: 32, halfY: 9, halfZ: 24 },
+        { y: 43, halfX: 24, halfY: 8, halfZ: 18 }
+      ], 1.08);
+      addLayeredCollider(dynamicColliders, "silo", x + 116, z + 36, [
+        { y: 12, halfX: 11, halfY: 12, halfZ: 11 },
+        { y: 34, halfX: 11, halfY: 10, halfZ: 11 },
+        { y: 55, halfX: 8, halfY: 10, halfZ: 8 }
+      ], 1.16);
+    }
+
     scene.add(group);
     return group;
   }
@@ -1047,6 +1207,75 @@
     if (button) button.textContent = hudHidden ? "Mostrar info" : "Esconder info";
   }
 
+  function careerData() {
+    return {
+      playerName,
+      money,
+      completed,
+      aircraftId: aircraftType.id,
+      ownedAircraft: Array.from(ownedAircraft)
+    };
+  }
+
+  function saveCareer() {
+    if (!playerName || gameMode !== "career") return;
+    try {
+      localStorage.setItem(careerKey(playerName), JSON.stringify(careerData()));
+    } catch (error) {
+      el("message").innerHTML = "Nao consegui salvar a carreira neste navegador.";
+    }
+  }
+
+  function loadCareer(name) {
+    try {
+      const saved = localStorage.getItem(careerKey(name));
+      return saved ? JSON.parse(saved) : null;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function applyCareerSave(save) {
+    money = Math.max(0, Number(save && save.money) || 0);
+    completed = Math.max(0, Number(save && save.completed) || 0);
+    const savedOwned = Array.isArray(save && save.ownedAircraft) ? save.ownedAircraft : [AIRCRAFT_TYPES[0].id];
+    ownedAircraft = new Set(savedOwned.filter(id => AIRCRAFT_TYPES.some(type => type.id === id)));
+    ownedAircraft.add(AIRCRAFT_TYPES[0].id);
+    const savedIndex = AIRCRAFT_TYPES.findIndex(type => type.id === (save && save.aircraftId));
+    aircraftIndex = savedIndex >= 0 && ownedAircraft.has(AIRCRAFT_TYPES[savedIndex].id) ? savedIndex : 0;
+    aircraftType = AIRCRAFT_TYPES[aircraftIndex];
+    makePlaneModel(aircraftType);
+  }
+
+  function updateProfileUi() {
+    const logged = !!playerName;
+    const freeButton = el("startFree");
+    const careerButton = el("startCareer");
+    const nameInput = el("pilotName");
+    if (freeButton) freeButton.disabled = !logged;
+    if (careerButton) careerButton.disabled = !logged;
+    if (nameInput && logged) nameInput.value = playerName;
+    el("playerLabel").textContent = logged ? playerName : "--";
+    const status = el("profileStatus");
+    if (status) {
+      status.textContent = logged
+        ? "Piloto " + playerName + " carregado. A carreira salva automaticamente."
+        : "Seu modo carreira sera salvo neste navegador.";
+    }
+  }
+
+  function loginPilot() {
+    const input = el("pilotName");
+    const raw = input ? input.value.trim() : "";
+    playerName = raw || "Piloto";
+    localStorage.setItem("flight-simulator-ofc-last-pilot", playerName);
+    updateProfileUi();
+    const saved = loadCareer(playerName);
+    el("message").innerHTML = saved
+      ? "Carreira de " + playerName + " encontrada. Entre no modo carreira para continuar."
+      : "Piloto " + playerName + " pronto. Comece uma carreira ou jogue livre.";
+  }
+
   function switchAircraft(index) {
     const target = AIRCRAFT_TYPES[index];
     if (!target) return;
@@ -1064,6 +1293,7 @@
     resetToAirport(currentAirport);
     rebuildHitboxHelpers();
     renderShop();
+    saveCareer();
     el("message").innerHTML = "Aeronave trocada para: " + aircraftType.name;
   }
 
@@ -1128,6 +1358,20 @@
       course,
       lateral: reverse ? -local.x : local.x,
       along: reverse ? -local.z : local.z
+    };
+  }
+
+  function approachRouteForAirport(a) {
+    const course = approachCourseForAirport(a);
+    const angle = THREE.Math.degToRad(course);
+    const leadDistance = Math.max(2800, a.length * 1.65);
+    const dirX = Math.sin(angle);
+    const dirZ = -Math.cos(angle);
+    return {
+      course,
+      x: a.x - dirX * leadDistance,
+      z: a.z - dirZ * leadDistance,
+      leadDistance
     };
   }
 
@@ -1225,13 +1469,26 @@
     const horizontalSpeed = Math.hypot(aircraft.velocity.x, aircraft.velocity.z);
 
     const boost = down("shift") ? aircraftType.boost : 1;
-    const thrustAccel = aircraft.throttle * aircraftType.thrust * boost;
+    const maxAllowedSpeed = maxSpeedMS() * (down("shift") ? 1.08 : 1);
+    const speedFraction = speed / Math.max(1, maxAllowedSpeed);
+    const powerAvailable = clamp(1 - Math.pow(clamp(speedFraction, 0, 1.25), 3) * 0.76, 0.08, 1);
+    const thrustAccel = aircraft.throttle * aircraftType.thrust * boost * powerAvailable;
     aircraft.velocity.addScaledVector(fwd, thrustAccel * dt);
 
-    // Sem limitador artificial: potência, gravidade e arrasto definem a velocidade.
-    const drag = aircraftType.drag * speed * speed + 0.018 * speed;
+    if (!aircraft.onGround && fwd.y > 0.05) {
+      const climbBleed = fwd.y * (5.5 + speed * 0.09) * (1 + aircraft.stallPressure * 0.6);
+      aircraft.velocity.addScaledVector(fwd, -climbBleed * dt);
+    }
+
+    const overspeed = Math.max(0, speed / maxAllowedSpeed - 0.97);
+    const overspeedDrag = overspeed * overspeed * speed * 2.6;
+    const inducedDrag = Math.max(0, aircraft.pitch) * Math.max(0, aircraft.pitch) * speed * 0.18;
+    const drag = aircraftType.drag * speed * speed + 0.022 * speed + overspeedDrag + inducedDrag;
     if (speed > 0.01) {
       aircraft.velocity.addScaledVector(aircraft.velocity.clone().normalize(), -drag * dt);
+    }
+    if (speed > maxAllowedSpeed * 1.18 && fwd.y > -0.14) {
+      aircraft.velocity.multiplyScalar(Math.pow(0.72, dt));
     }
 
     // Gravidade
@@ -1269,23 +1526,34 @@
     aircraft.stallPressure += (stallDemand - aircraft.stallPressure) * clamp(stallResponse * dt, 0, 1);
     aircraft.stall = aircraft.stallPressure > 0.68;
 
-    const speedLift = clamp((horizontalSpeed - stallSpeedMS * 0.45) / (stallSpeedMS * 1.15), 0, 1.75);
+    const takeoffGate = aircraft.onGround
+      ? clamp((speedKmh - aircraftType.takeoff * 0.86) / (aircraftType.takeoff * 0.22), 0, 1)
+      : 1;
+    const speedLift = clamp((horizontalSpeed - stallSpeedMS * 0.62) / (stallSpeedMS * 1.2), 0, 1.62);
     const angleLift = clamp(0.55 + aircraft.pitch * 1.25 + aoa * 0.95, -0.25, 1.55);
     const stallLiftPenalty = 1 - aircraft.stallPressure * 0.42;
-    const liftAccel = speedLift * angleLift * aircraftType.lift * stallLiftPenalty;
+    const liftAccel = speedLift * angleLift * aircraftType.lift * stallLiftPenalty * takeoffGate;
 
     aircraft.velocity.y += liftAccel * dt;
+    if (aircraft.onGround && speedKmh < aircraftType.takeoff * 0.98) {
+      aircraft.velocity.y = Math.min(aircraft.velocity.y, 0);
+    }
 
     const authorityBase = clamp(horizontalSpeed / (stallSpeedMS * 0.9), 0.18, 1.55);
     const stallControlPenalty = 1 - aircraft.stallPressure * 0.34;
     const authority = authorityBase * aircraftType.control * stallControlPenalty;
+    const stability = aircraftType.stability || 1;
+    const handling = authority / stability;
 
-    aircraft.angularPitch += elevator * 1.25 * authority * dt;
-    aircraft.angularRoll += aileron * 1.95 * authority * dt;
-    aircraft.angularYaw += rudder * 0.82 * authority * dt;
+    aircraft.angularPitch += elevator * 0.96 * handling * dt;
+    aircraft.angularRoll += aileron * 1.42 * handling * dt;
+    aircraft.angularYaw += rudder * 0.55 * handling * dt;
 
-    // Roll vira o avião, mas menos agressivo no Boeing.
-    aircraft.angularYaw += Math.sin(aircraft.roll) * 0.34 * authority * dt;
+    aircraft.angularYaw += Math.sin(aircraft.roll) * 0.18 * handling * dt;
+
+    const autoLevel = clamp((stability - 1) * 0.08, 0, 0.07);
+    if (Math.abs(aileron) < 0.01) aircraft.angularRoll -= aircraft.roll * autoLevel * dt;
+    if (Math.abs(elevator) < 0.01 && !aircraft.onGround) aircraft.angularPitch -= aircraft.pitch * autoLevel * 0.45 * dt;
 
     if (aircraft.stall) {
       aircraft.angularPitch -= 0.48 * dt;
@@ -1293,9 +1561,9 @@
       aircraft.angularYaw += Math.cos(performance.now() * 0.005) * 0.18 * dt;
     }
 
-    aircraft.angularPitch *= Math.pow(0.16, dt);
-    aircraft.angularRoll *= Math.pow(0.13, dt);
-    aircraft.angularYaw *= Math.pow(0.22, dt);
+    aircraft.angularPitch *= Math.pow(0.1 / clamp(stability, 0.75, 1.8), dt);
+    aircraft.angularRoll *= Math.pow(0.09 / clamp(stability, 0.75, 1.8), dt);
+    aircraft.angularYaw *= Math.pow(0.16 / clamp(stability, 0.75, 1.8), dt);
 
     aircraft.pitch += aircraft.angularPitch * dt;
     aircraft.roll += aircraft.angularRoll * dt;
@@ -1560,6 +1828,7 @@
         "Missão concluída! " + missionManifest(activeMission.data) + ". Recompensa " + fmtMoney(activeMission.data.reward) +
         (landingBonus ? " + bônus de pouso " + fmtMoney(landingBonus) : "") +
         ". Aperte N ou M para outra missão.";
+      saveCareer();
       renderShop();
     }
   }
@@ -1577,6 +1846,8 @@
   }
 
   function startGame(mode) {
+    if (!playerName) loginPilot();
+
     gameMode = mode;
     gameStarted = true;
     cameraMode = 0;
@@ -1591,11 +1862,19 @@
 
     if (gameMode === "free") {
       ownedAircraft = new Set(AIRCRAFT_TYPES.map(type => type.id));
-    } else {
-      ownedAircraft = new Set([AIRCRAFT_TYPES[0].id]);
       aircraftIndex = 0;
       aircraftType = AIRCRAFT_TYPES[0];
       makePlaneModel(aircraftType);
+    } else {
+      const saved = loadCareer(playerName);
+      if (saved) {
+        applyCareerSave(saved);
+      } else {
+        ownedAircraft = new Set([AIRCRAFT_TYPES[0].id]);
+        aircraftIndex = 0;
+        aircraftType = AIRCRAFT_TYPES[0];
+        makePlaneModel(aircraftType);
+      }
     }
 
     resetToAirport(AIRPORTS[0]);
@@ -1608,7 +1887,8 @@
 
     el("message").innerHTML = gameMode === "free"
       ? "Modo livre iniciado: todos os aviões estão liberados."
-      : "Modo carreira iniciado: comece com o Cessna velho, faça missões e compre aviões na loja.";
+      : "Modo carreira iniciado para " + playerName + ". Progresso salvo automaticamente.";
+    saveCareer();
   }
 
   function buyAircraft(index) {
@@ -1635,6 +1915,7 @@
     ownedAircraft.add(type.id);
     switchAircraft(index);
     el("message").innerHTML = "Compra feita: " + type.name + ". Saldo: " + fmtMoney(money) + ".";
+    saveCareer();
     renderShop();
   }
 
@@ -1677,7 +1958,8 @@
       meta.className = "shop-meta";
       meta.innerHTML =
         "Preço: <span class=\"shop-price\">" + (gameMode === "free" ? "Grátis" : fmtMoney(type.price)) + "</span><br>" +
-        "Máx: " + type.maxSpeed + " km/h | Stall: " + type.stallSpeed + " km/h | Decolagem: " + type.takeoff + " km/h";
+        "Máx: " + type.maxSpeed + " km/h | Stall: " + type.stallSpeed + " km/h | Decolagem: " + type.takeoff + " km/h<br>" +
+        "Estabilidade: " + Math.round((type.stability || 1) * 100) + "%";
 
       info.append(title, meta);
 
@@ -1786,6 +2068,27 @@
     const target = activeMission.to;
     const distance = dist2(aircraft.position.x, aircraft.position.z, target.x, target.z);
     const approachDistance = Math.max(3400, target.length * 2.2);
+    const route = approachRouteForAirport(target);
+    const routeDistance = dist2(aircraft.position.x, aircraft.position.z, route.x, route.z);
+
+    if (distance >= approachDistance && routeDistance > 850) {
+      const bearing = bearingBetween(aircraft.position.x, aircraft.position.z, route.x, route.z);
+      const error = wrapDegrees(bearing - heading);
+      const absError = Math.abs(error);
+      let guidance = "Vá ao ponto de aproximação para alinhar com a pista";
+      if (absError > 8) guidance = "Rota fácil: vire " + (error > 0 ? "direita " : "esquerda ") + Math.round(absError) + "°";
+
+      return {
+        mode: "route",
+        heading,
+        bearing,
+        route,
+        error,
+        distance,
+        routeDistance,
+        guidance
+      };
+    }
 
     if (distance < approachDistance) {
       const approach = runwayApproachData(target);
@@ -1877,12 +2180,20 @@
 
     if (activeMission && !activeMission.completed) {
       const target = toRadar(activeMission.to.x, activeMission.to.z);
+      const route = approachRouteForAirport(activeMission.to);
+      const routePoint = toRadar(route.x, route.z);
       ctx.strokeStyle = "rgba(255, 216, 77, 0.85)";
       ctx.lineWidth = 2.2;
       ctx.beginPath();
       ctx.moveTo(cx, cy);
+      ctx.lineTo(routePoint.x, routePoint.y);
       ctx.lineTo(target.x, target.y);
       ctx.stroke();
+
+      ctx.fillStyle = "#66caff";
+      ctx.beginPath();
+      ctx.arc(routePoint.x, routePoint.y, routePoint.clipped ? 4 : 6, 0, Math.PI * 2);
+      ctx.fill();
 
       ctx.fillStyle = activeMission.boarded ? "#ffd84d" : "#66caff";
       ctx.beginPath();
@@ -1941,7 +2252,7 @@
     el("directorHeading").textContent = Math.round(nav.heading).toString().padStart(3, "0") + "°";
     el("directorTarget").textContent = nav.bearing === null
       ? "--"
-      : (nav.mode === "approach" ? "Pista " : "Alvo ") + Math.round(nav.bearing).toString().padStart(3, "0") + "°";
+      : (nav.mode === "approach" ? "Pista " : nav.mode === "route" ? "Aprox " : "Alvo ") + Math.round(nav.bearing).toString().padStart(3, "0") + "°";
     el("directorGuidance").textContent = nav.guidance;
     el("directorNeedle").style.left = 50 + clamp(nav.error / 90, -1, 1) * 46 + "%";
   }
@@ -1960,6 +2271,7 @@
       fpsLast = now;
     }
 
+    el("playerLabel").textContent = playerName || "--";
     el("modeLabel").textContent = !gameStarted ? "Menu" : gameMode === "free" ? "Livre" : "Carreira";
     el("aircraftName").textContent = aircraftType.name;
     el("fps").textContent = fpsValue;
@@ -2014,7 +2326,7 @@
       el("missionDistance").textContent = Math.round(nav.distance);
       el("targetBearing").textContent = nav.bearing === null
         ? "--"
-        : (nav.mode === "approach" ? "Pista " : "") + Math.round(nav.bearing).toString().padStart(3, "0") + "°";
+        : (nav.mode === "approach" ? "Pista " : nav.mode === "route" ? "Aprox " : "") + Math.round(nav.bearing).toString().padStart(3, "0") + "°";
     } else {
       el("missionTitle").textContent = "Pressione N para iniciar";
       el("missionText").textContent = "Voe de um aeroporto para outro.";
@@ -2068,10 +2380,22 @@
   function setupUi() {
     const startFree = el("startFree");
     const startCareer = el("startCareer");
+    const loginButton = el("loginButton");
+    const pilotInput = el("pilotName");
     const shopToggle = el("shopToggle");
     const shopClose = el("shopClose");
     const hudToggle = el("hudToggle");
 
+    const lastPilot = localStorage.getItem("flight-simulator-ofc-last-pilot");
+    if (lastPilot) playerName = lastPilot;
+    if (pilotInput && playerName) pilotInput.value = playerName;
+
+    if (loginButton) loginButton.addEventListener("click", loginPilot);
+    if (pilotInput) {
+      pilotInput.addEventListener("keydown", event => {
+        if (event.key === "Enter") loginPilot();
+      });
+    }
     if (startFree) startFree.addEventListener("click", () => startGame("free"));
     if (startCareer) startCareer.addEventListener("click", () => startGame("career"));
     if (shopToggle) shopToggle.addEventListener("click", () => setShopOpen(!shopOpen));
@@ -2080,6 +2404,7 @@
 
     setHudHidden(false);
     setShopOpen(false);
+    updateProfileUi();
     renderShop();
   }
 
