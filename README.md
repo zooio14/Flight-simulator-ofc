@@ -47,12 +47,14 @@ Abra o jogo, coloque o nome do piloto, escolha um modo e use:
 - Tela do modo livre para escolher clima e horario antes de iniciar
 - Centro de configuracoes aberto pela tecla C ou pelo botao Config
 - Controle por teclado, mouse ou touch para iPad, com sensibilidade ajustavel
+- Touch com alavanca vertical de potencia, joystick, freio, boost, leme e botoes para armas, reset, loja, info, config, camera, qualidade, hitboxes, missoes e troca de aviao
 - Sistema de clima com ensolarado, parcialmente nublado, nublado, nevoa, chuva leve, chuva forte, chuva pesada, tempestade, vento cruzado, vento muito pesado, neve, turbulencia, nevoa fechada, calor forte, granizo e gelo
 - Sistema de horario com dia, fim de tarde e noite, mudando luz, cor do ceu, neblina e exposicao
 - Clima afeta fisica: vento empurra o aviao, rajadas instabilizam, turbulencia mexe no pitch/roll/yaw, chuva e gelo aumentam arrasto e reduzem sustentacao
 - Chuva pesada empurra o aviao para baixo e exige mais potencia na aproximacao
 - Nevoa fechada reduz muito a visibilidade
 - Vento muito pesado desvia a trajetoria no pouso e exige correcao lateral
+- Tempestade e chuva pesada deixam o pouso mais sensivel a impacto, alinhamento, banco e velocidade
 - Carreira dificil sorteia clima e horario toda vez que uma missao comeca
 - Pista molhada ou com neve reduz aderencia e deixa pouso/frenagem mais exigentes
 - Carreira dificil paga bonus de missao quando o voo acontece em clima ruim

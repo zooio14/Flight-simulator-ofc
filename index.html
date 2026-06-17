@@ -181,13 +181,39 @@
   </div>
 
   <div id="touchControls" aria-label="Controles touch">
-    <div id="touchPad" aria-label="Direção touch">
-      <span id="touchKnob"></span>
+    <div class="touch-stick-group">
+      <div id="touchPad" aria-label="Direção touch">
+        <span id="touchKnob"></span>
+      </div>
+      <div class="touch-rudder-row">
+        <button id="touchRudderLeft" type="button">Leme E</button>
+        <button id="touchRudderRight" type="button">Leme D</button>
+      </div>
     </div>
-    <div class="touch-throttle">
-      <button id="touchThrottleUp" type="button">+</button>
-      <button id="touchThrottleDown" type="button">-</button>
-      <button id="touchBoost" type="button">B</button>
+    <div id="touchThrottleLever" class="touch-throttle" aria-label="Alavanca de potência">
+      <span>Potência</span>
+      <div id="touchThrottleTrack">
+        <span id="touchThrottleKnob"></span>
+      </div>
+      <strong id="touchThrottleReadout">0%</strong>
+    </div>
+    <div class="touch-command-panel">
+      <button id="touchBrake" type="button">Freio</button>
+      <button id="touchBoost" type="button">Boost</button>
+      <button type="button" data-touch-action="fire">Atirar</button>
+      <button type="button" data-touch-action="weapon">Arma</button>
+      <button type="button" data-touch-action="reset">Reset</button>
+      <button type="button" data-touch-action="shop">Loja</button>
+      <button type="button" data-touch-action="hud">Info</button>
+      <button type="button" data-touch-action="settings">Config</button>
+      <button type="button" data-touch-action="camera">Camera</button>
+      <button type="button" data-touch-action="quality">Qualid.</button>
+      <button type="button" data-touch-action="hitboxes">Hitbox</button>
+      <button type="button" data-touch-action="mission">Missão</button>
+      <button type="button" data-touch-action="nextMission">Próx.</button>
+      <button type="button" data-touch-action="aircraft1">Aviao 1</button>
+      <button type="button" data-touch-action="aircraft2">Aviao 2</button>
+      <button type="button" data-touch-action="aircraft3">Caca</button>
     </div>
   </div>
 

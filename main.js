@@ -348,9 +348,11 @@
   controlSensitivity = Math.max(0.45, Math.min(1.75, controlSensitivity));
   let mouseControl = { x: 0, y: 0 };
   let touchControl = { x: 0, y: 0, pointerId: null };
-  let touchThrottleUp = false;
-  let touchThrottleDown = false;
+  let touchThrottleTarget = 0;
+  let touchThrottlePointerId = null;
+  let touchBrake = false;
   let touchBoost = false;
+  let touchRudder = 0;
   let careerDifficulty = "easy";
   let activeWeather = WEATHER_TYPES[0];
   let activeTimeOfDay = TIME_OF_DAY_TYPES[0];
@@ -484,15 +486,16 @@
     } else if (controlMode === "touch") {
       elevator = clamp(-touchControl.y * controlSensitivity, -1, 1);
       aileron = clamp(-touchControl.x * controlSensitivity, -1, 1);
-      rudder = clamp(-touchControl.x * controlSensitivity * 0.38 + keyboardRudder * 0.35, -1, 1);
+      rudder = clamp(touchRudder + keyboardRudder * 0.35, -1, 1);
     }
 
     return {
       elevator,
       aileron,
       rudder,
-      throttleUp: down("w") || touchThrottleUp,
-      throttleDown: down("s") || touchThrottleDown,
+      throttleTarget: controlMode === "touch" ? touchThrottleTarget : null,
+      throttleUp: down("w"),
+      throttleDown: down("s") || touchBrake,
       boost: down("shift") || touchBoost
     };
   }
@@ -508,6 +511,18 @@
     touchControl.y = 0;
     touchControl.pointerId = null;
     updateTouchKnob();
+  }
+
+  function updateTouchThrottleUi() {
+    const knob = el("touchThrottleKnob");
+    const readout = el("touchThrottleReadout");
+    if (knob) knob.style.bottom = (touchThrottleTarget * 100).toFixed(1) + "%";
+    if (readout) readout.textContent = Math.round(touchThrottleTarget * 100) + "%";
+  }
+
+  function setTouchThrottleTarget(value) {
+    touchThrottleTarget = clamp(value, 0, 1);
+    updateTouchThrottleUi();
   }
 
   const Y_AXIS = new THREE.Vector3(0, 1, 0);
@@ -1661,6 +1676,7 @@
 
   function resetToAirport(a) {
     aircraft.throttle = 0;
+    setTouchThrottleTarget(0);
     aircraft.health = 100;
     aircraft.position.set(a.x, 3, a.z);
     aircraft.velocity.set(0, 0, 0);
@@ -1740,10 +1756,13 @@
     controlMode = mode;
     localStorage.setItem("flight-simulator-ofc-control-mode", controlMode);
     if (controlMode !== "touch") {
-      touchThrottleUp = false;
-      touchThrottleDown = false;
+      touchBrake = false;
       touchBoost = false;
+      touchRudder = 0;
+      touchThrottlePointerId = null;
       resetTouchControl();
+    } else {
+      setTouchThrottleTarget(aircraft.throttle || 0);
     }
     updateSettingsUi();
   }
@@ -1879,6 +1898,43 @@
     startGame("free");
   }
 
+  function resetPlaneCommand() {
+    if (activeMission) resetToAirport(activeMission.from);
+    else resetToAirport(AIRPORTS[0]);
+    el("message").innerHTML = "Avião resetado. Segure W ou mova a alavanca para acelerar.";
+  }
+
+  function toggleQualityCommand() {
+    qualityIndex = (qualityIndex + 1) % QUALITY.length;
+    quality = QUALITY[qualityIndex];
+    rebuildDynamicWorld();
+  }
+
+  function toggleHitboxesCommand() {
+    showHitboxes = !showHitboxes;
+    rebuildHitboxHelpers();
+    el("message").innerHTML = showHitboxes ? "Hitboxes visíveis." : "Hitboxes ocultas.";
+  }
+
+  function runTouchCommand(action) {
+    if (!gameStarted && !["settings", "hud"].includes(action)) return;
+
+    if (action === "fire") fireSelectedWeapon();
+    else if (action === "weapon") cycleWeapon();
+    else if (action === "reset") resetPlaneCommand();
+    else if (action === "shop") setShopOpen(!shopOpen);
+    else if (action === "hud") setHudHidden(!hudHidden);
+    else if (action === "settings") setSettingsOpen(!settingsOpen);
+    else if (action === "camera") cycleCamera();
+    else if (action === "quality") toggleQualityCommand();
+    else if (action === "hitboxes") toggleHitboxesCommand();
+    else if (action === "mission") randomMission();
+    else if (action === "nextMission") nextMission();
+    else if (action === "aircraft1") switchAircraft(0);
+    else if (action === "aircraft2") switchAircraft(15);
+    else if (action === "aircraft3") switchAircraft(AIRCRAFT_TYPES.length - 1);
+  }
+
   function setupPointerControls() {
     window.addEventListener("pointermove", event => {
       if (controlMode !== "mouse" || pointerBlockedByUi(event.target)) return;
@@ -1920,6 +1976,37 @@
       touchPad.addEventListener("pointercancel", endTouch);
     }
 
+    const throttleTrack = el("touchThrottleTrack");
+    if (throttleTrack) {
+      const updateThrottle = event => {
+        const rect = throttleTrack.getBoundingClientRect();
+        const target = 1 - (event.clientY - rect.top) / Math.max(1, rect.height);
+        setTouchThrottleTarget(target);
+      };
+
+      throttleTrack.addEventListener("pointerdown", event => {
+        if (controlMode !== "touch") return;
+        touchThrottlePointerId = event.pointerId;
+        throttleTrack.setPointerCapture(event.pointerId);
+        updateThrottle(event);
+        event.preventDefault();
+      });
+
+      throttleTrack.addEventListener("pointermove", event => {
+        if (controlMode !== "touch" || touchThrottlePointerId !== event.pointerId) return;
+        updateThrottle(event);
+        event.preventDefault();
+      });
+
+      const endThrottle = event => {
+        if (touchThrottlePointerId !== event.pointerId) return;
+        touchThrottlePointerId = null;
+        event.preventDefault();
+      };
+      throttleTrack.addEventListener("pointerup", endThrottle);
+      throttleTrack.addEventListener("pointercancel", endThrottle);
+    }
+
     const bindHold = (id, setter) => {
       const button = el(id);
       if (!button) return;
@@ -1938,9 +2025,18 @@
       button.addEventListener("pointercancel", stop);
     };
 
-    bindHold("touchThrottleUp", value => { touchThrottleUp = value; });
-    bindHold("touchThrottleDown", value => { touchThrottleDown = value; });
+    bindHold("touchBrake", value => { touchBrake = value; });
     bindHold("touchBoost", value => { touchBoost = value; });
+    bindHold("touchRudderLeft", value => { touchRudder = value ? 1 : touchRudder === 1 ? 0 : touchRudder; });
+    bindHold("touchRudderRight", value => { touchRudder = value ? -1 : touchRudder === -1 ? 0 : touchRudder; });
+
+    document.querySelectorAll("[data-touch-action]").forEach(button => {
+      button.addEventListener("pointerdown", event => {
+        if (controlMode !== "touch") return;
+        runTouchCommand(button.dataset.touchAction);
+        event.preventDefault();
+      });
+    });
   }
 
   function switchAircraft(index) {
@@ -2042,14 +2138,30 @@
     };
   }
 
+  function landingWeatherDifficulty(weather) {
+    if (!weatherEnabled()) return 0;
+    return clamp(
+      (weather.rain || 0) * 0.26 +
+      (weather.turbulence || 0) * 0.9 +
+      (weather.landingDrift || 0) * 0.42 +
+      (weather.downDraft ? 0.22 : 0) +
+      (weather.lightning ? 0.3 : 0),
+      0,
+      1.65
+    );
+  }
+
   function recordLanding(info) {
     let score = 100;
+    const weatherDifficulty = info.weatherDifficulty || 0;
 
     score -= clamp(info.verticalImpact - 1.4, 0, 10) * 8.5;
     score -= clamp(info.speedKmh - aircraftType.landingMax, 0, 360) * 0.12;
     score -= info.bank * 22;
     score -= info.nose * 16;
     score -= info.alignment > 35 ? clamp(info.alignment - 35, 0, 90) * 0.35 : 0;
+    score -= weatherDifficulty * 12;
+    if (weatherDifficulty > 0.85 && info.alignment > 18) score -= clamp(info.alignment - 18, 0, 70) * 0.18;
     if (!info.onRunway) score -= 22;
     if (info.hardHit) score -= 20;
 
@@ -2123,6 +2235,10 @@
     }
 
     const input = flightInput();
+    if (input.throttleTarget !== null) {
+      const targetThrottle = input.throttleDown ? 0 : input.throttleTarget;
+      aircraft.throttle += (targetThrottle - aircraft.throttle) * clamp(4.5 * dt, 0, 1);
+    }
     if (input.throttleUp) aircraft.throttle += 0.82 * dt;
     if (input.throttleDown) aircraft.throttle -= 0.92 * dt;
     aircraft.throttle = clamp(aircraft.throttle, 0, 1);
@@ -2291,13 +2407,19 @@
     const bank = Math.abs(aircraft.roll);
     const nose = Math.abs(aircraft.pitch);
     const contact = runwayContact();
-
-    const tooFast = speedKmh > aircraftType.landingMax;
-    const unstableTouch = bank > 1.18 || nose > 0.95;
-    const hardHit = verticalImpact > 11.5 || unstableTouch || (tooFast && (verticalImpact > 4.2 || !contact.onRunway));
+    const weather = weatherEnabled() ? activeWeather : WEATHER_TYPES[0];
+    const weatherDifficulty = landingWeatherDifficulty(weather);
+    const verticalLimit = 11.5 - weatherDifficulty * 2.1;
+    const bankLimit = 1.18 - weatherDifficulty * 0.16;
+    const noseLimit = 0.95 - weatherDifficulty * 0.09;
+    const weatherLandingMax = aircraftType.landingMax * (1 - weatherDifficulty * 0.045);
+    const tooFast = speedKmh > weatherLandingMax;
+    const unstableTouch = bank > bankLimit || nose > noseLimit;
+    const crosswindSlip = (weather.landingDrift || 0) > 0.9 && !contact.onRunway && speedKmh > 80;
+    const hardHit = verticalImpact > verticalLimit || unstableTouch || crosswindSlip || (tooFast && (verticalImpact > 4.2 - weatherDifficulty * 0.8 || !contact.onRunway));
 
     if (hardHit) {
-      const damage = Math.round(verticalImpact * 7 + Math.max(0, speedKmh - aircraftType.landingMax) * 0.16 + bank * 28 + nose * 30);
+      const damage = Math.round(verticalImpact * (7 + weatherDifficulty * 2.2) + Math.max(0, speedKmh - weatherLandingMax) * 0.18 + bank * 30 + nose * 32 + weatherDifficulty * 18);
       aircraft.health -= damage;
       if (wasAirborne) {
         recordLanding({
@@ -2308,7 +2430,8 @@
           speedKmh,
           bank,
           nose,
-          hardHit: true
+          hardHit: true,
+          weatherDifficulty
         });
       }
 
@@ -2342,11 +2465,11 @@
         speedKmh,
         bank,
         nose,
-        hardHit: false
+        hardHit: false,
+        weatherDifficulty
       });
     }
 
-    const weather = weatherEnabled() ? activeWeather : WEATHER_TYPES[0];
     const runwayWetness = clamp(weather.rain + weather.snow * 0.85, 0, 1.35);
     const input = flightInput();
     const braking = input.throttleDown
@@ -3613,24 +3736,18 @@
     if (once("i")) setHudHidden(!hudHidden);
 
     if (once("r")) {
-      if (activeMission) resetToAirport(activeMission.from);
-      else resetToAirport(AIRPORTS[0]);
-      el("message").innerHTML = "Avião resetado. Segure W para acelerar.";
+      resetPlaneCommand();
     }
 
     if (once("c")) setSettingsOpen(!settingsOpen);
     if (once("v")) cycleCamera();
 
     if (once("q")) {
-      qualityIndex = (qualityIndex + 1) % QUALITY.length;
-      quality = QUALITY[qualityIndex];
-      rebuildDynamicWorld();
+      toggleQualityCommand();
     }
 
     if (once("h")) {
-      showHitboxes = !showHitboxes;
-      rebuildHitboxHelpers();
-      el("message").innerHTML = showHitboxes ? "Hitboxes visíveis." : "Hitboxes ocultas.";
+      toggleHitboxesCommand();
     }
 
     if (once("n")) randomMission();
@@ -3695,6 +3812,7 @@
     setShopOpen(false);
     updateProfileUi();
     updateSettingsUi();
+    updateTouchThrottleUi();
     renderShop();
   }
 
