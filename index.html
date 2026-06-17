@@ -59,7 +59,33 @@
 
   <div id="topControls">
     <button id="shopToggle" type="button">Loja</button>
+    <button id="settingsToggle" type="button">Config</button>
     <button id="hudToggle" type="button">Esconder info</button>
+  </div>
+
+  <div id="settingsPanel" hidden>
+    <div class="settings-window">
+      <div class="settings-header">
+        <h2>Configurações</h2>
+        <button id="settingsClose" type="button">Fechar</button>
+      </div>
+      <div class="settings-section">
+        <label>Controle</label>
+        <div id="controlModeGroup" class="segmented-control">
+          <button type="button" data-control-mode="keyboard">Teclado</button>
+          <button type="button" data-control-mode="mouse">Mouse</button>
+          <button type="button" data-control-mode="touch">Touch</button>
+        </div>
+      </div>
+      <div class="settings-section">
+        <label for="controlSensitivity">Sensibilidade</label>
+        <input id="controlSensitivity" type="range" min="0.45" max="1.75" step="0.05" value="1" />
+      </div>
+      <div class="settings-section settings-row">
+        <span>Câmera: <strong id="cameraModeLabel">Terceira pessoa</strong></span>
+        <button id="cameraCycle" type="button">Trocar</button>
+      </div>
+    </div>
   </div>
 
   <div id="hud">
@@ -74,7 +100,8 @@
       1/2/3: atalhos de avião<br />
       Espaço: atirar | G: trocar arma<br />
       L: loja | I: esconder info<br />
-      C: câmera | Q: qualidade | H: hitboxes | R: reset<br />
+      C: configurações | V: câmera<br />
+      Q: qualidade | H: hitboxes | R: reset<br />
       N: missão aleatória | M: próxima missão
     </div>
 
@@ -85,6 +112,7 @@
       Arma: <span id="weaponInfo">--</span><br />
       FPS: <span id="fps">0</span><br />
       Qualidade: <span id="quality">Alta</span><br />
+      Controle: <span id="controlModeLabelHud">Teclado</span><br />
       Tempo: <span id="weatherName">Ensolarado</span><br />
       Horário: <span id="timeLabel">Dia</span><br />
       Vento: <span id="windInfo">Calmo</span><br />
@@ -150,6 +178,17 @@
   <div id="mapOrb" aria-label="Radar de navegação">
     <canvas id="miniMap" width="240" height="240" aria-label="Mapa de navegação"></canvas>
     <span id="mapLabel">RADAR</span>
+  </div>
+
+  <div id="touchControls" aria-label="Controles touch">
+    <div id="touchPad" aria-label="Direção touch">
+      <span id="touchKnob"></span>
+    </div>
+    <div class="touch-throttle">
+      <button id="touchThrottleUp" type="button">+</button>
+      <button id="touchThrottleDown" type="button">-</button>
+      <button id="touchBoost" type="button">B</button>
+    </div>
   </div>
 
   <div id="message">

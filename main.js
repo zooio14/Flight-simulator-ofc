@@ -39,10 +39,13 @@
     { id: "fog", name: "Nevoa", sky: 0xc7cdd0, fog: 0xd0d5d6, fogNear: 320, fogFar: 9800, wind: 3, gust: 1, turbulence: 0.04, liftPenalty: 0.02, dragBonus: 0.02, rain: 0, snow: 0, reward: 1.12 },
     { id: "lightRain", name: "Chuva leve", sky: 0x778a9a, fog: 0x8f9aa4, fogNear: 650, fogFar: 16500, wind: 12, gust: 6, turbulence: 0.13, liftPenalty: 0.05, dragBonus: 0.05, rain: 0.45, snow: 0, reward: 1.18 },
     { id: "heavyRain", name: "Chuva forte", sky: 0x4d5d6a, fog: 0x6b747d, fogNear: 350, fogFar: 10500, wind: 18, gust: 12, turbulence: 0.22, liftPenalty: 0.09, dragBonus: 0.09, rain: 0.9, snow: 0, reward: 1.32 },
+    { id: "heavyDownpour", name: "Chuva pesada", sky: 0x25313d, fog: 0x3c4650, fogNear: 160, fogFar: 5200, wind: 24, gust: 20, turbulence: 0.34, liftPenalty: 0.16, dragBonus: 0.18, rain: 1.65, snow: 0, downDraft: 5.6, landingDrift: 0.45, lightning: true, reward: 1.62 },
     { id: "storm", name: "Tempestade", sky: 0x2e3845, fog: 0x4c5660, fogNear: 260, fogFar: 8200, wind: 28, gust: 22, turbulence: 0.36, liftPenalty: 0.13, dragBonus: 0.14, rain: 1.25, snow: 0, lightning: true, reward: 1.55 },
     { id: "crosswind", name: "Vento cruzado", sky: 0x88aeca, fog: 0x9fb1bd, fogNear: 1000, fogFar: 26000, wind: 34, gust: 18, turbulence: 0.18, liftPenalty: 0.03, dragBonus: 0.05, rain: 0, snow: 0, crosswind: true, reward: 1.3 },
+    { id: "severeCrosswind", name: "Vento muito pesado", sky: 0x6f91ad, fog: 0x8395a5, fogNear: 520, fogFar: 12500, wind: 52, gust: 38, turbulence: 0.45, liftPenalty: 0.05, dragBonus: 0.08, rain: 0, snow: 0, crosswind: true, landingDrift: 1.35, reward: 1.58 },
     { id: "snow", name: "Neve", sky: 0xcad6df, fog: 0xd8e0e6, fogNear: 520, fogFar: 12500, wind: 14, gust: 8, turbulence: 0.12, liftPenalty: 0.07, dragBonus: 0.07, rain: 0, snow: 0.75, reward: 1.28 },
     { id: "turbulence", name: "Turbulencia", sky: 0x95b7d3, fog: 0xa6b9c7, fogNear: 850, fogFar: 21000, wind: 20, gust: 25, turbulence: 0.42, liftPenalty: 0.06, dragBonus: 0.06, rain: 0, snow: 0, reward: 1.42 },
+    { id: "blindFog", name: "Nevoa fechada", sky: 0xcdd1d2, fog: 0xe0e3e3, fogNear: 8, fogFar: 950, wind: 4, gust: 3, turbulence: 0.06, liftPenalty: 0.03, dragBonus: 0.04, rain: 0, snow: 0, reward: 1.45 },
     { id: "heat", name: "Calor forte", sky: 0x9ed0ef, fog: 0xc2c7b2, fogNear: 900, fogFar: 24500, wind: 8, gust: 9, turbulence: 0.2, liftPenalty: 0.08, dragBonus: 0.02, rain: 0, snow: 0, reward: 1.18 },
     { id: "hail", name: "Granizo", sky: 0x3f4a56, fog: 0x636b74, fogNear: 290, fogFar: 9000, wind: 24, gust: 20, turbulence: 0.34, liftPenalty: 0.12, dragBonus: 0.13, rain: 1.05, snow: 0.25, lightning: true, reward: 1.5 },
     { id: "icing", name: "Gelo em baixa temperatura", sky: 0xb7c6d4, fog: 0xd4dde5, fogNear: 430, fogFar: 11500, wind: 16, gust: 12, turbulence: 0.2, liftPenalty: 0.14, dragBonus: 0.11, rain: 0.15, snow: 0.55, reward: 1.46 }
@@ -338,6 +341,16 @@
   let keys = {};
   let pressed = {};
   let cameraMode = 0;
+  let settingsOpen = false;
+  let controlMode = localStorage.getItem("flight-simulator-ofc-control-mode") || "keyboard";
+  let controlSensitivity = Number(localStorage.getItem("flight-simulator-ofc-control-sensitivity")) || 1;
+  if (!["keyboard", "mouse", "touch"].includes(controlMode)) controlMode = "keyboard";
+  controlSensitivity = Math.max(0.45, Math.min(1.75, controlSensitivity));
+  let mouseControl = { x: 0, y: 0 };
+  let touchControl = { x: 0, y: 0, pointerId: null };
+  let touchThrottleUp = false;
+  let touchThrottleDown = false;
+  let touchBoost = false;
   let careerDifficulty = "easy";
   let activeWeather = WEATHER_TYPES[0];
   let activeTimeOfDay = TIME_OF_DAY_TYPES[0];
@@ -425,6 +438,8 @@
   }
 
   window.addEventListener("keydown", event => {
+    const tag = event.target && event.target.tagName;
+    if (["INPUT", "SELECT", "TEXTAREA"].includes(tag)) return;
     const key = event.key.toLowerCase();
     if (!keys[key]) pressed[key] = true;
     keys[key] = true;
@@ -432,6 +447,8 @@
   });
 
   window.addEventListener("keyup", event => {
+    const tag = event.target && event.target.tagName;
+    if (["INPUT", "SELECT", "TEXTAREA"].includes(tag)) return;
     keys[event.key.toLowerCase()] = false;
   });
 
@@ -446,6 +463,51 @@
       return true;
     }
     return false;
+  }
+
+  function pointerBlockedByUi(target) {
+    return !!(target && target.closest && target.closest("button, input, select, #hud, #shopPanel, #settingsPanel, #freeSetupScreen, #startScreen"));
+  }
+
+  function flightInput() {
+    const keyboardElevator = (down("arrowup") ? 1 : 0) - (down("arrowdown") ? 1 : 0);
+    const keyboardAileron = (down("arrowleft") ? 1 : 0) - (down("arrowright") ? 1 : 0);
+    const keyboardRudder = (down("a") ? 1 : 0) - (down("d") ? 1 : 0);
+    let elevator = keyboardElevator;
+    let aileron = keyboardAileron;
+    let rudder = keyboardRudder;
+
+    if (controlMode === "mouse") {
+      elevator = clamp(-mouseControl.y * controlSensitivity, -1, 1);
+      aileron = clamp(-mouseControl.x * controlSensitivity, -1, 1);
+      rudder = clamp(-mouseControl.x * controlSensitivity * 0.42 + keyboardRudder * 0.45, -1, 1);
+    } else if (controlMode === "touch") {
+      elevator = clamp(-touchControl.y * controlSensitivity, -1, 1);
+      aileron = clamp(-touchControl.x * controlSensitivity, -1, 1);
+      rudder = clamp(-touchControl.x * controlSensitivity * 0.38 + keyboardRudder * 0.35, -1, 1);
+    }
+
+    return {
+      elevator,
+      aileron,
+      rudder,
+      throttleUp: down("w") || touchThrottleUp,
+      throttleDown: down("s") || touchThrottleDown,
+      boost: down("shift") || touchBoost
+    };
+  }
+
+  function updateTouchKnob() {
+    const knob = el("touchKnob");
+    if (!knob) return;
+    knob.style.transform = "translate(calc(-50% + " + (touchControl.x * 46).toFixed(1) + "px), calc(-50% + " + (touchControl.y * 46).toFixed(1) + "px))";
+  }
+
+  function resetTouchControl() {
+    touchControl.x = 0;
+    touchControl.y = 0;
+    touchControl.pointerId = null;
+    updateTouchKnob();
   }
 
   const Y_AXIS = new THREE.Vector3(0, 1, 0);
@@ -1635,6 +1697,63 @@
     if (button) button.textContent = hudHidden ? "Mostrar info" : "Esconder info";
   }
 
+  function cameraModeName() {
+    return ["Terceira pessoa", "Cockpit", "Topo", "Lateral"][cameraMode] || "Terceira pessoa";
+  }
+
+  function cycleCamera() {
+    cameraMode = (cameraMode + 1) % 4;
+    updateSettingsUi();
+  }
+
+  function updateSettingsUi() {
+    const panel = el("settingsPanel");
+    if (panel) panel.hidden = !settingsOpen;
+    document.body.classList.toggle("settings-open", settingsOpen);
+    document.body.classList.toggle("touch-mode", controlMode === "touch" && gameStarted);
+
+    document.querySelectorAll("[data-control-mode]").forEach(button => {
+      button.classList.toggle("active", button.dataset.controlMode === controlMode);
+    });
+
+    const sensitivity = el("controlSensitivity");
+    if (sensitivity) sensitivity.value = controlSensitivity;
+    const cameraLabel = el("cameraModeLabel");
+    if (cameraLabel) cameraLabel.textContent = cameraModeName();
+    const controlHud = el("controlModeLabelHud");
+    if (controlHud) {
+      controlHud.textContent = controlMode === "keyboard"
+        ? "Teclado"
+        : controlMode === "mouse"
+          ? "Mouse"
+          : "Touch";
+    }
+  }
+
+  function setSettingsOpen(open) {
+    settingsOpen = open;
+    updateSettingsUi();
+  }
+
+  function setControlMode(mode) {
+    if (!["keyboard", "mouse", "touch"].includes(mode)) return;
+    controlMode = mode;
+    localStorage.setItem("flight-simulator-ofc-control-mode", controlMode);
+    if (controlMode !== "touch") {
+      touchThrottleUp = false;
+      touchThrottleDown = false;
+      touchBoost = false;
+      resetTouchControl();
+    }
+    updateSettingsUi();
+  }
+
+  function setControlSensitivity(value) {
+    controlSensitivity = clamp(Number(value) || 1, 0.45, 1.75);
+    localStorage.setItem("flight-simulator-ofc-control-sensitivity", String(controlSensitivity));
+    updateSettingsUi();
+  }
+
   function careerData() {
     return {
       playerName,
@@ -1758,6 +1877,70 @@
     freeWeatherId = weatherSelect ? weatherSelect.value : "sunny";
     freeTimeId = timeSelect ? timeSelect.value : "day";
     startGame("free");
+  }
+
+  function setupPointerControls() {
+    window.addEventListener("pointermove", event => {
+      if (controlMode !== "mouse" || pointerBlockedByUi(event.target)) return;
+      mouseControl.x = clamp((event.clientX / Math.max(1, window.innerWidth) - 0.5) * 2, -1, 1);
+      mouseControl.y = clamp((event.clientY / Math.max(1, window.innerHeight) - 0.5) * 2, -1, 1);
+    });
+
+    const touchPad = el("touchPad");
+    if (touchPad) {
+      const updatePad = event => {
+        const rect = touchPad.getBoundingClientRect();
+        const cx = rect.left + rect.width / 2;
+        const cy = rect.top + rect.height / 2;
+        touchControl.x = clamp((event.clientX - cx) / (rect.width * 0.42), -1, 1);
+        touchControl.y = clamp((event.clientY - cy) / (rect.height * 0.42), -1, 1);
+        updateTouchKnob();
+      };
+
+      touchPad.addEventListener("pointerdown", event => {
+        if (controlMode !== "touch") return;
+        touchControl.pointerId = event.pointerId;
+        touchPad.setPointerCapture(event.pointerId);
+        updatePad(event);
+        event.preventDefault();
+      });
+
+      touchPad.addEventListener("pointermove", event => {
+        if (controlMode !== "touch" || touchControl.pointerId !== event.pointerId) return;
+        updatePad(event);
+        event.preventDefault();
+      });
+
+      const endTouch = event => {
+        if (touchControl.pointerId !== event.pointerId) return;
+        resetTouchControl();
+        event.preventDefault();
+      };
+      touchPad.addEventListener("pointerup", endTouch);
+      touchPad.addEventListener("pointercancel", endTouch);
+    }
+
+    const bindHold = (id, setter) => {
+      const button = el(id);
+      if (!button) return;
+      const start = event => {
+        if (controlMode !== "touch") return;
+        setter(true);
+        event.preventDefault();
+      };
+      const stop = event => {
+        setter(false);
+        event.preventDefault();
+      };
+      button.addEventListener("pointerdown", start);
+      button.addEventListener("pointerup", stop);
+      button.addEventListener("pointerleave", stop);
+      button.addEventListener("pointercancel", stop);
+    };
+
+    bindHold("touchThrottleUp", value => { touchThrottleUp = value; });
+    bindHold("touchThrottleDown", value => { touchThrottleDown = value; });
+    bindHold("touchBoost", value => { touchBoost = value; });
   }
 
   function switchAircraft(index) {
@@ -1939,13 +2122,14 @@
       return;
     }
 
-    if (down("w")) aircraft.throttle += 0.82 * dt;
-    if (down("s")) aircraft.throttle -= 0.92 * dt;
+    const input = flightInput();
+    if (input.throttleUp) aircraft.throttle += 0.82 * dt;
+    if (input.throttleDown) aircraft.throttle -= 0.92 * dt;
     aircraft.throttle = clamp(aircraft.throttle, 0, 1);
 
-    const elevator = (down("arrowup") ? 1 : 0) - (down("arrowdown") ? 1 : 0);
-    const aileron = (down("arrowleft") ? 1 : 0) - (down("arrowright") ? 1 : 0);
-    const rudder = (down("a") ? 1 : 0) - (down("d") ? 1 : 0);
+    const elevator = input.elevator;
+    const aileron = input.aileron;
+    const rudder = input.rudder;
 
     const fwd = forwardVector();
     const speed = aircraft.velocity.length();
@@ -1954,13 +2138,17 @@
     const weather = weatherEnabled() ? activeWeather : WEATHER_TYPES[0];
     const wind = weatherWindVector();
 
-    const boost = down("shift") ? aircraftType.boost : 1;
-    const maxAllowedSpeed = maxSpeedMS() * (down("shift") ? 1.08 : 1);
+    const boost = input.boost ? aircraftType.boost : 1;
+    const maxAllowedSpeed = maxSpeedMS() * (input.boost ? 1.08 : 1);
     const speedFraction = speed / Math.max(1, maxAllowedSpeed);
     const powerAvailable = clamp(1 - Math.pow(clamp(speedFraction, 0, 1.25), 3) * 0.76, 0.08, 1);
     const thrustAccel = aircraft.throttle * aircraftType.thrust * boost * powerAvailable;
     aircraft.velocity.addScaledVector(fwd, thrustAccel * dt);
-    aircraft.velocity.addScaledVector(wind, dt * (aircraft.onGround ? 0.012 : 0.038));
+    const landingWind = clamp((280 - altitude()) / 280, 0, 1) * (weather.landingDrift || 0);
+    const windInfluence = aircraft.onGround
+      ? 0.012 + landingWind * 0.008
+      : 0.038 + landingWind * 0.055;
+    aircraft.velocity.addScaledVector(wind, dt * windInfluence);
 
     if (!aircraft.onGround && fwd.y > 0.05) {
       const climbBleed = fwd.y * (5.5 + speed * 0.09) * (1 + aircraft.stallPressure * 0.6);
@@ -1981,6 +2169,9 @@
 
     // Gravidade
     aircraft.velocity.y -= 9.81 * dt;
+    if (!aircraft.onGround && weather.downDraft) {
+      aircraft.velocity.y -= weather.downDraft * (0.72 + landingWind * 0.35) * dt;
+    }
 
     const velDir = aircraft.velocity.clone().normalize();
     let aoa = Math.asin(clamp(fwd.y - velDir.y, -1, 1));
@@ -2157,7 +2348,8 @@
 
     const weather = weatherEnabled() ? activeWeather : WEATHER_TYPES[0];
     const runwayWetness = clamp(weather.rain + weather.snow * 0.85, 0, 1.35);
-    const braking = down("s")
+    const input = flightInput();
+    const braking = input.throttleDown
       ? clamp(0.91 + runwayWetness * 0.045, 0.91, 0.985)
       : clamp(0.965 + runwayWetness * 0.018, 0.965, 0.992);
     const friction = aircraft.throttle > 0.05
@@ -2169,8 +2361,7 @@
     aircraft.pitch *= 0.985;
     aircraft.roll *= 0.94;
 
-    const rudder = (down("a") ? 1 : 0) - (down("d") ? 1 : 0);
-    aircraft.yaw += rudder * clamp(horizontalSpeed / 30, 0.15, 1) * 0.024 * rudderAuthorityFactor(aircraftType);
+    aircraft.yaw += input.rudder * clamp(horizontalSpeed / 30, 0.15, 1) * 0.024 * rudderAuthorityFactor(aircraftType);
   }
 
   function explodePlane() {
@@ -2849,6 +3040,7 @@
     resetCameraRig();
     setWeatherForMode(true);
     setShopOpen(false);
+    updateSettingsUi();
     renderShop();
 
     const startScreen = el("startScreen");
@@ -3322,6 +3514,7 @@
     el("aircraftName").textContent = aircraftType.name;
     el("weaponInfo").textContent = selectedWeaponLabel();
     el("fps").textContent = fpsValue;
+    el("controlModeLabelHud").textContent = controlMode === "keyboard" ? "Teclado" : controlMode === "mouse" ? "Mouse" : "Touch";
     const weather = weatherEnabled() ? activeWeather : WEATHER_TYPES[0];
     const timeOfDay = weatherEnabled() ? activeTimeOfDay : TIME_OF_DAY_TYPES[0];
     const windTop = weather.wind + weather.gust;
@@ -3335,8 +3528,8 @@
     el("stallSpeed").textContent = aircraftType.stallSpeed;
     el("altitude").textContent = Math.round(altitude());
     el("throttle").textContent = Math.round(aircraft.throttle * 100);
-    el("boost").textContent = down("shift") ? "On" : "Off";
-    el("boost").className = down("shift") ? "warn" : "";
+    el("boost").textContent = flightInput().boost ? "On" : "Off";
+    el("boost").className = flightInput().boost ? "warn" : "";
     el("aoa").textContent = THREE.Math.radToDeg(aircraft.aoa).toFixed(1);
     el("vertical").textContent = aircraft.velocity.y.toFixed(1);
     el("heading").textContent = Math.round(headingDegrees()).toString().padStart(3, "0");
@@ -3425,7 +3618,8 @@
       el("message").innerHTML = "Avião resetado. Segure W para acelerar.";
     }
 
-    if (once("c")) cameraMode = (cameraMode + 1) % 4;
+    if (once("c")) setSettingsOpen(!settingsOpen);
+    if (once("v")) cycleCamera();
 
     if (once("q")) {
       qualityIndex = (qualityIndex + 1) % QUALITY.length;
@@ -3456,6 +3650,10 @@
     const shopToggle = el("shopToggle");
     const shopClose = el("shopClose");
     const hudToggle = el("hudToggle");
+    const settingsToggle = el("settingsToggle");
+    const settingsClose = el("settingsClose");
+    const sensitivity = el("controlSensitivity");
+    const cameraCycleButton = el("cameraCycle");
 
     const lastPilot = localStorage.getItem("flight-simulator-ofc-last-pilot");
     if (lastPilot) playerName = lastPilot;
@@ -3484,10 +3682,19 @@
     if (shopToggle) shopToggle.addEventListener("click", () => setShopOpen(!shopOpen));
     if (shopClose) shopClose.addEventListener("click", () => setShopOpen(false));
     if (hudToggle) hudToggle.addEventListener("click", () => setHudHidden(!hudHidden));
+    if (settingsToggle) settingsToggle.addEventListener("click", () => setSettingsOpen(!settingsOpen));
+    if (settingsClose) settingsClose.addEventListener("click", () => setSettingsOpen(false));
+    if (sensitivity) sensitivity.addEventListener("input", () => setControlSensitivity(sensitivity.value));
+    if (cameraCycleButton) cameraCycleButton.addEventListener("click", cycleCamera);
+    document.querySelectorAll("[data-control-mode]").forEach(button => {
+      button.addEventListener("click", () => setControlMode(button.dataset.controlMode));
+    });
+    setupPointerControls();
 
     setHudHidden(false);
     setShopOpen(false);
     updateProfileUi();
+    updateSettingsUi();
     renderShop();
   }
 

@@ -2,7 +2,7 @@
 
 Criado por Guilherme Trecenti.
 
-Versao com login de piloto, carreira salva no navegador, modo livre com escolha de clima e horario, carreira facil, carreira dificil com clima aleatorio por missao, loja de avioes, mapa maior, cidades urbanas e rurais, fisica de voo melhorada, radar com rota de aproximacao, camera terceira pessoa, cacas armados, missoes PvP e desafios de argolas.
+Versao com login de piloto, carreira salva no navegador, modo livre com escolha de clima e horario, carreira facil, carreira dificil com clima aleatorio por missao, loja de avioes, centro de configuracoes, controle por teclado/mouse/touch, mapa maior, cidades urbanas e rurais, fisica de voo melhorada, radar com rota de aproximacao, camera terceira pessoa, cacas armados, missoes PvP e desafios de argolas.
 
 ## Como jogar
 
@@ -20,7 +20,8 @@ Abra o jogo, coloque o nome do piloto, escolha um modo e use:
 - G: alternar entre misseis e canhao
 - L: loja de avioes
 - I: esconder/mostrar informacoes
-- C: camera
+- C: configuracoes
+- V: camera
 - Q: qualidade
 - H: hitboxes
 - R: reset
@@ -44,9 +45,14 @@ Abra o jogo, coloque o nome do piloto, escolha um modo e use:
 - Saves separados para carreira facil e carreira dificil
 - Botoes de modo sempre visiveis: se o jogador nao digitar nome, entra como Piloto
 - Tela do modo livre para escolher clima e horario antes de iniciar
-- Sistema de clima com ensolarado, parcialmente nublado, nublado, nevoa, chuva leve, chuva forte, tempestade, vento cruzado, neve, turbulencia, calor forte, granizo e gelo
+- Centro de configuracoes aberto pela tecla C ou pelo botao Config
+- Controle por teclado, mouse ou touch para iPad, com sensibilidade ajustavel
+- Sistema de clima com ensolarado, parcialmente nublado, nublado, nevoa, chuva leve, chuva forte, chuva pesada, tempestade, vento cruzado, vento muito pesado, neve, turbulencia, nevoa fechada, calor forte, granizo e gelo
 - Sistema de horario com dia, fim de tarde e noite, mudando luz, cor do ceu, neblina e exposicao
 - Clima afeta fisica: vento empurra o aviao, rajadas instabilizam, turbulencia mexe no pitch/roll/yaw, chuva e gelo aumentam arrasto e reduzem sustentacao
+- Chuva pesada empurra o aviao para baixo e exige mais potencia na aproximacao
+- Nevoa fechada reduz muito a visibilidade
+- Vento muito pesado desvia a trajetoria no pouso e exige correcao lateral
 - Carreira dificil sorteia clima e horario toda vez que uma missao comeca
 - Pista molhada ou com neve reduz aderencia e deixa pouso/frenagem mais exigentes
 - Carreira dificil paga bonus de missao quando o voo acontece em clima ruim
