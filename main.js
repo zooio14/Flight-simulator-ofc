@@ -352,9 +352,10 @@
 
   function rudderAuthorityFactor(type) {
     if (!type) return 1;
-    if (type.id === "cessna" || type.price <= 205000 || cheapFighterRudderIds.has(type.id)) return 0.6;
-    if (type.price <= 520000) return 0.78;
-    return 1;
+    const price = Math.max(0, type.price || 0);
+    const progression = clamp(price / 1800000, 0, 1);
+    const base = 0.36 + progression * 0.64;
+    return cheapFighterRudderIds.has(type.id) ? Math.min(base, 0.9) : base;
   }
 
   function bestOwnedCombatFighterIndex() {

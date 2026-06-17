@@ -37,7 +37,7 @@ Abra o jogo, coloque o nome do piloto, escolha um modo e use:
 - 27 modelos de aviao, do Cessna velho ate cacas armados de alto desempenho
 - 6 cacas armados para PvP: F-22, F-15EX, Rafale, Typhoon, Su-57 e OFC-X
 - Precos rebalanceados: avioes baratos sao mais dificeis e avioes caros ficam mais estaveis
-- Leme dos avioes baratos e dos cacas baratos reduzido em 40%, aumentando a diferenca ate os cacas caros
+- Leme dos avioes baratos com curva progressiva: bem reduzido no Cessna e voltando ate 100% nos avioes caros
 - Jatos caros e cacas viram mais rapido e respondem melhor aos comandos
 - Carreira salva automaticamente por nome de piloto no navegador
 - Loja com comprar/equipar e estatisticas de velocidade, stall e decolagem
