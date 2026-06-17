@@ -77,19 +77,19 @@
     ["embraer", 145000, 915, 245, 156, 174, 1.34, 0.96, 0.00069],
     ["atr", 168000, 650, 215, 138, 158, 1.32, 0.94, 0.00091],
     ["dash8", 205000, 720, 225, 146, 168, 1.38, 0.95, 0.00085],
-    ["crj", 260000, 930, 255, 168, 184, 1.46, 0.96, 0.00065],
-    ["a320", 420000, 955, 275, 178, 196, 1.56, 0.94, 0.00062],
-    ["boeing", 520000, 980, 270, 174, 210, 1.62, 0.94, 0.00058],
-    ["widebody", 740000, 1010, 315, 196, 242, 1.72, 0.9, 0.00054],
-    ["cargo", 920000, 860, 330, 204, 258, 1.7, 0.88, 0.00066],
-    ["f16", 1250000, 1650, 185, 128, 235, 1.78, 1.06, 0.00047],
-    ["f35", 1500000, 1820, 190, 124, 258, 1.9, 1.08, 0.00043],
-    ["f22", 1800000, 2050, 195, 122, 288, 2.05, 1.1, 0.0004],
-    ["f15ex", 2100000, 2150, 205, 130, 300, 2.12, 1.1, 0.00042],
-    ["rafale", 2450000, 1980, 195, 122, 286, 2.18, 1.12, 0.00039],
-    ["typhoon", 2850000, 2280, 200, 124, 318, 2.24, 1.14, 0.00037],
-    ["su57", 3400000, 2400, 210, 128, 340, 2.32, 1.16, 0.00035],
-    ["ofcx", 4300000, 2850, 225, 132, 390, 2.45, 1.18, 0.00031]
+    ["crj", 260000, 930, 255, 168, 184, 1.46, 1.02, 0.00065],
+    ["a320", 420000, 955, 275, 178, 196, 1.56, 1.02, 0.00062],
+    ["boeing", 520000, 980, 270, 174, 210, 1.62, 1.04, 0.00058],
+    ["widebody", 740000, 1010, 315, 196, 242, 1.72, 0.98, 0.00054],
+    ["cargo", 920000, 860, 330, 204, 258, 1.7, 0.96, 0.00066],
+    ["f16", 1250000, 1650, 185, 128, 235, 1.78, 1.18, 0.00047],
+    ["f35", 1500000, 1820, 190, 124, 258, 1.9, 1.24, 0.00043],
+    ["f22", 1800000, 2050, 195, 122, 288, 2.05, 1.32, 0.0004],
+    ["f15ex", 2100000, 2150, 205, 130, 300, 2.12, 1.28, 0.00042],
+    ["rafale", 2450000, 1980, 195, 122, 286, 2.18, 1.36, 0.00039],
+    ["typhoon", 2850000, 2280, 200, 124, 318, 2.24, 1.42, 0.00037],
+    ["su57", 3400000, 2400, 210, 128, 340, 2.32, 1.45, 0.00035],
+    ["ofcx", 4300000, 2850, 225, 132, 390, 2.45, 1.52, 0.00031]
   ];
 
   AIRCRAFT_TUNING.forEach(([id, price, maxSpeed, takeoff, stallSpeed, thrust, stability, control, drag]) => {
@@ -345,6 +345,7 @@
   const maxSpeedMS = () => aircraftType.maxSpeed / 3.6;
   const aircraftById = id => AIRCRAFT_TYPES.find(type => type.id === id);
   const ownsAircraftId = id => gameMode === "free" || ownedAircraft.has(id);
+  const isFighterType = type => type && (type.model === "fighter" || type.model === "f22");
   const isCombatFighterId = id => COMBAT_FIGHTER_IDS.includes(id);
   const currentIsCombatFighter = () => isCombatFighterId(aircraftType.id);
 
@@ -1764,11 +1765,17 @@
     const stallControlPenalty = 1 - aircraft.stallPressure * 0.34;
     const authority = authorityBase * aircraftType.control * stallControlPenalty;
     const stability = aircraftType.stability || 1;
-    const handling = authority / stability;
+    const priceAssist = clamp((aircraftType.price - 260000) / 4040000, 0, 1);
+    const fighterAssist = isFighterType(aircraftType) ? 0.58 : 0;
+    const premiumJetAssist = ["business", "regional", "airliner", "cargo"].includes(aircraftType.model) ? priceAssist * 0.3 : 0;
+    const agilityAssist = 1 + priceAssist * 0.52 + fighterAssist + premiumJetAssist;
+    const stabilityDamping = clamp(0.82 + stability * 0.42, 0.82, 1.9);
+    const handling = authority * agilityAssist / stabilityDamping;
+    const turnBoost = 1 + priceAssist * 0.28 + (isFighterType(aircraftType) ? 0.34 : 0);
 
-    aircraft.angularPitch += elevator * 0.96 * handling * dt;
-    aircraft.angularRoll += aileron * 1.42 * handling * dt;
-    aircraft.angularYaw += rudder * 0.55 * handling * dt;
+    aircraft.angularPitch += elevator * 0.96 * handling * turnBoost * dt;
+    aircraft.angularRoll += aileron * 1.42 * handling * turnBoost * dt;
+    aircraft.angularYaw += rudder * 0.55 * handling * (1 + priceAssist * 0.22) * dt;
 
     aircraft.angularYaw += Math.sin(aircraft.roll) * 0.18 * handling * dt;
 
@@ -1782,9 +1789,10 @@
       aircraft.angularYaw += Math.cos(performance.now() * 0.005) * 0.18 * dt;
     }
 
-    aircraft.angularPitch *= Math.pow(0.1 / clamp(stability, 0.75, 1.8), dt);
-    aircraft.angularRoll *= Math.pow(0.09 / clamp(stability, 0.75, 1.8), dt);
-    aircraft.angularYaw *= Math.pow(0.16 / clamp(stability, 0.75, 1.8), dt);
+    const dampingStability = clamp(stability - priceAssist * 0.38 - (isFighterType(aircraftType) ? 0.24 : 0), 0.75, 1.8);
+    aircraft.angularPitch *= Math.pow(0.1 / dampingStability, dt);
+    aircraft.angularRoll *= Math.pow(0.09 / dampingStability, dt);
+    aircraft.angularYaw *= Math.pow(0.16 / dampingStability, dt);
 
     aircraft.pitch += aircraft.angularPitch * dt;
     aircraft.roll += aircraft.angularRoll * dt;
@@ -1969,6 +1977,19 @@
     }
   }
 
+  function combatTargetInFront(fwd, coneDot = 0.52) {
+    if (!activeMission || activeMission.data.challenge !== "combat" || activeMission.completed) return null;
+
+    const target = activeMissionTarget();
+    if (!target || !target.alive) return null;
+
+    const toTarget = target.object.position.clone().sub(aircraft.position);
+    const distance = toTarget.length();
+    if (distance < 20 || distance > 14000) return null;
+
+    return toTarget.normalize().dot(fwd) >= coneDot ? target : null;
+  }
+
   function fireSelectedWeapon() {
     fireWeapon(selectedWeapon);
   }
@@ -1998,27 +2019,33 @@
       .addScaledVector(up, 0.12);
 
     function addShot(mesh, direction, position, speed, life, damage, radius) {
-      mesh.quaternion.setFromUnitVectors(Y_AXIS, direction.clone().normalize());
+      const shotDirection = direction.clone().normalize();
+      mesh.quaternion.setFromUnitVectors(Y_AXIS, shotDirection);
       mesh.position.copy(position);
-      mesh.userData.vel = direction.clone().multiplyScalar(speed).add(aircraft.velocity.clone());
+      mesh.userData.vel = shotDirection.multiplyScalar(speed).add(aircraft.velocity.clone());
       mesh.userData.life = life;
       mesh.userData.maxLife = life;
       mesh.userData.kind = kind;
       mesh.userData.damage = damage;
       mesh.userData.radius = radius;
+      mesh.userData.speed = speed;
       scene.add(mesh);
       projectiles.push(mesh);
     }
 
     if (isMissile) {
+      const missileLock = combatTargetInFront(fwd);
       const mesh = new THREE.Mesh(
         new THREE.CylinderGeometry(0.32, 0.32, 4.2, 12),
         new THREE.MeshBasicMaterial({ color: 0xffdf64 })
       );
       addShot(mesh, fwd, muzzle, 540, 5.2, 2, 155);
+      mesh.userData.lock = missileLock;
       missileAmmo--;
       weaponCooldown = 0.72;
-      el("message").innerHTML = "Míssil disparado. Restam " + missileAmmo + ".";
+      el("message").innerHTML = missileLock
+        ? "Míssil teleguiado travado no rival. Restam " + missileAmmo + "."
+        : "Míssil disparado. Restam " + missileAmmo + ".";
       return;
     }
 
@@ -2027,10 +2054,10 @@
       return;
     }
 
-    const burst = Math.min(10, cannonAmmo);
+    const burst = Math.min(12, cannonAmmo);
     for (let i = 0; i < burst; i++) {
-      const yawSpread = ((i % 5) - 2) * 0.0035 + (Math.random() - 0.5) * 0.002;
-      const pitchSpread = (Math.floor(i / 5) - 0.5) * 0.003 + (Math.random() - 0.5) * 0.002;
+      const yawSpread = ((i % 6) - 2.5) * 0.0024 + (Math.random() - 0.5) * 0.0014;
+      const pitchSpread = (Math.floor(i / 6) - 0.5) * 0.0022 + (Math.random() - 0.5) * 0.0014;
       const direction = new THREE.Vector3(0, 0, -1)
         .applyEuler(new THREE.Euler(aircraft.pitch + pitchSpread, aircraft.yaw + yawSpread, aircraft.roll, "YXZ"))
         .normalize();
@@ -2045,7 +2072,7 @@
       const position = muzzle.clone()
         .addScaledVector(right, (i % 2 === 0 ? -0.12 : 0.12))
         .addScaledVector(direction, i * 2.2);
-      addShot(tracer, direction, position, 860 + i * 8, 1.55, 0.34, 48);
+      addShot(tracer, direction, position, 890 + i * 8, 1.7, 0.45, 84);
     }
 
     cannonAmmo -= burst;
@@ -2062,7 +2089,21 @@
       shot.position.addScaledVector(shot.userData.vel, dt);
 
       if (shot.userData.kind === "missile") {
-        shot.rotation.z += dt * 8;
+        const lockedTarget = shot.userData.lock;
+        if (lockedTarget && lockedTarget.alive && lockedTarget.object.visible) {
+          const toTarget = lockedTarget.object.position.clone().sub(shot.position);
+          if (toTarget.lengthSq() > 1) {
+            const desired = toTarget.normalize();
+            const current = shot.userData.vel.clone().normalize();
+            const turnRate = clamp(dt * 2.8, 0, 0.18);
+            current.lerp(desired, turnRate).normalize();
+            shot.userData.vel.copy(current.multiplyScalar(Math.max(shot.userData.speed || 540, shot.userData.vel.length())));
+          }
+        }
+
+        const missileDir = shot.userData.vel.clone().normalize();
+        shot.quaternion.setFromUnitVectors(Y_AXIS, missileDir);
+        shot.rotateY(dt * 8);
       } else if (shot.userData.kind === "cannon" && shot.material) {
         shot.material.opacity = clamp(shot.userData.life / shot.userData.maxLife, 0.18, 0.96);
       }

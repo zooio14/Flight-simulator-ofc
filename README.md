@@ -37,6 +37,7 @@ Abra o jogo, coloque o nome do piloto, escolha um modo e use:
 - 27 modelos de aviao, do Cessna velho ate cacas armados de alto desempenho
 - 6 cacas armados para PvP: F-22, F-15EX, Rafale, Typhoon, Su-57 e OFC-X
 - Precos rebalanceados: avioes baratos sao mais dificeis e avioes caros ficam mais estaveis
+- Jatos caros e cacas viram mais rapido e respondem melhor aos comandos
 - Carreira salva automaticamente por nome de piloto no navegador
 - Loja com comprar/equipar e estatisticas de velocidade, stall e decolagem
 - Mapa aumentado para 48 km x 48 km
@@ -48,6 +49,8 @@ Abra o jogo, coloque o nome do piloto, escolha um modo e use:
 - Missoes de argolas usam checkpoints 3D no ceu guiados pelo radar
 - Sistema de armas com Espaco para atirar e G para alternar entre misseis e canhao
 - Canhao com 520 balas por recarga e rajadas de tracers visiveis no ar
+- Misseis teleguiados quando o alvo PvP esta na frente do aviao
+- Canhao mais facil de acertar por colisao maior, mas sem teleguiar
 - Nariz dos cacas remodelado para ficar mais reto e menos pontudo
 - Mini mapa circular com rota ate um ponto de aproximacao antes da pista
 - Radar superior que orienta o jeito mais facil de chegar alinhado para pousar
