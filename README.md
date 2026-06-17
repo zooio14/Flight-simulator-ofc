@@ -9,7 +9,7 @@ Versao com login de piloto, carreira salva no navegador, modo livre com escolha 
 Abra o jogo, coloque o nome do piloto, escolha um modo e use:
 
 - W: acelerar
-- S: reduzir/frear
+- S: reduzir motor; segurando depois de 0% abre o speed brake
 - Shift: turbo
 - Setas: pitch invertido e roll; seta para baixo puxa o manche e faz subir, seta para cima empurra e faz descer
 - A/D: yaw
@@ -47,8 +47,9 @@ Abra o jogo, coloque o nome do piloto, escolha um modo e use:
 - Tela do modo livre para escolher clima e horario antes de iniciar
 - Centro de configuracoes aberto pela tecla C ou pelo botao Config
 - Controle por teclado, mouse ou touch para iPad, com sensibilidade ajustavel
-- Touch com alavanca vertical de potencia, joystick, freio, boost e leme na parte de baixo
-- Barra superior touch com botao Comandos para mostrar/ocultar reset, loja, info, config, camera, qualidade, hitboxes, missoes e troca de aviao
+- Touch com joystick, leme e alavanca vertical de potencia na parte de baixo
+- No touch, puxar a alavanca de potencia abaixo de 0% abre o speed brake
+- Barra superior touch com Freio, Boost e botao Comandos para mostrar/ocultar reset, loja, info, config, camera, qualidade, hitboxes, missoes e troca de aviao
 - Em cacas armados, os botoes Atirar e Arma aparecem automaticamente no topo mesmo com a lista de comandos fechada
 - Sistema de clima com ensolarado, parcialmente nublado, nublado, nevoa, chuva leve, chuva forte, chuva pesada, tempestade, vento cruzado, vento muito pesado, neve, turbulencia, nevoa fechada, calor forte, granizo e gelo
 - Sistema de horario com dia, fim de tarde e noite, mudando luz, cor do ceu, neblina e exposicao
@@ -82,6 +83,7 @@ Abra o jogo, coloque o nome do piloto, escolha um modo e use:
 - Hitboxes com mais camadas para predios, arvores, montanhas, terminais, torres, casas, celeiros e silos
 - Pouso pesado quebra o aviao, mas nao explode automaticamente
 - Fisica melhorada: nariz para cima perde energia, mergulho ganha velocidade, arrasto segura a velocidade maxima
+- Speed brake aerodinamico: segure S depois de zerar o motor ou negative a alavanca touch para frear no ar
 - Decolagem mais dificil: o aviao precisa passar da velocidade certa e puxar o manche para baixo para sair do chao
 - Stall baseado em velocidade minima especifica de cada aeronave, um pouco mais exigente
 - Modelos 3D com escala e cores por aeronave

@@ -390,8 +390,7 @@ body.touch-armed .touch-fighter-action {
 }
 
 .touch-stick-group,
-.touch-throttle,
-.touch-flight-buttons {
+.touch-throttle {
   pointer-events: auto;
 }
 
@@ -477,26 +476,6 @@ body.touch-armed .touch-fighter-action {
   transform: translate(-50%, 50%);
 }
 
-.touch-flight-buttons {
-  width: 78px;
-  display: grid;
-  gap: 8px;
-  padding: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  border-radius: 8px;
-  background: rgba(4, 13, 20, 0.46);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
-  backdrop-filter: blur(8px);
-}
-
-.touch-flight-buttons button {
-  min-width: 0;
-  height: 42px;
-  padding: 5px 6px;
-  font-size: 12px;
-  white-space: nowrap;
-}
-
 @media (max-width: 760px) {
   #touchControls {
     left: 10px;
@@ -542,15 +521,6 @@ body.touch-armed .touch-fighter-action {
     font-size: 10px;
   }
 
-  .touch-flight-buttons {
-    width: 62px;
-    gap: 6px;
-  }
-
-  .touch-flight-buttons button {
-    height: 38px;
-    font-size: 11px;
-  }
 }
 
 body.hud-hidden #compactHUD {

@@ -121,6 +121,7 @@
       Stall abaixo de: <span id="stallSpeed">0</span> km/h<br />
       Altitude: <span id="altitude">0</span> m<br />
       Potência: <span id="throttle">0</span>%<br />
+      Speed brake: <span id="speedBrake">Off</span><br />
       Turbo: <span id="boost">Off</span><br />
       AOA: <span id="aoa">0</span>°<br />
       Vertical: <span id="vertical">0</span> m/s<br />
@@ -182,6 +183,8 @@
 
   <div id="touchTopCommands" aria-label="Comandos touch">
     <button id="touchCommandsToggle" type="button">Comandos</button>
+    <button id="touchBrake" type="button">Freio</button>
+    <button id="touchBoost" type="button">Boost</button>
     <button class="touch-fighter-action" type="button" data-touch-action="fire">Atirar</button>
     <button class="touch-fighter-action" type="button" data-touch-action="weapon">Arma</button>
     <div id="touchCommandTray" hidden>
@@ -216,10 +219,6 @@
         <span id="touchThrottleKnob"></span>
       </div>
       <strong id="touchThrottleReadout">0%</strong>
-    </div>
-    <div class="touch-flight-buttons">
-      <button id="touchBrake" type="button">Freio</button>
-      <button id="touchBoost" type="button">Boost</button>
     </div>
   </div>
 

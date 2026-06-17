@@ -351,6 +351,7 @@
   let touchControl = { x: 0, y: 0, pointerId: null };
   let touchThrottleTarget = 0;
   let touchThrottlePointerId = null;
+  const TOUCH_THROTTLE_MIN = -0.42;
   let touchBrake = false;
   let touchBoost = false;
   let touchRudder = 0;
@@ -497,6 +498,7 @@
       throttleTarget: controlMode === "touch" ? touchThrottleTarget : null,
       throttleUp: down("w"),
       throttleDown: down("s") || touchBrake,
+      throttleDownKey: down("s"),
       boost: down("shift") || touchBoost
     };
   }
@@ -517,12 +519,18 @@
   function updateTouchThrottleUi() {
     const knob = el("touchThrottleKnob");
     const readout = el("touchThrottleReadout");
-    if (knob) knob.style.bottom = (touchThrottleTarget * 100).toFixed(1) + "%";
-    if (readout) readout.textContent = Math.round(touchThrottleTarget * 100) + "%";
+    const throttleUi = clamp(touchThrottleTarget, 0, 1);
+    const speedBrakeUi = clamp(-touchThrottleTarget / Math.abs(TOUCH_THROTTLE_MIN), 0, 1);
+    if (knob) knob.style.bottom = (throttleUi * 100).toFixed(1) + "%";
+    if (readout) {
+      readout.textContent = speedBrakeUi > 0.02
+        ? "SB " + Math.round(speedBrakeUi * 100) + "%"
+        : Math.round(throttleUi * 100) + "%";
+    }
   }
 
   function setTouchThrottleTarget(value) {
-    touchThrottleTarget = clamp(value, 0, 1);
+    touchThrottleTarget = clamp(value, TOUCH_THROTTLE_MIN, 1);
     updateTouchThrottleUi();
   }
 
@@ -1668,6 +1676,7 @@
     angularYaw: 0,
     angularRoll: 0,
     aoa: 0,
+    speedBrake: 0,
     stallPressure: 0,
     stall: false,
     crashed: false,
@@ -1688,6 +1697,7 @@
     aircraft.angularYaw = 0;
     aircraft.angularRoll = 0;
     aircraft.aoa = 0;
+    aircraft.speedBrake = 0;
     aircraft.stallPressure = 0;
     aircraft.stall = false;
     aircraft.crashed = false;
@@ -2249,13 +2259,24 @@
     }
 
     const input = flightInput();
+    const touchSpeedBrakeInput = input.throttleTarget !== null
+      ? clamp(-input.throttleTarget / Math.abs(TOUCH_THROTTLE_MIN), 0, 1)
+      : 0;
     if (input.throttleTarget !== null) {
-      const targetThrottle = input.throttleDown ? 0 : input.throttleTarget;
+      const targetThrottle = input.throttleDown ? 0 : clamp(input.throttleTarget, 0, 1);
       aircraft.throttle += (targetThrottle - aircraft.throttle) * clamp(4.5 * dt, 0, 1);
     }
     if (input.throttleUp) aircraft.throttle += 0.82 * dt;
     if (input.throttleDown) aircraft.throttle -= 0.92 * dt;
     aircraft.throttle = clamp(aircraft.throttle, 0, 1);
+
+    const speedBrakeDemand = Math.max(
+      input.throttleDownKey && aircraft.throttle <= 0.01 ? 1 : 0,
+      aircraft.throttle <= 0.03 ? touchSpeedBrakeInput : 0
+    );
+    const speedBrakeRate = speedBrakeDemand > aircraft.speedBrake ? 2.4 : 3.8;
+    aircraft.speedBrake += (speedBrakeDemand - aircraft.speedBrake) * clamp(speedBrakeRate * dt, 0, 1);
+    if (aircraft.speedBrake < 0.01) aircraft.speedBrake = 0;
 
     const elevator = input.elevator;
     const aileron = input.aileron;
@@ -2289,7 +2310,8 @@
     const overspeedDrag = overspeed * overspeed * speed * 2.6;
     const inducedDrag = Math.max(0, aircraft.pitch) * Math.max(0, aircraft.pitch) * speed * 0.18;
     const weatherDrag = weather.dragBonus * speed * (1 + weather.rain + weather.snow);
-    const drag = aircraftType.drag * speed * speed + 0.022 * speed + overspeedDrag + inducedDrag + weatherDrag;
+    const speedBrakeDrag = aircraft.speedBrake * (speed * 0.09 + speed * speed * 0.00032);
+    const drag = aircraftType.drag * speed * speed + 0.022 * speed + overspeedDrag + inducedDrag + weatherDrag + speedBrakeDrag;
     if (speed > 0.01) {
       aircraft.velocity.addScaledVector(aircraft.velocity.clone().normalize(), -drag * dt);
     }
@@ -2344,8 +2366,9 @@
     const speedLift = clamp((horizontalSpeed - stallSpeedMS * 0.62) / (stallSpeedMS * 1.2), 0, 1.62);
     const angleLift = clamp(0.55 + aircraft.pitch * 1.25 + aoa * 0.95, -0.25, 1.55);
     const stallLiftPenalty = 1 - aircraft.stallPressure * 0.42;
+    const speedBrakeLiftPenalty = 1 - aircraft.speedBrake * 0.09;
     const weatherLift = 1 - weather.liftPenalty;
-    const liftAccel = speedLift * angleLift * aircraftType.lift * stallLiftPenalty * takeoffGate * weatherLift;
+    const liftAccel = speedLift * angleLift * aircraftType.lift * stallLiftPenalty * speedBrakeLiftPenalty * takeoffGate * weatherLift;
 
     aircraft.velocity.y += liftAccel * dt;
     if (aircraft.onGround && (!rotatingForTakeoff || speedKmh < aircraftType.takeoff * 1.18)) {
@@ -3667,6 +3690,10 @@
     el("altitude").textContent = Math.round(altitude());
     el("throttle").textContent = Math.round(aircraft.throttle * 100);
     const hudInput = flightInput();
+    el("speedBrake").textContent = aircraft.speedBrake > 0.03
+      ? Math.round(aircraft.speedBrake * 100) + "%"
+      : "Off";
+    el("speedBrake").className = aircraft.speedBrake > 0.05 ? "warn" : "";
     el("boost").textContent = hudInput.boost ? "On" : "Off";
     el("boost").className = hudInput.boost ? "warn" : "";
     el("aoa").textContent = THREE.Math.radToDeg(aircraft.aoa).toFixed(1);
@@ -3738,7 +3765,8 @@
     el("compactSpeed").textContent = Math.round(speedKmh()) + " km/h";
     el("compactAircraft").textContent = aircraftType.name;
     el("compactAltitude").textContent = Math.round(altitude()) + " m";
-    el("compactThrottle").textContent = Math.round(aircraft.throttle * 100) + "%";
+    el("compactThrottle").textContent = Math.round(aircraft.throttle * 100) + "%" +
+      (aircraft.speedBrake > 0.05 ? " | SB " + Math.round(aircraft.speedBrake * 100) + "%" : "");
     el("compactLanding").textContent = lastLanding ? lastLanding.text : status;
   }
 
