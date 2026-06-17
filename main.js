@@ -348,6 +348,14 @@
   const isFighterType = type => type && (type.model === "fighter" || type.model === "f22");
   const isCombatFighterId = id => COMBAT_FIGHTER_IDS.includes(id);
   const currentIsCombatFighter = () => isCombatFighterId(aircraftType.id);
+  const cheapFighterRudderIds = new Set(["f16", "f35"]);
+
+  function rudderAuthorityFactor(type) {
+    if (!type) return 1;
+    if (type.id === "cessna" || type.price <= 205000 || cheapFighterRudderIds.has(type.id)) return 0.6;
+    if (type.price <= 520000) return 0.78;
+    return 1;
+  }
 
   function bestOwnedCombatFighterIndex() {
     for (let i = COMBAT_FIGHTER_IDS.length - 1; i >= 0; i--) {
@@ -1772,10 +1780,11 @@
     const stabilityDamping = clamp(0.82 + stability * 0.42, 0.82, 1.9);
     const handling = authority * agilityAssist / stabilityDamping;
     const turnBoost = 1 + priceAssist * 0.28 + (isFighterType(aircraftType) ? 0.34 : 0);
+    const rudderFactor = rudderAuthorityFactor(aircraftType);
 
     aircraft.angularPitch += elevator * 0.96 * handling * turnBoost * dt;
     aircraft.angularRoll += aileron * 1.42 * handling * turnBoost * dt;
-    aircraft.angularYaw += rudder * 0.55 * handling * (1 + priceAssist * 0.22) * dt;
+    aircraft.angularYaw += rudder * 0.55 * handling * (1 + priceAssist * 0.22) * rudderFactor * dt;
 
     aircraft.angularYaw += Math.sin(aircraft.roll) * 0.18 * handling * dt;
 
@@ -1884,7 +1893,7 @@
     aircraft.roll *= 0.94;
 
     const rudder = (down("a") ? 1 : 0) - (down("d") ? 1 : 0);
-    aircraft.yaw += rudder * clamp(horizontalSpeed / 30, 0.15, 1) * 0.024;
+    aircraft.yaw += rudder * clamp(horizontalSpeed / 30, 0.15, 1) * 0.024 * rudderAuthorityFactor(aircraftType);
   }
 
   function explodePlane() {
