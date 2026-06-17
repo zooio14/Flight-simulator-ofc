@@ -32,7 +32,7 @@ Abra o jogo, coloque o nome do piloto, escolha um modo e use:
 
 - Modo livre: todos os 27 avioes ficam liberados de graca e o jogador escolhe clima e horario antes de voar.
 - Carreira facil: o jogador comeca com o Cessna velho de aeroclube, faz missoes para ganhar dinheiro e compra avioes melhores na loja, sem clima dificil.
-- Carreira dificil: o progresso salva separado, cada missao sorteia clima e horario, e a pilotagem sofre com vento, rajadas, turbulencia, chuva, neve, gelo, calor, granizo e nevoa.
+- Carreira dificil: o progresso salva separado, cada missao normal sorteia clima e horario, e a pilotagem sofre com vento, rajadas, turbulencia, chuva, neve, gelo, calor, granizo e nevoa.
 
 ## Melhorias principais
 
@@ -59,7 +59,7 @@ Abra o jogo, coloque o nome do piloto, escolha um modo e use:
 - Nevoa fechada reduz muito a visibilidade
 - Vento muito pesado desvia a trajetoria no pouso e exige correcao lateral
 - Tempestade e chuva pesada deixam o pouso mais sensivel a impacto, alinhamento, banco e velocidade
-- Carreira dificil sorteia clima e horario toda vez que uma missao comeca
+- Carreira dificil sorteia clima e horario nas missoes normais; argolas e PvP ficam com clima limpo e horario variavel
 - Pista molhada ou com neve reduz aderencia e deixa pouso/frenagem mais exigentes
 - Carreira dificil paga bonus de missao quando o voo acontece em clima ruim
 - Loja com comprar/equipar e estatisticas de velocidade, stall e decolagem
@@ -69,6 +69,7 @@ Abra o jogo, coloque o nome do piloto, escolha um modo e use:
 - Vilas rurais com casas, celeiros, silos e campos
 - 25 missoes: passageiros, carga, emergencia, operacao militar, argolas e PvP simulado
 - Missoes PvP so liberam quando o jogador desbloqueia qualquer um dos 6 cacas de PvP
+- Missoes de argolas e PvP usam clima limpo para melhorar visibilidade, mantendo horario de dia/fim de tarde/noite
 - Missoes de argolas usam checkpoints 3D no ceu guiados pelo radar
 - Sistema de armas com Espaco para atirar e G para alternar entre misseis e canhao
 - Canhao com 520 balas por recarga e rajadas de tracers visiveis no ar
@@ -82,6 +83,7 @@ Abra o jogo, coloque o nome do piloto, escolha um modo e use:
 - Nota de pouso com bonus de missao
 - Cores fixas para oceano, grama, campos, floresta, areia, pistas, ruas, rios e montanhas, com camadas separadas para evitar piscadas
 - Hitboxes com mais camadas para predios, arvores, montanhas, terminais, torres, casas, celeiros e silos
+- Pouso ficou mais justo: toque suave tolera um pouco mais de banco, nariz e velocidade antes de quebrar o aviao
 - Pouso pesado quebra o aviao, mas nao explode automaticamente
 - Fisica melhorada: nariz para cima perde energia, mergulho ganha velocidade, arrasto segura a velocidade maxima
 - Speed brake aerodinamico: segure S depois de zerar o motor ou negative a alavanca touch para frear no ar

@@ -557,6 +557,16 @@
     return TIME_OF_DAY_TYPES[Math.floor(Math.random() * TIME_OF_DAY_TYPES.length)];
   }
 
+  function missionUsesClearChallengeWeather(mission) {
+    return !!mission && (mission.challenge === "rings" || mission.challenge === "combat" || mission.type === "argolas" || mission.type === "pvp");
+  }
+
+  function missionChallengeTimeOfDay() {
+    if (gameMode === "free") return timeOfDayById(freeTimeId);
+    if (gameMode === "career" && careerDifficulty === "hard") return randomTimeOfDay();
+    return activeTimeOfDay || TIME_OF_DAY_TYPES[0];
+  }
+
   function blendedColor(baseHex, tintHex, amount) {
     return new THREE.Color(baseHex).lerp(new THREE.Color(tintHex), amount);
   }
@@ -665,7 +675,10 @@
   }
 
   function updateWeather(dt) {
-    if (gameMode === "career" && careerDifficulty === "hard") {
+    if (activeMission && missionUsesClearChallengeWeather(activeMission.data)) {
+      if (activeWeather.id !== "sunny") applyWeather(WEATHER_TYPES[0], activeTimeOfDay);
+      weatherTimer = 0;
+    } else if (gameMode === "career" && careerDifficulty === "hard") {
       weatherTimer -= dt;
       if (weatherTimer <= 0) setWeatherForMode(true);
     } else if (gameMode !== "free" && (activeWeather.id !== "sunny" || activeTimeOfDay.id !== "day")) {
@@ -2458,17 +2471,28 @@
     const contact = runwayContact();
     const weather = weatherEnabled() ? activeWeather : WEATHER_TYPES[0];
     const weatherDifficulty = landingWeatherDifficulty(weather);
-    const verticalLimit = 11.5 - weatherDifficulty * 2.1;
-    const bankLimit = 1.18 - weatherDifficulty * 0.16;
-    const noseLimit = 0.95 - weatherDifficulty * 0.09;
-    const weatherLandingMax = aircraftType.landingMax * (1 - weatherDifficulty * 0.045);
+    const verticalLimit = 13.2 - weatherDifficulty * 1.6;
+    const bankLimit = 1.32 - weatherDifficulty * 0.12;
+    const noseLimit = 1.08 - weatherDifficulty * 0.07;
+    const weatherLandingMax = aircraftType.landingMax * (1.06 - weatherDifficulty * 0.025);
     const tooFast = speedKmh > weatherLandingMax;
     const unstableTouch = bank > bankLimit || nose > noseLimit;
     const crosswindSlip = (weather.landingDrift || 0) > 0.9 && !contact.onRunway && speedKmh > 80;
-    const hardHit = verticalImpact > verticalLimit || unstableTouch || crosswindSlip || (tooFast && (verticalImpact > 4.2 - weatherDifficulty * 0.8 || !contact.onRunway));
+    const smoothTouchGrace =
+      contact.onRunway &&
+      verticalImpact <= 6.4 - weatherDifficulty * 0.35 &&
+      bank <= bankLimit * 0.88 &&
+      nose <= noseLimit * 0.88 &&
+      speedKmh <= weatherLandingMax * 1.12;
+    const hardHit = !smoothTouchGrace && (
+      verticalImpact > verticalLimit ||
+      unstableTouch ||
+      crosswindSlip ||
+      (tooFast && (verticalImpact > 5.6 - weatherDifficulty * 0.45 || !contact.onRunway))
+    );
 
     if (hardHit) {
-      const damage = Math.round(verticalImpact * (7 + weatherDifficulty * 2.2) + Math.max(0, speedKmh - weatherLandingMax) * 0.18 + bank * 30 + nose * 32 + weatherDifficulty * 18);
+      const damage = Math.round(verticalImpact * (5.6 + weatherDifficulty * 1.8) + Math.max(0, speedKmh - weatherLandingMax) * 0.12 + bank * 22 + nose * 24 + weatherDifficulty * 14);
       aircraft.health -= damage;
       if (wasAirborne) {
         recordLanding({
@@ -2493,7 +2517,7 @@
       aircraft.onGround = true;
       aircraft.health = Math.max(5, aircraft.health);
 
-      if (damage > 52 || verticalImpact > 18 || bank > 1.45 || nose > 1.18) {
+      if (damage > 68 || verticalImpact > 21 || bank > 1.64 || nose > 1.36) {
         aircraft.crashed = true;
         aircraft.velocity.multiplyScalar(0.18);
         el("message").innerHTML = "Pouso muito pesado. O avião quebrou, mas não explodiu. Aperte R.";
@@ -3058,7 +3082,13 @@
       enemiesDown: 0
     };
 
-    if (gameMode === "career" && careerDifficulty === "hard") setWeatherForMode(true);
+    const clearChallengeWeather = missionUsesClearChallengeWeather(mission);
+    if (clearChallengeWeather) {
+      applyWeather(WEATHER_TYPES[0], missionChallengeTimeOfDay());
+      weatherTimer = 0;
+    } else if (gameMode === "career" && careerDifficulty === "hard") {
+      setWeatherForMode(true);
+    }
 
     resetToAirport(activeMission.from);
     buildMissionChallenge(activeMission);
@@ -3067,9 +3097,11 @@
       marker.visible = true;
       marker.position.set(activeMission.to.x, 12, activeMission.to.z);
     }
-    const weatherText = gameMode === "career" && careerDifficulty === "hard"
-      ? " Clima sorteado: " + activeWeather.name + ", " + activeTimeOfDay.name + "."
-      : "";
+    const weatherText = clearChallengeWeather && weatherEnabled()
+      ? " Clima limpo para desafio: " + activeWeather.name + ", " + activeTimeOfDay.name + "."
+      : gameMode === "career" && careerDifficulty === "hard"
+        ? " Clima sorteado: " + activeWeather.name + ", " + activeTimeOfDay.name + "."
+        : "";
     el("message").innerHTML = missionBrief(activeMission) + autoSelected + weatherText + " Pare no terminal e decole quando estiver pronto.";
   }
 
