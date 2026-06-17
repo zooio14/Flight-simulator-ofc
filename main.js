@@ -473,7 +473,7 @@
   }
 
   function flightInput() {
-    const keyboardElevator = (down("arrowup") ? 1 : 0) - (down("arrowdown") ? 1 : 0);
+    const keyboardElevator = (down("arrowdown") ? 1 : 0) - (down("arrowup") ? 1 : 0);
     const keyboardAileron = (down("arrowleft") ? 1 : 0) - (down("arrowright") ? 1 : 0);
     const keyboardRudder = (down("a") ? 1 : 0) - (down("d") ? 1 : 0);
     let elevator = keyboardElevator;
@@ -481,11 +481,11 @@
     let rudder = keyboardRudder;
 
     if (controlMode === "mouse") {
-      elevator = clamp(-mouseControl.y * controlSensitivity, -1, 1);
+      elevator = clamp(mouseControl.y * controlSensitivity, -1, 1);
       aileron = clamp(-mouseControl.x * controlSensitivity, -1, 1);
       rudder = clamp(-mouseControl.x * controlSensitivity * 0.42 + keyboardRudder * 0.45, -1, 1);
     } else if (controlMode === "touch") {
-      elevator = clamp(-touchControl.y * controlSensitivity, -1, 1);
+      elevator = clamp(touchControl.y * controlSensitivity, -1, 1);
       aileron = clamp(-touchControl.x * controlSensitivity, -1, 1);
       rudder = clamp(touchRudder + keyboardRudder * 0.35, -1, 1);
     }
@@ -3666,8 +3666,9 @@
     el("stallSpeed").textContent = aircraftType.stallSpeed;
     el("altitude").textContent = Math.round(altitude());
     el("throttle").textContent = Math.round(aircraft.throttle * 100);
-    el("boost").textContent = flightInput().boost ? "On" : "Off";
-    el("boost").className = flightInput().boost ? "warn" : "";
+    const hudInput = flightInput();
+    el("boost").textContent = hudInput.boost ? "On" : "Off";
+    el("boost").className = hudInput.boost ? "warn" : "";
     el("aoa").textContent = THREE.Math.radToDeg(aircraft.aoa).toFixed(1);
     el("vertical").textContent = aircraft.velocity.y.toFixed(1);
     el("heading").textContent = Math.round(headingDegrees()).toString().padStart(3, "0");
@@ -3685,7 +3686,7 @@
     else if (aircraft.stall) status = "STALL abaixo de " + aircraftType.stallSpeed + " km/h";
     else if (lowSpeedWarning) status = "Velocidade baixa";
     else if (altitude() > 12) status = "Voando";
-    else if (aircraft.onGround && speedKmh() > aircraftType.takeoff * 1.12 && !down("arrowup")) status = "Puxe ↑ para decolar";
+    else if (aircraft.onGround && speedKmh() > aircraftType.takeoff * 1.12 && hudInput.elevator <= 0.05) status = "Puxe para baixo para decolar";
     else if (aircraft.onGround && speedKmh() > aircraftType.takeoff * 1.12) status = "Rotação de decolagem";
 
     if (Math.abs(aircraft.position.x) > HALF || Math.abs(aircraft.position.z) > HALF) {

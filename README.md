@@ -11,7 +11,7 @@ Abra o jogo, coloque o nome do piloto, escolha um modo e use:
 - W: acelerar
 - S: reduzir/frear
 - Shift: turbo
-- Setas: pitch e roll, com seta para cima obrigatoria para decolar
+- Setas: pitch invertido e roll; seta para baixo puxa o manche e faz subir, seta para cima empurra e faz descer
 - A/D: yaw
 - 1: Cessna inicial
 - 2: airliner medio
@@ -82,7 +82,7 @@ Abra o jogo, coloque o nome do piloto, escolha um modo e use:
 - Hitboxes com mais camadas para predios, arvores, montanhas, terminais, torres, casas, celeiros e silos
 - Pouso pesado quebra o aviao, mas nao explode automaticamente
 - Fisica melhorada: nariz para cima perde energia, mergulho ganha velocidade, arrasto segura a velocidade maxima
-- Decolagem mais dificil: o aviao precisa passar da velocidade certa e puxar seta para cima para sair do chao
+- Decolagem mais dificil: o aviao precisa passar da velocidade certa e puxar o manche para baixo para sair do chao
 - Stall baseado em velocidade minima especifica de cada aeronave, um pouco mais exigente
 - Modelos 3D com escala e cores por aeronave
 
