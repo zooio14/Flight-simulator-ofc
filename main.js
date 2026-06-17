@@ -32,6 +32,22 @@
     { name: "Alta", pixel: 0.9, buildings: 260, trees: 560, clouds: 28, fog: 39000, particles: 64 }
   ];
 
+  const WEATHER_TYPES = [
+    { id: "sunny", name: "Ensolarado", sky: 0x8fd3ff, fog: 0x9bd6ff, fogNear: 2100, fogFar: 42000, wind: 0, gust: 0, turbulence: 0, liftPenalty: 0, dragBonus: 0, rain: 0, snow: 0, reward: 1 },
+    { id: "partly", name: "Parcialmente nublado", sky: 0x99c7e6, fog: 0xb5c9d6, fogNear: 1800, fogFar: 34000, wind: 6, gust: 2, turbulence: 0.04, liftPenalty: 0.01, dragBonus: 0.01, rain: 0, snow: 0, reward: 1.04 },
+    { id: "cloudy", name: "Nublado", sky: 0x9daab5, fog: 0xaeb8c1, fogNear: 1400, fogFar: 26000, wind: 10, gust: 4, turbulence: 0.09, liftPenalty: 0.03, dragBonus: 0.03, rain: 0, snow: 0, reward: 1.08 },
+    { id: "fog", name: "Nevoa", sky: 0xc7cdd0, fog: 0xd0d5d6, fogNear: 320, fogFar: 9800, wind: 3, gust: 1, turbulence: 0.04, liftPenalty: 0.02, dragBonus: 0.02, rain: 0, snow: 0, reward: 1.12 },
+    { id: "lightRain", name: "Chuva leve", sky: 0x778a9a, fog: 0x8f9aa4, fogNear: 650, fogFar: 16500, wind: 12, gust: 6, turbulence: 0.13, liftPenalty: 0.05, dragBonus: 0.05, rain: 0.45, snow: 0, reward: 1.18 },
+    { id: "heavyRain", name: "Chuva forte", sky: 0x4d5d6a, fog: 0x6b747d, fogNear: 350, fogFar: 10500, wind: 18, gust: 12, turbulence: 0.22, liftPenalty: 0.09, dragBonus: 0.09, rain: 0.9, snow: 0, reward: 1.32 },
+    { id: "storm", name: "Tempestade", sky: 0x2e3845, fog: 0x4c5660, fogNear: 260, fogFar: 8200, wind: 28, gust: 22, turbulence: 0.36, liftPenalty: 0.13, dragBonus: 0.14, rain: 1.25, snow: 0, lightning: true, reward: 1.55 },
+    { id: "crosswind", name: "Vento cruzado", sky: 0x88aeca, fog: 0x9fb1bd, fogNear: 1000, fogFar: 26000, wind: 34, gust: 18, turbulence: 0.18, liftPenalty: 0.03, dragBonus: 0.05, rain: 0, snow: 0, crosswind: true, reward: 1.3 },
+    { id: "snow", name: "Neve", sky: 0xcad6df, fog: 0xd8e0e6, fogNear: 520, fogFar: 12500, wind: 14, gust: 8, turbulence: 0.12, liftPenalty: 0.07, dragBonus: 0.07, rain: 0, snow: 0.75, reward: 1.28 },
+    { id: "turbulence", name: "Turbulencia", sky: 0x95b7d3, fog: 0xa6b9c7, fogNear: 850, fogFar: 21000, wind: 20, gust: 25, turbulence: 0.42, liftPenalty: 0.06, dragBonus: 0.06, rain: 0, snow: 0, reward: 1.42 },
+    { id: "heat", name: "Calor forte", sky: 0x9ed0ef, fog: 0xc2c7b2, fogNear: 900, fogFar: 24500, wind: 8, gust: 9, turbulence: 0.2, liftPenalty: 0.08, dragBonus: 0.02, rain: 0, snow: 0, reward: 1.18 },
+    { id: "hail", name: "Granizo", sky: 0x3f4a56, fog: 0x636b74, fogNear: 290, fogFar: 9000, wind: 24, gust: 20, turbulence: 0.34, liftPenalty: 0.12, dragBonus: 0.13, rain: 1.05, snow: 0.25, lightning: true, reward: 1.5 },
+    { id: "icing", name: "Gelo em baixa temperatura", sky: 0xb7c6d4, fog: 0xd4dde5, fogNear: 430, fogFar: 11500, wind: 16, gust: 12, turbulence: 0.2, liftPenalty: 0.14, dragBonus: 0.11, rain: 0.15, snow: 0.55, reward: 1.46 }
+  ];
+
   const AIRCRAFT_TYPES = [
     { id: "cessna", name: "Cessna velho de aeroclube", model: "cessna", price: 0, takeoff: 98, landingMax: 180, maxSpeed: 320, thrust: 58, boost: 1.12, drag: 0.00185, lift: 17.4, control: 1.12, stallAngle: 22, stallSpeed: 72, cameraBack: 34, hitboxRadius: 7, color: 0xf3f0df, accent: 0xb43732, scale: 0.96 },
     { id: "trainer", name: "Treinador leve OFC-120", model: "cessna", price: 2400, takeoff: 92, landingMax: 185, maxSpeed: 350, thrust: 65, boost: 1.16, drag: 0.0017, lift: 18.2, control: 1.24, stallAngle: 23, stallSpeed: 68, cameraBack: 34, hitboxRadius: 7, color: 0xffffff, accent: 0x2d6fd3, scale: 1 },
@@ -308,10 +324,18 @@
   sun.position.set(1200, 2200, 800);
   scene.add(sun);
 
+  const weatherGroup = new THREE.Group();
+  scene.add(weatherGroup);
+
   let dynamicObjects = [];
   let keys = {};
   let pressed = {};
   let cameraMode = 0;
+  let careerDifficulty = "easy";
+  let activeWeather = WEATHER_TYPES[0];
+  let weatherTimer = 0;
+  let lightningTimer = 0;
+  let weatherWindDirection = Math.PI * 0.35;
   let activeMission = null;
   let missionIndex = -1;
   let money = 0;
@@ -341,7 +365,9 @@
   const lerpAngle = (from, to, amount) => from + wrapRadians(to - from) * amount;
   const ownsAircraft = type => gameMode === "free" || ownedAircraft.has(type.id);
   const fmtGameMoney = () => gameMode === "free" ? "Livre" : fmtMoney(money);
-  const careerKey = name => "flight-simulator-ofc-career-" + name.trim().toLowerCase().replace(/[^a-z0-9_-]/g, "-");
+  const pilotSlug = name => name.trim().toLowerCase().replace(/[^a-z0-9_-]/g, "-");
+  const careerKey = (name, difficulty = careerDifficulty) => "flight-simulator-ofc-career-" + difficulty + "-" + pilotSlug(name);
+  const legacyCareerKey = name => "flight-simulator-ofc-career-" + pilotSlug(name);
   const maxSpeedMS = () => aircraftType.maxSpeed / 3.6;
   const aircraftById = id => AIRCRAFT_TYPES.find(type => type.id === id);
   const ownsAircraftId = id => gameMode === "free" || ownedAircraft.has(id);
@@ -421,6 +447,130 @@
     cameraRig.ready = false;
     cameraRig.yaw = aircraft.yaw;
     cameraRig.target.copy(aircraft.position);
+  }
+
+  function weatherEnabled() {
+    return gameMode === "career" && careerDifficulty === "hard";
+  }
+
+  function createWeatherParticles(weather) {
+    weatherGroup.children.forEach(child => {
+      if (child.geometry) child.geometry.dispose();
+      if (child.material) child.material.dispose();
+    });
+    while (weatherGroup.children.length) weatherGroup.remove(weatherGroup.children[0]);
+    const amount = weather.rain || weather.snow || 0;
+    if (amount <= 0) return;
+
+    const count = Math.floor((weather.snow ? 520 : 760) * amount * quality.pixel);
+    const positions = new Float32Array(count * 3);
+    const spread = 1600;
+
+    for (let i = 0; i < count; i++) {
+      positions[i * 3] = (Math.random() - 0.5) * spread;
+      positions[i * 3 + 1] = 80 + Math.random() * 780;
+      positions[i * 3 + 2] = (Math.random() - 0.5) * spread;
+    }
+
+    const geometry = new THREE.BufferGeometry();
+    geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+    const material = new THREE.PointsMaterial({
+      color: weather.snow ? 0xf4fbff : 0x9ed6ff,
+      size: weather.snow ? 5.2 : 3.2,
+      transparent: true,
+      opacity: weather.snow ? 0.82 : 0.62,
+      depthWrite: false
+    });
+    const points = new THREE.Points(geometry, material);
+    points.userData.weather = weather;
+    points.userData.spread = spread;
+    points.userData.fallSpeed = weather.snow ? 34 : 155 + weather.rain * 85;
+    weatherGroup.add(points);
+  }
+
+  function applyWeather(weather) {
+    activeWeather = weather || WEATHER_TYPES[0];
+    weatherWindDirection = Math.random() * Math.PI * 2;
+    lightningTimer = activeWeather.lightning ? 2 + Math.random() * 5 : 0;
+
+    scene.background = new THREE.Color(activeWeather.sky);
+    scene.fog.color.setHex(activeWeather.fog);
+    scene.fog.near = activeWeather.fogNear;
+    scene.fog.far = Math.min(activeWeather.fogFar, quality.fog);
+    sun.intensity = activeWeather.lightning ? 0.72 : clamp(1.85 - activeWeather.turbulence * 1.8 - activeWeather.rain * 0.55 - activeWeather.snow * 0.35, 0.65, 1.85);
+    createWeatherParticles(activeWeather);
+  }
+
+  function chooseHardWeather() {
+    const choices = WEATHER_TYPES;
+    return choices[Math.floor(Math.random() * choices.length)];
+  }
+
+  function setWeatherForMode(force = false) {
+    if (!weatherEnabled()) {
+      if (force || activeWeather.id !== "sunny") applyWeather(WEATHER_TYPES[0]);
+      weatherTimer = 0;
+      return;
+    }
+
+    if (force || weatherTimer <= 0) {
+      applyWeather(chooseHardWeather());
+      weatherTimer = 80 + Math.random() * 80;
+    }
+  }
+
+  function weatherWindVector() {
+    const weather = weatherEnabled() ? activeWeather : WEATHER_TYPES[0];
+    const gust = weather.gust * Math.sin(performance.now() * 0.0017);
+    const speed = Math.max(0, weather.wind + gust);
+    const angle = weather.crosswind ? aircraft.yaw + Math.PI / 2 : weatherWindDirection;
+    return new THREE.Vector3(Math.sin(angle) * speed, 0, -Math.cos(angle) * speed);
+  }
+
+  function updateWeather(dt) {
+    if (weatherEnabled()) {
+      weatherTimer -= dt;
+      if (weatherTimer <= 0) setWeatherForMode(true);
+    } else if (activeWeather.id !== "sunny") {
+      setWeatherForMode(true);
+    }
+
+    weatherGroup.children.forEach(points => {
+      const geometry = points.geometry;
+      const positions = geometry.attributes.position.array;
+      const spread = points.userData.spread || 1600;
+      const wind = weatherWindVector();
+      const fall = points.userData.fallSpeed || 120;
+
+      points.position.set(aircraft.position.x, 0, aircraft.position.z);
+
+      for (let i = 0; i < positions.length; i += 3) {
+        positions[i] += wind.x * dt * 0.9;
+        positions[i + 1] -= fall * dt;
+        positions[i + 2] += wind.z * dt * 0.9;
+
+        if (positions[i + 1] < 8 || Math.abs(positions[i]) > spread * 0.6 || Math.abs(positions[i + 2]) > spread * 0.6) {
+          positions[i] = (Math.random() - 0.5) * spread;
+          positions[i + 1] = 520 + Math.random() * 340;
+          positions[i + 2] = (Math.random() - 0.5) * spread;
+        }
+      }
+
+      geometry.attributes.position.needsUpdate = true;
+    });
+
+    if (activeWeather.lightning) {
+      lightningTimer -= dt;
+      if (lightningTimer < 0.12) {
+        sun.intensity = 2.7;
+        scene.background.setHex(0x9fb5cf);
+      }
+      if (lightningTimer <= 0) {
+        lightningTimer = 4 + Math.random() * 7;
+        scene.background.setHex(activeWeather.sky);
+        sun.intensity = 0.72;
+      }
+    }
   }
 
   function flatSurfaceMaterial(color, offsetFactor) {
@@ -748,6 +898,7 @@
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, quality.pixel));
     scene.fog.far = quality.fog;
     el("quality").textContent = quality.name;
+    applyWeather(activeWeather);
 
     dynamicObjects.push(createBuildings(quality.buildings));
     dynamicObjects.push(createUrbanLandmarks(Math.max(5, Math.floor(quality.buildings * 0.055))));
@@ -1440,6 +1591,7 @@
   function careerData() {
     return {
       playerName,
+      careerDifficulty,
       money,
       completed,
       aircraftId: aircraftType.id,
@@ -1450,16 +1602,19 @@
   function saveCareer() {
     if (!playerName || gameMode !== "career") return;
     try {
-      localStorage.setItem(careerKey(playerName), JSON.stringify(careerData()));
+      localStorage.setItem(careerKey(playerName, careerDifficulty), JSON.stringify(careerData()));
     } catch (error) {
       el("message").innerHTML = "Nao consegui salvar a carreira neste navegador.";
     }
   }
 
-  function loadCareer(name) {
+  function loadCareer(name, difficulty = careerDifficulty) {
     try {
-      const saved = localStorage.getItem(careerKey(name));
-      return saved ? JSON.parse(saved) : null;
+      const saved = localStorage.getItem(careerKey(name, difficulty));
+      if (saved) return JSON.parse(saved);
+
+      const legacy = difficulty === "easy" ? localStorage.getItem(legacyCareerKey(name)) : null;
+      return legacy ? JSON.parse(legacy) : null;
     } catch (error) {
       return null;
     }
@@ -1480,16 +1635,18 @@
   function updateProfileUi() {
     const logged = !!playerName;
     const freeButton = el("startFree");
-    const careerButton = el("startCareer");
+    const careerEasyButton = el("startCareerEasy");
+    const careerHardButton = el("startCareerHard");
     const nameInput = el("pilotName");
     if (freeButton) freeButton.disabled = !logged;
-    if (careerButton) careerButton.disabled = !logged;
+    if (careerEasyButton) careerEasyButton.disabled = !logged;
+    if (careerHardButton) careerHardButton.disabled = !logged;
     if (nameInput && logged) nameInput.value = playerName;
     el("playerLabel").textContent = logged ? playerName : "--";
     const status = el("profileStatus");
     if (status) {
       status.textContent = logged
-        ? "Piloto " + playerName + " carregado. A carreira salva automaticamente."
+        ? "Piloto " + playerName + " carregado. Cada modo carreira salva separado."
         : "Seu modo carreira sera salvo neste navegador.";
     }
   }
@@ -1500,9 +1657,10 @@
     playerName = raw || "Piloto";
     localStorage.setItem("flight-simulator-ofc-last-pilot", playerName);
     updateProfileUi();
-    const saved = loadCareer(playerName);
-    el("message").innerHTML = saved
-      ? "Carreira de " + playerName + " encontrada. Entre no modo carreira para continuar."
+    const savedEasy = loadCareer(playerName, "easy");
+    const savedHard = loadCareer(playerName, "hard");
+    el("message").innerHTML = savedEasy || savedHard
+      ? "Carreira de " + playerName + " encontrada. Escolha fácil ou difícil para continuar."
       : "Piloto " + playerName + " pronto. Comece uma carreira ou jogue livre.";
   }
 
@@ -1697,6 +1855,8 @@
     const speed = aircraft.velocity.length();
     const speedKmh = speed * 3.6;
     const horizontalSpeed = Math.hypot(aircraft.velocity.x, aircraft.velocity.z);
+    const weather = weatherEnabled() ? activeWeather : WEATHER_TYPES[0];
+    const wind = weatherWindVector();
 
     const boost = down("shift") ? aircraftType.boost : 1;
     const maxAllowedSpeed = maxSpeedMS() * (down("shift") ? 1.08 : 1);
@@ -1704,6 +1864,7 @@
     const powerAvailable = clamp(1 - Math.pow(clamp(speedFraction, 0, 1.25), 3) * 0.76, 0.08, 1);
     const thrustAccel = aircraft.throttle * aircraftType.thrust * boost * powerAvailable;
     aircraft.velocity.addScaledVector(fwd, thrustAccel * dt);
+    aircraft.velocity.addScaledVector(wind, dt * (aircraft.onGround ? 0.012 : 0.038));
 
     if (!aircraft.onGround && fwd.y > 0.05) {
       const climbBleed = fwd.y * (5.5 + speed * 0.09) * (1 + aircraft.stallPressure * 0.6);
@@ -1713,7 +1874,8 @@
     const overspeed = Math.max(0, speed / maxAllowedSpeed - 0.97);
     const overspeedDrag = overspeed * overspeed * speed * 2.6;
     const inducedDrag = Math.max(0, aircraft.pitch) * Math.max(0, aircraft.pitch) * speed * 0.18;
-    const drag = aircraftType.drag * speed * speed + 0.022 * speed + overspeedDrag + inducedDrag;
+    const weatherDrag = weather.dragBonus * speed * (1 + weather.rain + weather.snow);
+    const drag = aircraftType.drag * speed * speed + 0.022 * speed + overspeedDrag + inducedDrag + weatherDrag;
     if (speed > 0.01) {
       aircraft.velocity.addScaledVector(aircraft.velocity.clone().normalize(), -drag * dt);
     }
@@ -1765,7 +1927,8 @@
     const speedLift = clamp((horizontalSpeed - stallSpeedMS * 0.62) / (stallSpeedMS * 1.2), 0, 1.62);
     const angleLift = clamp(0.55 + aircraft.pitch * 1.25 + aoa * 0.95, -0.25, 1.55);
     const stallLiftPenalty = 1 - aircraft.stallPressure * 0.42;
-    const liftAccel = speedLift * angleLift * aircraftType.lift * stallLiftPenalty * takeoffGate;
+    const weatherLift = 1 - weather.liftPenalty;
+    const liftAccel = speedLift * angleLift * aircraftType.lift * stallLiftPenalty * takeoffGate * weatherLift;
 
     aircraft.velocity.y += liftAccel * dt;
     if (aircraft.onGround && (!rotatingForTakeoff || speedKmh < aircraftType.takeoff * 1.18)) {
@@ -1800,6 +1963,14 @@
       aircraft.angularPitch -= 0.48 * dt;
       aircraft.angularRoll += Math.sin(performance.now() * 0.006) * 0.45 * dt;
       aircraft.angularYaw += Math.cos(performance.now() * 0.005) * 0.18 * dt;
+    }
+
+    if (!aircraft.onGround && weather.turbulence > 0) {
+      const t = performance.now() * 0.001;
+      aircraft.angularPitch += Math.sin(t * 4.1) * weather.turbulence * 0.52 * dt;
+      aircraft.angularRoll += Math.sin(t * 5.6 + 1.4) * weather.turbulence * 0.92 * dt;
+      aircraft.angularYaw += Math.cos(t * 3.7) * weather.turbulence * 0.34 * dt;
+      aircraft.velocity.y += Math.sin(t * 2.9) * weather.turbulence * 1.35 * dt;
     }
 
     const dampingStability = clamp(stability - priceAssist * 0.38 - (isFighterType(aircraftType) ? 0.24 : 0), 0.75, 1.8);
@@ -1888,8 +2059,14 @@
       });
     }
 
-    const braking = down("s") ? 0.91 : 0.965;
-    const friction = aircraft.throttle > 0.05 ? 0.992 : braking;
+    const weather = weatherEnabled() ? activeWeather : WEATHER_TYPES[0];
+    const runwayWetness = clamp(weather.rain + weather.snow * 0.85, 0, 1.35);
+    const braking = down("s")
+      ? clamp(0.91 + runwayWetness * 0.045, 0.91, 0.985)
+      : clamp(0.965 + runwayWetness * 0.018, 0.965, 0.992);
+    const friction = aircraft.throttle > 0.05
+      ? clamp(0.992 + runwayWetness * 0.006, 0.992, 0.997)
+      : braking;
     aircraft.velocity.x *= friction;
     aircraft.velocity.z *= friction;
 
@@ -2357,7 +2534,10 @@
   function completeActiveMission(extraText, bonus = 0) {
     if (!activeMission || activeMission.completed) return;
 
-    const payout = activeMission.data.reward + bonus;
+    const weatherBonus = weatherEnabled()
+      ? Math.round(activeMission.data.reward * ((activeWeather.reward || 1) - 1))
+      : 0;
+    const payout = activeMission.data.reward + bonus + weatherBonus;
     activeMission.completed = true;
     completed++;
     if (gameMode !== "free") money += payout;
@@ -2369,6 +2549,7 @@
       (extraText ? extraText + " " : "") +
       "Missão concluída! " + missionManifest(activeMission.data) + ". Recompensa " + fmtMoney(activeMission.data.reward) +
       (bonus ? " + bônus " + fmtMoney(bonus) : "") +
+      (weatherBonus ? " + clima " + fmtMoney(weatherBonus) : "") +
       ". Aperte N ou M para outra missão.";
 
     saveCareer();
@@ -2530,7 +2711,9 @@
   function startGame(mode) {
     if (!playerName) loginPilot();
 
-    gameMode = mode;
+    const careerMode = mode === "careerEasy" || mode === "careerHard" || mode === "career";
+    gameMode = careerMode ? "career" : "free";
+    careerDifficulty = mode === "careerHard" ? "hard" : "easy";
     gameStarted = true;
     cameraMode = 0;
     keys = {};
@@ -2550,7 +2733,7 @@
       aircraftType = AIRCRAFT_TYPES[0];
       makePlaneModel(aircraftType);
     } else {
-      const saved = loadCareer(playerName);
+      const saved = loadCareer(playerName, careerDifficulty);
       if (saved) {
         applyCareerSave(saved);
       } else {
@@ -2563,6 +2746,7 @@
 
     resetToAirport(AIRPORTS[0]);
     resetCameraRig();
+    setWeatherForMode(true);
     setShopOpen(false);
     renderShop();
 
@@ -2571,7 +2755,9 @@
 
     el("message").innerHTML = gameMode === "free"
       ? "Modo livre iniciado: todos os aviões estão liberados."
-      : "Modo carreira iniciado para " + playerName + ". Progresso salvo automaticamente.";
+      : careerDifficulty === "hard"
+        ? "Carreira difícil iniciada para " + playerName + ": clima, vento, turbulência e pista molhada ativos."
+        : "Carreira fácil iniciada para " + playerName + ": sem clima difícil, progresso salvo automaticamente.";
     saveCareer();
   }
 
@@ -2613,7 +2799,9 @@
       mode.textContent = gameMode === "free"
         ? "Modo livre: todos os aviões são grátis."
         : gameMode === "career"
-          ? "Modo carreira: compre aviões com dinheiro das missões."
+          ? careerDifficulty === "hard"
+            ? "Carreira difícil: clima realista ativo e bônus por voo em condição ruim."
+            : "Carreira fácil: sem clima difícil, compre aviões com dinheiro das missões."
           : "Escolha um modo para começar.";
     }
     if (bank) bank.textContent = fmtGameMoney();
@@ -3021,10 +3209,23 @@
     }
 
     el("playerLabel").textContent = playerName || "--";
-    el("modeLabel").textContent = !gameStarted ? "Menu" : gameMode === "free" ? "Livre" : "Carreira";
+    el("modeLabel").textContent = !gameStarted
+      ? "Menu"
+      : gameMode === "free"
+        ? "Livre"
+        : careerDifficulty === "hard"
+          ? "Carreira difícil"
+          : "Carreira fácil";
     el("aircraftName").textContent = aircraftType.name;
     el("weaponInfo").textContent = selectedWeaponLabel();
     el("fps").textContent = fpsValue;
+    const weather = weatherEnabled() ? activeWeather : WEATHER_TYPES[0];
+    const windTop = weather.wind + weather.gust;
+    el("weatherName").textContent = weatherEnabled() ? weather.name : "Ensolarado";
+    el("windInfo").textContent = windTop > 0
+      ? Math.round(weather.wind * 3.6) + "-" + Math.round(windTop * 3.6) + " km/h"
+      : "Calmo";
+    el("turbulenceInfo").textContent = Math.round(weather.turbulence * 100) + "%";
     el("speed").textContent = Math.round(speedKmh());
     el("stallSpeed").textContent = aircraftType.stallSpeed;
     el("altitude").textContent = Math.round(altitude());
@@ -3139,7 +3340,8 @@
 
   function setupUi() {
     const startFree = el("startFree");
-    const startCareer = el("startCareer");
+    const startCareerEasy = el("startCareerEasy");
+    const startCareerHard = el("startCareerHard");
     const loginButton = el("loginButton");
     const pilotInput = el("pilotName");
     const shopToggle = el("shopToggle");
@@ -3157,7 +3359,8 @@
       });
     }
     if (startFree) startFree.addEventListener("click", () => startGame("free"));
-    if (startCareer) startCareer.addEventListener("click", () => startGame("career"));
+    if (startCareerEasy) startCareerEasy.addEventListener("click", () => startGame("careerEasy"));
+    if (startCareerHard) startCareerHard.addEventListener("click", () => startGame("careerHard"));
     if (shopToggle) shopToggle.addEventListener("click", () => setShopOpen(!shopOpen));
     if (shopClose) shopClose.addEventListener("click", () => setShopOpen(false));
     if (hudToggle) hudToggle.addEventListener("click", () => setHudHidden(!hudHidden));
@@ -3172,6 +3375,7 @@
   rebuildDynamicWorld();
   makePlaneModel(aircraftType);
   resetToAirport(AIRPORTS[0]);
+  setWeatherForMode(true);
   setupUi();
 
   let last = performance.now();
@@ -3180,6 +3384,7 @@
     const dt = Math.min((now - last) / 1000, 0.033);
     last = now;
 
+    updateWeather(dt);
     if (gameStarted) {
       shortcuts();
       updatePhysics(dt);

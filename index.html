@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Flight Simulator OFC V9</title>
+  <title>Flight Simulator OFC V10</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div id="loading">
     <div>
-      <h1>Flight Simulator OFC V9</h1>
-      <p>Carregando fisica, carreira salva, cidades e radar...</p>
+      <h1>Flight Simulator OFC V10</h1>
+      <p>Carregando fisica, clima, carreira salva, cidades e radar...</p>
     </div>
   </div>
 
@@ -29,7 +29,8 @@
       </div>
       <div class="start-actions">
         <button id="startFree" type="button" disabled>Jogar livre</button>
-        <button id="startCareer" type="button" disabled>Modo carreira</button>
+        <button id="startCareerEasy" type="button" disabled>Carreira facil</button>
+        <button id="startCareerHard" type="button" disabled>Carreira dificil com clima</button>
       </div>
     </div>
   </div>
@@ -40,7 +41,7 @@
   </div>
 
   <div id="hud">
-    <h2>FLIGHT SIMULATOR OFC V9</h2>
+    <h2>FLIGHT SIMULATOR OFC V10</h2>
 
     <div class="panel">
       <b>Controles</b><br />
@@ -62,6 +63,9 @@
       Arma: <span id="weaponInfo">--</span><br />
       FPS: <span id="fps">0</span><br />
       Qualidade: <span id="quality">Alta</span><br />
+      Tempo: <span id="weatherName">Ensolarado</span><br />
+      Vento: <span id="windInfo">Calmo</span><br />
+      Turbulência: <span id="turbulenceInfo">0%</span><br />
       Velocidade: <span id="speed">0</span> km/h<br />
       Stall abaixo de: <span id="stallSpeed">0</span> km/h<br />
       Altitude: <span id="altitude">0</span> m<br />
@@ -126,7 +130,7 @@
   </div>
 
   <div id="message">
-    V9: caças armados, missões PvP, argolas, carreira salva e fisica mais exigente.
+    V10: clima, carreira facil/dificil, caças armados, PvP e fisica mais exigente.
   </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>

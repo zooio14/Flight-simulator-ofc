@@ -1,8 +1,8 @@
-# Flight Simulator OFC V9
+# Flight Simulator OFC V10
 
 Criado por Guilherme Trecenti.
 
-Versao com login de piloto, carreira salva no navegador, modo livre, loja de avioes, mapa maior, cidades urbanas e rurais, fisica de voo melhorada, radar com rota de aproximacao, camera terceira pessoa, cacas armados, missoes PvP e desafios de argolas.
+Versao com login de piloto, carreira salva no navegador, modo livre, carreira facil, carreira dificil com clima, loja de avioes, mapa maior, cidades urbanas e rurais, fisica de voo melhorada, radar com rota de aproximacao, camera terceira pessoa, cacas armados, missoes PvP e desafios de argolas.
 
 ## Como jogar
 
@@ -30,7 +30,8 @@ Abra o jogo, coloque o nome do piloto, escolha um modo e use:
 ## Modos
 
 - Modo livre: todos os 27 avioes ficam liberados de graca.
-- Modo carreira: o jogador comeca com o Cessna velho de aeroclube, faz missoes para ganhar dinheiro e compra avioes melhores na loja.
+- Carreira facil: o jogador comeca com o Cessna velho de aeroclube, faz missoes para ganhar dinheiro e compra avioes melhores na loja, sem clima dificil.
+- Carreira dificil: o progresso salva separado, o clima dinamico fica ativo e a pilotagem sofre com vento, rajadas, turbulencia, chuva, neve, gelo, calor, granizo e nevoa.
 
 ## Melhorias principais
 
@@ -40,6 +41,11 @@ Abra o jogo, coloque o nome do piloto, escolha um modo e use:
 - Leme dos avioes baratos com curva progressiva: bem reduzido no Cessna e voltando ate 100% nos avioes caros
 - Jatos caros e cacas viram mais rapido e respondem melhor aos comandos
 - Carreira salva automaticamente por nome de piloto no navegador
+- Saves separados para carreira facil e carreira dificil
+- Sistema de clima com ensolarado, parcialmente nublado, nublado, nevoa, chuva leve, chuva forte, tempestade, vento cruzado, neve, turbulencia, calor forte, granizo e gelo
+- Clima afeta fisica: vento empurra o aviao, rajadas instabilizam, turbulencia mexe no pitch/roll/yaw, chuva e gelo aumentam arrasto e reduzem sustentacao
+- Pista molhada ou com neve reduz aderencia e deixa pouso/frenagem mais exigentes
+- Carreira dificil paga bonus de missao quando o voo acontece em clima ruim
 - Loja com comprar/equipar e estatisticas de velocidade, stall e decolagem
 - Mapa aumentado para 48 km x 48 km
 - 22 aeroportos espalhados pelo mundo
