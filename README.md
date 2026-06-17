@@ -47,7 +47,9 @@ Abra o jogo, coloque o nome do piloto, escolha um modo e use:
 - Tela do modo livre para escolher clima e horario antes de iniciar
 - Centro de configuracoes aberto pela tecla C ou pelo botao Config
 - Controle por teclado, mouse ou touch para iPad, com sensibilidade ajustavel
-- Touch com alavanca vertical de potencia, joystick, freio, boost, leme e botoes para armas, reset, loja, info, config, camera, qualidade, hitboxes, missoes e troca de aviao
+- Touch com alavanca vertical de potencia, joystick, freio, boost e leme na parte de baixo
+- Barra superior touch com botao Comandos para mostrar/ocultar reset, loja, info, config, camera, qualidade, hitboxes, missoes e troca de aviao
+- Em cacas armados, os botoes Atirar e Arma aparecem automaticamente no topo mesmo com a lista de comandos fechada
 - Sistema de clima com ensolarado, parcialmente nublado, nublado, nevoa, chuva leve, chuva forte, chuva pesada, tempestade, vento cruzado, vento muito pesado, neve, turbulencia, nevoa fechada, calor forte, granizo e gelo
 - Sistema de horario com dia, fim de tarde e noite, mudando luz, cor do ceu, neblina e exposicao
 - Clima afeta fisica: vento empurra o aviao, rajadas instabilizam, turbulencia mexe no pitch/roll/yaw, chuva e gelo aumentam arrasto e reduzem sustentacao

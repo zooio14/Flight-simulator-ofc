@@ -342,6 +342,7 @@
   let pressed = {};
   let cameraMode = 0;
   let settingsOpen = false;
+  let touchCommandsOpen = false;
   let controlMode = localStorage.getItem("flight-simulator-ofc-control-mode") || "keyboard";
   let controlSensitivity = Number(localStorage.getItem("flight-simulator-ofc-control-sensitivity")) || 1;
   if (!["keyboard", "mouse", "touch"].includes(controlMode)) controlMode = "keyboard";
@@ -1727,6 +1728,12 @@
     if (panel) panel.hidden = !settingsOpen;
     document.body.classList.toggle("settings-open", settingsOpen);
     document.body.classList.toggle("touch-mode", controlMode === "touch" && gameStarted);
+    document.body.classList.toggle("touch-armed", controlMode === "touch" && gameStarted && !!aircraftType.weapons);
+
+    const touchTray = el("touchCommandTray");
+    if (touchTray) touchTray.hidden = !touchCommandsOpen;
+    const touchToggle = el("touchCommandsToggle");
+    if (touchToggle) touchToggle.textContent = touchCommandsOpen ? "Ocultar" : "Comandos";
 
     document.querySelectorAll("[data-control-mode]").forEach(button => {
       button.classList.toggle("active", button.dataset.controlMode === controlMode);
@@ -1751,6 +1758,11 @@
     updateSettingsUi();
   }
 
+  function toggleTouchCommands() {
+    touchCommandsOpen = !touchCommandsOpen;
+    updateSettingsUi();
+  }
+
   function setControlMode(mode) {
     if (!["keyboard", "mouse", "touch"].includes(mode)) return;
     controlMode = mode;
@@ -1760,6 +1772,7 @@
       touchBoost = false;
       touchRudder = 0;
       touchThrottlePointerId = null;
+      touchCommandsOpen = false;
       resetTouchControl();
     } else {
       setTouchThrottleTarget(aircraft.throttle || 0);
@@ -2053,6 +2066,7 @@
     aircraftIndex = index;
     aircraftType = AIRCRAFT_TYPES[aircraftIndex];
     makePlaneModel(aircraftType);
+    updateSettingsUi();
     resetToAirport(currentAirport);
     rebuildHitboxHelpers();
     renderShop();
@@ -2989,6 +3003,7 @@
       aircraftIndex = fighterIndex;
       aircraftType = AIRCRAFT_TYPES[aircraftIndex];
       makePlaneModel(aircraftType);
+      updateSettingsUi();
       autoSelected = " Equipei automaticamente " + aircraftType.name + ".";
       renderShop();
     }
@@ -3771,6 +3786,7 @@
     const settingsClose = el("settingsClose");
     const sensitivity = el("controlSensitivity");
     const cameraCycleButton = el("cameraCycle");
+    const touchCommandsToggle = el("touchCommandsToggle");
 
     const lastPilot = localStorage.getItem("flight-simulator-ofc-last-pilot");
     if (lastPilot) playerName = lastPilot;
@@ -3803,6 +3819,7 @@
     if (settingsClose) settingsClose.addEventListener("click", () => setSettingsOpen(false));
     if (sensitivity) sensitivity.addEventListener("input", () => setControlSensitivity(sensitivity.value));
     if (cameraCycleButton) cameraCycleButton.addEventListener("click", cycleCamera);
+    if (touchCommandsToggle) touchCommandsToggle.addEventListener("click", toggleTouchCommands);
     document.querySelectorAll("[data-control-mode]").forEach(button => {
       button.addEventListener("click", () => setControlMode(button.dataset.controlMode));
     });

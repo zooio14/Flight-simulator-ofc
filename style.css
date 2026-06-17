@@ -330,9 +330,68 @@ body.touch-mode #touchControls {
   display: flex;
 }
 
+#touchTopCommands {
+  position: fixed;
+  top: 58px;
+  left: 50%;
+  z-index: 16;
+  display: none;
+  align-items: start;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  width: min(760px, calc(100vw - 24px));
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+body.touch-mode #touchTopCommands {
+  display: flex;
+}
+
+#touchTopCommands > button,
+#touchCommandTray {
+  pointer-events: auto;
+}
+
+.touch-fighter-action {
+  display: none;
+  border-color: rgba(255, 216, 77, 0.65);
+  background: rgba(102, 73, 15, 0.82);
+}
+
+body.touch-armed .touch-fighter-action {
+  display: inline-block;
+}
+
+#touchCommandTray {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(58px, 1fr));
+  gap: 7px;
+  width: min(590px, calc(100vw - 185px));
+  padding: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 8px;
+  background: rgba(4, 13, 20, 0.58);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(8px);
+}
+
+#touchCommandTray[hidden] {
+  display: none;
+}
+
+#touchCommandTray button {
+  min-width: 0;
+  height: 34px;
+  padding: 5px 6px;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
 .touch-stick-group,
 .touch-throttle,
-.touch-command-panel {
+.touch-flight-buttons {
   pointer-events: auto;
 }
 
@@ -418,11 +477,10 @@ body.touch-mode #touchControls {
   transform: translate(-50%, 50%);
 }
 
-.touch-command-panel {
-  width: min(480px, calc(100vw - 290px));
+.touch-flight-buttons {
+  width: 78px;
   display: grid;
-  grid-template-columns: repeat(4, minmax(54px, 1fr));
-  gap: 7px;
+  gap: 8px;
   padding: 8px;
   border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 8px;
@@ -431,11 +489,11 @@ body.touch-mode #touchControls {
   backdrop-filter: blur(8px);
 }
 
-.touch-command-panel button {
+.touch-flight-buttons button {
   min-width: 0;
-  height: 36px;
+  height: 42px;
   padding: 5px 6px;
-  font-size: 11px;
+  font-size: 12px;
   white-space: nowrap;
 }
 
@@ -461,15 +519,37 @@ body.touch-mode #touchControls {
     height: 118px;
   }
 
-  .touch-command-panel {
-    width: min(380px, calc(100vw - 214px));
-    grid-template-columns: repeat(3, minmax(48px, 1fr));
+  #touchTopCommands {
+    top: 48px;
+    width: calc(100vw - 14px);
     gap: 5px;
   }
 
-  .touch-command-panel button {
+  #touchTopCommands > button {
+    min-width: 0;
+    padding: 7px 8px;
+    font-size: 11px;
+  }
+
+  #touchCommandTray {
+    width: min(410px, calc(100vw - 140px));
+    grid-template-columns: repeat(3, minmax(54px, 1fr));
+    gap: 5px;
+  }
+
+  #touchCommandTray button {
     height: 32px;
     font-size: 10px;
+  }
+
+  .touch-flight-buttons {
+    width: 62px;
+    gap: 6px;
+  }
+
+  .touch-flight-buttons button {
+    height: 38px;
+    font-size: 11px;
   }
 }
 
