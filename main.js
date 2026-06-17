@@ -77,8 +77,8 @@
     { id: "boeing", name: "Jato comercial 737", model: "airliner", price: 680000, takeoff: 205, landingMax: 315, maxSpeed: 940, thrust: 184, boost: 1.16, drag: 0.00066, lift: 16.2, control: 0.72, stallAngle: 20, stallSpeed: 155, cameraBack: 64, hitboxRadius: 15, color: 0xf2f2f2, accent: 0x1c60d6, scale: 1.22 },
     { id: "widebody", name: "Widebody longo", model: "airliner", price: 980000, takeoff: 245, landingMax: 340, maxSpeed: 980, thrust: 215, boost: 1.12, drag: 0.00062, lift: 15.7, control: 0.55, stallAngle: 19, stallSpeed: 178, cameraBack: 76, hitboxRadius: 18, color: 0xf6f6f2, accent: 0x7a4ea3, scale: 1.5 },
     { id: "cargo", name: "Cargueiro pesado", model: "cargo", price: 1250000, takeoff: 260, landingMax: 330, maxSpeed: 820, thrust: 230, boost: 1.1, drag: 0.00078, lift: 16.4, control: 0.48, stallAngle: 19, stallSpeed: 182, cameraBack: 82, hitboxRadius: 19, color: 0xd8dde0, accent: 0x2f5c44, scale: 1.42 },
-    { id: "f16", name: "Caça leve inspirado no F-16", model: "fighter", price: 1800000, takeoff: 135, landingMax: 255, maxSpeed: 1450, thrust: 195, boost: 1.34, drag: 0.00055, lift: 21.2, control: 1.55, stallAngle: 28, stallSpeed: 112, cameraBack: 42, hitboxRadius: 10, color: 0x909aa2, accent: 0x39424b, scale: 0.98 },
-    { id: "f35", name: "Caça stealth moderno", model: "fighter", price: 2400000, takeoff: 142, landingMax: 260, maxSpeed: 1650, thrust: 220, boost: 1.38, drag: 0.0005, lift: 21.8, control: 1.7, stallAngle: 29, stallSpeed: 108, cameraBack: 43, hitboxRadius: 10, color: 0x7f8992, accent: 0x2c343c, scale: 1.02 },
+    { id: "f16", name: "Caça leve inspirado no F-16", model: "fighter", price: 1800000, takeoff: 135, landingMax: 255, maxSpeed: 1450, thrust: 195, boost: 1.34, drag: 0.00055, lift: 21.2, control: 1.55, stallAngle: 28, stallSpeed: 112, cameraBack: 42, hitboxRadius: 10, color: 0x909aa2, accent: 0x39424b, scale: 0.98, weapons: { missiles: 4, cannon: true } },
+    { id: "f35", name: "Caça stealth moderno", model: "fighter", price: 2400000, takeoff: 142, landingMax: 260, maxSpeed: 1650, thrust: 220, boost: 1.38, drag: 0.0005, lift: 21.8, control: 1.7, stallAngle: 29, stallSpeed: 108, cameraBack: 43, hitboxRadius: 10, color: 0x7f8992, accent: 0x2c343c, scale: 1.02, weapons: { missiles: 6, cannon: true } },
     { id: "f22", name: "Caça stealth inspirado no F-22", model: "f22", price: 3200000, takeoff: 145, landingMax: 260, maxSpeed: 1900, thrust: 248, boost: 1.42, drag: 0.00048, lift: 22.8, control: 1.85, stallAngle: 30, stallSpeed: 105, cameraBack: 44, hitboxRadius: 10, color: 0x8b959d, accent: 0x303842, scale: 1.05, weapons: { missiles: 6, cannon: true } },
     { id: "f15ex", name: "Caça pesado F-15EX armado", model: "fighter", price: 2100000, takeoff: 166, landingMax: 270, maxSpeed: 2150, thrust: 300, boost: 1.4, drag: 0.00042, lift: 23.2, control: 1.55, stallAngle: 30, stallSpeed: 126, cameraBack: 47, hitboxRadius: 11, color: 0x7d858b, accent: 0x222c36, scale: 1.12, weapons: { missiles: 8, cannon: true } },
     { id: "rafale", name: "Caça naval Rafale armado", model: "fighter", price: 2450000, takeoff: 158, landingMax: 265, maxSpeed: 1980, thrust: 286, boost: 1.44, drag: 0.00039, lift: 24.2, control: 1.62, stallAngle: 31, stallSpeed: 118, cameraBack: 45, hitboxRadius: 10, color: 0x8f969c, accent: 0x343a42, scale: 1.02, weapons: { missiles: 6, cannon: true } },
@@ -425,7 +425,7 @@
   }
 
   function missionRequirementText(mission) {
-    if (mission.requiredGroup === "combatFighter") return "um dos 6 caças armados: F-22, F-15EX, Rafale, Typhoon, Su-57 ou OFC-X";
+    if (mission.requiredGroup === "combatFighter") return "um dos 6 caças de PvP: F-22, F-15EX, Rafale, Typhoon, Su-57 ou OFC-X";
     if (mission.requiredAircraft) {
       const type = aircraftById(mission.requiredAircraft);
       return type ? type.name : mission.requiredAircraft;
@@ -2995,7 +2995,7 @@
     if (mission.challenge === "combat" && !currentIsCombatFighter()) {
       const fighterIndex = bestOwnedCombatFighterIndex();
       if (fighterIndex < 0) {
-        el("message").innerHTML = mission.title + " bloqueada. Compre um dos 6 caças armados para liberar PvP.";
+        el("message").innerHTML = mission.title + " bloqueada. Compre um dos 6 caças de PvP para liberar PvP.";
         setShopOpen(true);
         return;
       }

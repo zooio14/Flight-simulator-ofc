@@ -37,7 +37,7 @@ Abra o jogo, coloque o nome do piloto, escolha um modo e use:
 ## Melhorias principais
 
 - 27 modelos de aviao, do Cessna velho ate cacas armados de alto desempenho
-- 6 cacas armados para PvP: F-22, F-15EX, Rafale, Typhoon, Su-57 e OFC-X
+- Cacas com armas no modo touch; os 6 cacas de PvP sao F-22, F-15EX, Rafale, Typhoon, Su-57 e OFC-X
 - Precos rebalanceados: avioes baratos sao mais dificeis e avioes caros ficam mais estaveis
 - Leme dos avioes baratos com curva progressiva: bem reduzido no Cessna e voltando ate 100% nos avioes caros
 - Jatos caros e cacas viram mais rapido e respondem melhor aos comandos
@@ -66,7 +66,7 @@ Abra o jogo, coloque o nome do piloto, escolha um modo e use:
 - Cidades urbanas com torres, parques e ruas
 - Vilas rurais com casas, celeiros, silos e campos
 - 25 missoes: passageiros, carga, emergencia, operacao militar, argolas e PvP simulado
-- Missoes PvP so liberam quando o jogador desbloqueia qualquer um dos 6 cacas armados
+- Missoes PvP so liberam quando o jogador desbloqueia qualquer um dos 6 cacas de PvP
 - Missoes de argolas usam checkpoints 3D no ceu guiados pelo radar
 - Sistema de armas com Espaco para atirar e G para alternar entre misseis e canhao
 - Canhao com 520 balas por recarga e rajadas de tracers visiveis no ar
