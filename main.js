@@ -27,9 +27,9 @@
   };
 
   const QUALITY = [
-    { name: "Ultra leve", pixel: 0.42, buildings: 70, trees: 150, clouds: 8, fog: 23500, particles: 24 },
-    { name: "Baixa", pixel: 0.62, buildings: 140, trees: 310, clouds: 15, fog: 30000, particles: 38 },
-    { name: "Alta", pixel: 0.9, buildings: 260, trees: 560, clouds: 28, fog: 39000, particles: 64 }
+    { name: "Ultra leve", pixel: 0.42, buildings: 105, trees: 150, clouds: 8, fog: 23500, particles: 24 },
+    { name: "Baixa", pixel: 0.62, buildings: 210, trees: 310, clouds: 15, fog: 30000, particles: 38 },
+    { name: "Alta", pixel: 0.9, buildings: 390, trees: 560, clouds: 28, fog: 39000, particles: 64 }
   ];
 
   const WEATHER_TYPES = [
@@ -88,39 +88,39 @@
   ];
 
   const AIRCRAFT_TUNING = [
-    ["cessna", 0, 330, 138, 86, 60, 0.52, 1.04, 0.00178],
-    ["trainer", 1800, 365, 134, 82, 70, 0.64, 1.02, 0.0016],
-    ["piper", 3900, 405, 148, 88, 80, 0.72, 1, 0.00146],
-    ["taildragger", 6200, 330, 120, 72, 76, 0.78, 0.96, 0.00174],
-    ["baron", 10500, 535, 170, 104, 99, 0.88, 0.98, 0.00113],
-    ["caravan", 17000, 500, 178, 102, 105, 0.92, 0.96, 0.0012],
-    ["kingair", 29000, 650, 192, 116, 124, 1.02, 0.96, 0.00096],
-    ["pc12", 42000, 740, 198, 120, 134, 1.08, 0.98, 0.00086],
-    ["tbm", 56000, 850, 205, 128, 150, 1.16, 1, 0.00078],
-    ["learjet", 76000, 890, 225, 144, 150, 1.2, 0.98, 0.00072],
-    ["citation", 98000, 940, 220, 140, 164, 1.28, 1, 0.00067],
-    ["embraer", 145000, 915, 245, 156, 174, 1.34, 0.96, 0.00069],
-    ["atr", 168000, 650, 215, 138, 158, 1.32, 0.94, 0.00091],
-    ["dash8", 205000, 720, 225, 146, 168, 1.38, 0.95, 0.00085],
-    ["crj", 260000, 930, 255, 168, 184, 1.46, 1.02, 0.00065],
-    ["a320", 420000, 955, 275, 178, 196, 1.56, 1.02, 0.00062],
-    ["boeing", 520000, 980, 270, 174, 210, 1.62, 1.04, 0.00058],
-    ["widebody", 740000, 1010, 315, 196, 242, 1.72, 0.98, 0.00054],
-    ["cargo", 920000, 860, 330, 204, 258, 1.7, 0.96, 0.00066],
-    ["f16", 1250000, 1650, 185, 128, 235, 1.78, 1.18, 0.00047],
-    ["f35", 1500000, 1820, 190, 124, 258, 1.9, 1.24, 0.00043],
-    ["f22", 1800000, 2050, 195, 122, 288, 2.05, 1.32, 0.0004],
-    ["f15ex", 2100000, 2150, 205, 130, 300, 2.12, 1.28, 0.00042],
-    ["rafale", 2450000, 1980, 195, 122, 286, 2.18, 1.36, 0.00039],
-    ["typhoon", 2850000, 2280, 200, 124, 318, 2.24, 1.42, 0.00037],
-    ["su57", 3400000, 2400, 210, 128, 340, 2.32, 1.45, 0.00035],
-    ["ofcx", 4300000, 2850, 225, 132, 390, 2.45, 1.52, 0.00031]
+    ["cessna", 0, 330, 138, 86, 60, 0.52, 1.04, 0.00178, 235],
+    ["trainer", 1800, 365, 134, 82, 70, 0.64, 1.02, 0.0016, 245],
+    ["piper", 3900, 405, 148, 88, 80, 0.72, 1, 0.00146, 255],
+    ["taildragger", 6200, 330, 120, 72, 76, 0.78, 0.96, 0.00174, 210],
+    ["baron", 10500, 535, 170, 104, 99, 0.88, 0.98, 0.00113, 280],
+    ["caravan", 17000, 500, 178, 102, 105, 0.92, 0.96, 0.0012, 270],
+    ["kingair", 29000, 650, 192, 116, 124, 1.02, 0.96, 0.00096, 310],
+    ["pc12", 42000, 740, 198, 120, 134, 1.08, 0.98, 0.00086, 315],
+    ["tbm", 56000, 850, 205, 128, 150, 1.16, 1, 0.00078, 335],
+    ["learjet", 76000, 890, 225, 144, 150, 1.2, 0.98, 0.00072, 350],
+    ["citation", 98000, 940, 220, 140, 164, 1.28, 1, 0.00067, 365],
+    ["embraer", 145000, 915, 245, 156, 174, 1.34, 0.96, 0.00069, 385],
+    ["atr", 168000, 650, 215, 138, 158, 1.32, 0.94, 0.00091, 335],
+    ["dash8", 205000, 720, 225, 146, 168, 1.38, 0.95, 0.00085, 345],
+    ["crj", 260000, 930, 255, 168, 184, 1.46, 1.02, 0.00065, 395],
+    ["a320", 420000, 955, 275, 178, 196, 1.56, 1.02, 0.00062, 410],
+    ["boeing", 520000, 980, 270, 174, 210, 1.62, 1.04, 0.00058, 415],
+    ["widebody", 740000, 1010, 315, 196, 242, 1.72, 0.98, 0.00054, 430],
+    ["cargo", 920000, 860, 330, 204, 258, 1.7, 0.96, 0.00066, 390],
+    ["f16", 1250000, 1650, 185, 128, 235, 1.78, 1.18, 0.00047, 520],
+    ["f35", 1500000, 1820, 190, 124, 258, 1.9, 1.24, 0.00043, 560],
+    ["f22", 1800000, 2050, 195, 122, 288, 2.05, 1.32, 0.0004, 580],
+    ["f15ex", 2100000, 2150, 205, 130, 300, 2.12, 1.28, 0.00042, 560],
+    ["rafale", 2450000, 1980, 195, 122, 286, 2.18, 1.36, 0.00039, 540],
+    ["typhoon", 2850000, 2280, 200, 124, 318, 2.24, 1.42, 0.00037, 565],
+    ["su57", 3400000, 2400, 210, 128, 340, 2.32, 1.45, 0.00035, 585],
+    ["ofcx", 4300000, 2850, 225, 132, 390, 2.45, 1.52, 0.00031, 620]
   ];
 
-  AIRCRAFT_TUNING.forEach(([id, price, maxSpeed, takeoff, stallSpeed, thrust, stability, control, drag]) => {
+  AIRCRAFT_TUNING.forEach(([id, price, maxSpeed, takeoff, stallSpeed, thrust, stability, control, drag, gearLimit]) => {
     const type = AIRCRAFT_TYPES.find(aircraft => aircraft.id === id);
     if (!type) return;
-    Object.assign(type, { price, maxSpeed, takeoff, stallSpeed, thrust, stability, control, drag });
+    Object.assign(type, { price, maxSpeed, takeoff, stallSpeed, thrust, stability, control, drag, gearLimit });
   });
 
   const COMBAT_FIGHTER_IDS = ["f22", "f15ex", "rafale", "typhoon", "su57", "ofcx"];
@@ -165,7 +165,12 @@
     { x: -6400, z: 21100, radius: 2300 },
     { x: 21400, z: -14500, radius: 2200 },
     { x: -21300, z: 14200, radius: 2100 },
-    { x: 20500, z: 19800, radius: 1800 }
+    { x: 20500, z: 19800, radius: 1800 },
+    { x: -18400, z: 18800, radius: 1900 },
+    { x: 15600, z: 14400, radius: 2500 },
+    { x: -14600, z: -18400, radius: 2100 },
+    { x: 7200, z: -16800, radius: 2300 },
+    { x: -2600, z: 16800, radius: 1800 }
   ];
 
   const RURAL_CENTERS = [
@@ -375,6 +380,9 @@
   let missileAmmo = 0;
   let cannonAmmo = 0;
   let selectedWeapon = "missile";
+  let activeFailure = null;
+  let failureTimer = 0;
+  let failureGrace = 0;
   let plane = null;
   let lastLanding = null;
   let showHitboxes = false;
@@ -791,6 +799,119 @@
     weaponCooldown = 0;
   }
 
+  function gearLimitKmh(type = aircraftType) {
+    return type.gearLimit || Math.max(type.landingMax * 1.32, type.takeoff * 1.5);
+  }
+
+  function landingGearLabel() {
+    if (aircraft.gearBroken) return "Quebrado";
+    return aircraft.gearDown ? "Baixado" : "Recolhido";
+  }
+
+  function toggleLandingGear() {
+    if (aircraft.gearBroken) {
+      el("message").innerHTML = "Trem de pouso quebrado. Pouse muito suave, alinhado e lento.";
+      return;
+    }
+    if (aircraft.onGround && aircraft.gearDown) {
+      el("message").innerHTML = "Recolha o trem só depois de decolar.";
+      return;
+    }
+    if (aircraft.onGround && speedKmh() > 35) {
+      el("message").innerHTML = "Reduza antes de mexer no trem de pouso no chão.";
+      return;
+    }
+    aircraft.gearDown = !aircraft.gearDown;
+    el("message").innerHTML = "Trem de pouso " + landingGearLabel().toLowerCase() + ". Limite: " + gearLimitKmh() + " km/h.";
+    syncPlane();
+  }
+
+  function breakLandingGear(reason) {
+    if (aircraft.gearBroken) return;
+    aircraft.gearBroken = true;
+    aircraft.gearDown = false;
+    aircraft.health = Math.max(18, aircraft.health - 22);
+    el("message").innerHTML = reason + " Trem de pouso quebrado: ainda dá para pousar, mas tem que ser muito suave.";
+    syncPlane();
+  }
+
+  function clearFailure() {
+    activeFailure = null;
+    failureGrace = 0;
+  }
+
+  function failureActionText(failure) {
+    if (!failure) return "";
+    if (failure.kind === "engine") return "reduza o motor abaixo de 35%, nivele o avião e aperte F para religar";
+    if (failure.kind === "wing") return "mantenha asas niveladas, reduza abaixo de 70% e aperte F para compensar a asa";
+    if (failure.kind === "controls") return "voe acima de 250 m, solte os comandos por um instante e aperte F para recalibrar";
+    return "aperte F para corrigir";
+  }
+
+  function startRandomFailure() {
+    if (activeFailure || aircraft.crashed || aircraft.exploded || !gameStarted || gameMode !== "career" || careerDifficulty !== "hard") return;
+    if (aircraft.onGround || altitude() < 180 || speedKmh() < aircraftType.stallSpeed * 1.45) return;
+    const choices = [
+      { kind: "engine", title: "Falha no motor", severity: 0.38 + Math.random() * 0.24 },
+      { kind: "wing", title: "Problema na asa", severity: 0.28 + Math.random() * 0.22 },
+      { kind: "controls", title: "Comandos desalinhados", severity: 0.22 + Math.random() * 0.2 }
+    ];
+    activeFailure = choices[Math.floor(Math.random() * choices.length)];
+    failureGrace = 18;
+    el("message").innerHTML = activeFailure.title + "! Para consertar: " + failureActionText(activeFailure) + ".";
+  }
+
+  function repairFailureCommand() {
+    if (!activeFailure) {
+      el("message").innerHTML = "Nenhuma pane ativa.";
+      return;
+    }
+    const input = flightInput();
+    const nearlyLevel = Math.abs(aircraft.roll) < 0.18 && Math.abs(aircraft.pitch) < 0.22;
+    let fixed = false;
+
+    if (activeFailure.kind === "engine") {
+      fixed = aircraft.throttle < 0.35 && nearlyLevel;
+    } else if (activeFailure.kind === "wing") {
+      fixed = aircraft.throttle < 0.7 && Math.abs(aircraft.roll) < 0.16;
+    } else if (activeFailure.kind === "controls") {
+      fixed = altitude() > 250 && Math.abs(input.elevator) < 0.08 && Math.abs(input.aileron) < 0.08 && Math.abs(input.rudder) < 0.08;
+    }
+
+    if (fixed) {
+      const title = activeFailure.title;
+      clearFailure();
+      failureTimer = 80 + Math.random() * 150;
+      el("message").innerHTML = title + " corrigida. Continue o voo.";
+    } else {
+      el("message").innerHTML = "Ainda não deu. Para consertar: " + failureActionText(activeFailure) + ".";
+    }
+  }
+
+  function updateFailureSystem(dt) {
+    if (gameMode !== "career" || careerDifficulty !== "hard" || !gameStarted) {
+      clearFailure();
+      return;
+    }
+
+    if (activeMission && missionUsesClearChallengeWeather(activeMission.data)) return;
+
+    if (activeFailure) {
+      failureGrace = Math.max(0, failureGrace - dt);
+      if (failureGrace <= 0 && activeFailure.kind === "engine" && aircraft.throttle > 0.82) {
+        aircraft.health = Math.max(8, aircraft.health - 3 * dt);
+      }
+      return;
+    }
+
+    if (!activeMission || activeMission.completed || !activeMission.airborne) return;
+    failureTimer -= dt;
+    if (failureTimer <= 0) {
+      startRandomFailure();
+      failureTimer = 95 + Math.random() * 165;
+    }
+  }
+
   function selectedWeaponLabel() {
     if (!aircraftType.weapons) return "--";
     return selectedWeapon === "missile"
@@ -1102,7 +1223,10 @@
       const center = CITY_CENTERS[Math.floor(Math.random() * CITY_CENTERS.length)];
       const x = cluster ? center.x + (Math.random() - 0.5) * center.radius : (Math.random() - 0.5) * (MAP_SIZE * 0.86);
       const z = cluster ? center.z + (Math.random() - 0.5) * center.radius : (Math.random() - 0.5) * (MAP_SIZE * 0.86);
-      const h = cluster ? 35 + Math.random() * 260 : 15 + Math.random() * 90;
+      const highRise = cluster && Math.random() < 0.36;
+      const h = cluster
+        ? highRise ? 180 + Math.random() * 340 : 42 + Math.random() * 230
+        : 18 + Math.random() * 110;
       const w = 30 + Math.random() * 75;
       const d = 30 + Math.random() * 75;
 
@@ -1424,11 +1548,13 @@
 
     if (isStol) {
       const gearMat = new THREE.MeshLambertMaterial({ color: 0x222222 });
+      g.userData.gearParts = g.userData.gearParts || [];
       [-1, 1].forEach(side => {
         const tire = new THREE.Mesh(new THREE.CylinderGeometry(0.82, 0.82, 0.5, 14), gearMat);
         tire.rotation.z = Math.PI / 2;
         tire.position.set(side * 2.1, -1.65, -1.2);
         g.add(tire);
+        g.userData.gearParts.push(tire);
       });
     } else {
       addWheels(g, 1.2);
@@ -1657,6 +1783,7 @@
     g.add(fakeProp);
     g.userData.prop = fakeProp;
 
+    addWheels(g, 1.08);
     addShadow(g, 10 * scale);
     g.scale.setScalar(scale);
     return g;
@@ -1664,19 +1791,23 @@
 
   function addWheels(group, size) {
     const wheelMat = new THREE.MeshLambertMaterial({ color: 0x151515 });
+    group.userData.gearParts = group.userData.gearParts || [];
     const wheel1 = new THREE.Mesh(new THREE.CylinderGeometry(0.45 * size, 0.45 * size, 0.35 * size, 14), wheelMat);
     wheel1.rotation.z = Math.PI / 2;
     wheel1.position.set(-1.2 * size, -1.25 * size, -1);
     group.add(wheel1);
+    group.userData.gearParts.push(wheel1);
 
     const wheel2 = wheel1.clone();
     wheel2.position.x = 1.2 * size;
     group.add(wheel2);
+    group.userData.gearParts.push(wheel2);
 
     const wheel3 = wheel1.clone();
     wheel3.scale.set(0.7, 0.7, 0.7);
     wheel3.position.set(0, -1.18 * size, -6.1);
     group.add(wheel3);
+    group.userData.gearParts.push(wheel3);
   }
 
   const aircraft = {
@@ -1692,6 +1823,8 @@
     angularRoll: 0,
     aoa: 0,
     speedBrake: 0,
+    gearDown: true,
+    gearBroken: false,
     stallPressure: 0,
     stall: false,
     crashed: false,
@@ -1713,11 +1846,14 @@
     aircraft.angularRoll = 0;
     aircraft.aoa = 0;
     aircraft.speedBrake = 0;
+    aircraft.gearDown = true;
+    aircraft.gearBroken = false;
     aircraft.stallPressure = 0;
     aircraft.stall = false;
     aircraft.crashed = false;
     aircraft.exploded = false;
     aircraft.onGround = true;
+    clearFailure();
     lastLanding = null;
     clearProjectiles();
     resetWeaponAmmo();
@@ -1973,6 +2109,7 @@
     else if (action === "shop") setShopOpen(!shopOpen);
     else if (action === "hud") setHudHidden(!hudHidden);
     else if (action === "settings") setSettingsOpen(!settingsOpen);
+    else if (action === "gear") toggleLandingGear();
     else if (action === "camera") cycleCamera();
     else if (action === "quality") toggleQualityCommand();
     else if (action === "hitboxes") toggleHitboxesCommand();
@@ -2176,7 +2313,7 @@
   function approachRouteForAirport(a) {
     const course = approachCourseForAirport(a);
     const angle = THREE.Math.degToRad(course);
-    const leadDistance = Math.max(2800, a.length * 1.65);
+    const leadDistance = Math.max(5200, a.length * 2.75);
     const dirX = Math.sin(angle);
     const dirZ = -Math.cos(angle);
     return {
@@ -2284,6 +2421,7 @@
     }
 
     const input = flightInput();
+    updateFailureSystem(dt);
     const touchSpeedBrakeInput = input.throttleTarget !== null
       ? clamp(-input.throttleTarget / Math.abs(TOUCH_THROTTLE_MIN), 0, 1)
       : 0;
@@ -2313,12 +2451,20 @@
     const horizontalSpeed = Math.hypot(aircraft.velocity.x, aircraft.velocity.z);
     const weather = weatherEnabled() ? activeWeather : WEATHER_TYPES[0];
     const wind = weatherWindVector();
+    const altitudeStability = clamp(altitude() / 5200, 0, 0.46);
+    const engineFailure = activeFailure && activeFailure.kind === "engine" ? activeFailure.severity : 0;
+    const wingFailure = activeFailure && activeFailure.kind === "wing" ? activeFailure.severity : 0;
+    const controlsFailure = activeFailure && activeFailure.kind === "controls" ? activeFailure.severity : 0;
+
+    if (!aircraft.onGround && aircraft.gearDown && !aircraft.gearBroken && speedKmh > gearLimitKmh() * 1.08) {
+      breakLandingGear("Velocidade acima do limite de " + gearLimitKmh() + " km/h com o trem baixado.");
+    }
 
     const boost = input.boost ? aircraftType.boost : 1;
     const maxAllowedSpeed = maxSpeedMS() * (input.boost ? 1.08 : 1);
     const speedFraction = speed / Math.max(1, maxAllowedSpeed);
     const powerAvailable = clamp(1 - Math.pow(clamp(speedFraction, 0, 1.25), 3) * 0.76, 0.08, 1);
-    const thrustAccel = aircraft.throttle * aircraftType.thrust * boost * powerAvailable;
+    const thrustAccel = aircraft.throttle * aircraftType.thrust * boost * powerAvailable * (1 - engineFailure * 0.72);
     aircraft.velocity.addScaledVector(fwd, thrustAccel * dt);
     const landingWind = clamp((280 - altitude()) / 280, 0, 1) * (weather.landingDrift || 0);
     const windInfluence = aircraft.onGround
@@ -2336,7 +2482,10 @@
     const inducedDrag = Math.max(0, aircraft.pitch) * Math.max(0, aircraft.pitch) * speed * 0.18;
     const weatherDrag = weather.dragBonus * speed * (1 + weather.rain + weather.snow);
     const speedBrakeDrag = aircraft.speedBrake * (speed * 0.09 + speed * speed * 0.00032);
-    const drag = aircraftType.drag * speed * speed + 0.022 * speed + overspeedDrag + inducedDrag + weatherDrag + speedBrakeDrag;
+    const gearDrag = aircraft.gearDown && !aircraft.gearBroken ? speed * 0.038 + speed * speed * 0.00018 : 0;
+    const powerOffGlide = !aircraft.onGround ? (1 - aircraft.throttle) * (1 - aircraft.speedBrake * 0.65) * 0.22 : 0;
+    const baseDrag = aircraftType.drag * speed * speed + 0.022 * speed + overspeedDrag + inducedDrag + weatherDrag;
+    const drag = baseDrag * (1 - powerOffGlide) + speedBrakeDrag + gearDrag;
     if (speed > 0.01) {
       aircraft.velocity.addScaledVector(aircraft.velocity.clone().normalize(), -drag * dt);
     }
@@ -2392,8 +2541,11 @@
     const angleLift = clamp(0.55 + aircraft.pitch * 1.25 + aoa * 0.95, -0.25, 1.55);
     const stallLiftPenalty = 1 - aircraft.stallPressure * 0.42;
     const speedBrakeLiftPenalty = 1 - aircraft.speedBrake * 0.09;
+    const gearLiftPenalty = aircraft.gearDown && !aircraft.gearBroken ? 0.985 : 1;
+    const wingFailureLiftPenalty = 1 - wingFailure * 0.18;
+    const glideLiftBonus = !aircraft.onGround ? 1 + (1 - aircraft.throttle) * (1 - aircraft.speedBrake) * 0.11 : 1;
     const weatherLift = 1 - weather.liftPenalty;
-    const liftAccel = speedLift * angleLift * aircraftType.lift * stallLiftPenalty * speedBrakeLiftPenalty * takeoffGate * weatherLift;
+    const liftAccel = speedLift * angleLift * aircraftType.lift * stallLiftPenalty * speedBrakeLiftPenalty * gearLiftPenalty * wingFailureLiftPenalty * glideLiftBonus * takeoffGate * weatherLift;
 
     aircraft.velocity.y += liftAccel * dt;
     if (aircraft.onGround && (!rotatingForTakeoff || speedKmh < aircraftType.takeoff * 1.18)) {
@@ -2404,19 +2556,23 @@
     const authorityBase = clamp(horizontalSpeed / (stallSpeedMS * 0.9), 0.18, 1.55);
     const stallControlPenalty = 1 - aircraft.stallPressure * 0.34;
     const authority = authorityBase * aircraftType.control * stallControlPenalty;
-    const stability = aircraftType.stability || 1;
+    const stability = (aircraftType.stability || 1) + altitudeStability;
     const priceAssist = clamp((aircraftType.price - 260000) / 4040000, 0, 1);
     const fighterAssist = isFighterType(aircraftType) ? 0.58 : 0;
     const premiumJetAssist = ["business", "regional", "airliner", "cargo"].includes(aircraftType.model) ? priceAssist * 0.3 : 0;
     const agilityAssist = 1 + priceAssist * 0.52 + fighterAssist + premiumJetAssist;
     const stabilityDamping = clamp(0.82 + stability * 0.42, 0.82, 1.9);
-    const handling = authority * agilityAssist / stabilityDamping;
+    const handling = authority * agilityAssist * (1 - controlsFailure * 0.36) / stabilityDamping;
     const turnBoost = 1 + priceAssist * 0.28 + (isFighterType(aircraftType) ? 0.34 : 0);
     const rudderFactor = rudderAuthorityFactor(aircraftType);
 
     aircraft.angularPitch += elevator * 0.96 * handling * turnBoost * dt;
     aircraft.angularRoll += aileron * 1.42 * handling * turnBoost * dt;
     aircraft.angularYaw += rudder * 0.55 * handling * (1 + priceAssist * 0.22) * rudderFactor * dt;
+    if (wingFailure > 0 && !aircraft.onGround) {
+      aircraft.angularRoll += wingFailure * 0.38 * dt;
+      aircraft.angularYaw += wingFailure * 0.08 * dt;
+    }
 
     aircraft.angularYaw += Math.sin(aircraft.roll) * 0.18 * handling * dt;
 
@@ -2432,10 +2588,11 @@
 
     if (!aircraft.onGround && weather.turbulence > 0) {
       const t = performance.now() * 0.001;
-      aircraft.angularPitch += Math.sin(t * 4.1) * weather.turbulence * 0.52 * dt;
-      aircraft.angularRoll += Math.sin(t * 5.6 + 1.4) * weather.turbulence * 0.92 * dt;
-      aircraft.angularYaw += Math.cos(t * 3.7) * weather.turbulence * 0.34 * dt;
-      aircraft.velocity.y += Math.sin(t * 2.9) * weather.turbulence * 1.35 * dt;
+      const altitudeCalm = 1 - altitudeStability * 0.55;
+      aircraft.angularPitch += Math.sin(t * 4.1) * weather.turbulence * 0.52 * altitudeCalm * dt;
+      aircraft.angularRoll += Math.sin(t * 5.6 + 1.4) * weather.turbulence * 0.92 * altitudeCalm * dt;
+      aircraft.angularYaw += Math.cos(t * 3.7) * weather.turbulence * 0.34 * altitudeCalm * dt;
+      aircraft.velocity.y += Math.sin(t * 2.9) * weather.turbulence * 1.35 * altitudeCalm * dt;
     }
 
     const dampingStability = clamp(stability - priceAssist * 0.38 - (isFighterType(aircraftType) ? 0.24 : 0), 0.75, 1.8);
@@ -2478,13 +2635,23 @@
     const tooFast = speedKmh > weatherLandingMax;
     const unstableTouch = bank > bankLimit || nose > noseLimit;
     const crosswindSlip = (weather.landingDrift || 0) > 0.9 && !contact.onRunway && speedKmh > 80;
+    const noGearTouch = !aircraft.gearDown || aircraft.gearBroken;
+    const safeNoGearLanding =
+      noGearTouch &&
+      contact.onRunway &&
+      verticalImpact <= 2.7 - weatherDifficulty * 0.18 &&
+      speedKmh <= aircraftType.landingMax * 0.82 &&
+      bank <= 0.16 &&
+      nose <= 0.24;
     const smoothTouchGrace =
       contact.onRunway &&
+      !noGearTouch &&
       verticalImpact <= 6.4 - weatherDifficulty * 0.35 &&
       bank <= bankLimit * 0.88 &&
       nose <= noseLimit * 0.88 &&
       speedKmh <= weatherLandingMax * 1.12;
     const hardHit = !smoothTouchGrace && (
+      (noGearTouch && !safeNoGearLanding) ||
       verticalImpact > verticalLimit ||
       unstableTouch ||
       crosswindSlip ||
@@ -2492,7 +2659,14 @@
     );
 
     if (hardHit) {
-      const damage = Math.round(verticalImpact * (5.6 + weatherDifficulty * 1.8) + Math.max(0, speedKmh - weatherLandingMax) * 0.12 + bank * 22 + nose * 24 + weatherDifficulty * 14);
+      const damage = Math.round(
+        verticalImpact * (5.6 + weatherDifficulty * 1.8) +
+        Math.max(0, speedKmh - weatherLandingMax) * 0.12 +
+        bank * 22 +
+        nose * 24 +
+        weatherDifficulty * 14 +
+        (noGearTouch ? 46 : 0)
+      );
       aircraft.health -= damage;
       if (wasAirborne) {
         recordLanding({
@@ -2517,10 +2691,12 @@
       aircraft.onGround = true;
       aircraft.health = Math.max(5, aircraft.health);
 
-      if (damage > 68 || verticalImpact > 21 || bank > 1.64 || nose > 1.36) {
+      if (noGearTouch || damage > 68 || verticalImpact > 21 || bank > 1.64 || nose > 1.36) {
         aircraft.crashed = true;
         aircraft.velocity.multiplyScalar(0.18);
-        el("message").innerHTML = "Pouso muito pesado. O avião quebrou, mas não explodiu. Aperte R.";
+        el("message").innerHTML = noGearTouch
+          ? "Pouso sem trem pesado demais. O avião quebrou, mas não explodiu. Aperte R."
+          : "Pouso muito pesado. O avião quebrou, mas não explodiu. Aperte R.";
       }
       return;
     }
@@ -2541,6 +2717,10 @@
         hardHit: false,
         weatherDifficulty
       });
+      if (noGearTouch) {
+        aircraft.health = Math.max(12, aircraft.health - 18);
+        el("message").innerHTML = "Pouso de emergência sem trem aceito. Foi suave o bastante.";
+      }
     }
 
     const runwayWetness = clamp(weather.rain + weather.snow * 0.85, 0, 1.35);
@@ -2814,6 +2994,11 @@
       plane.userData.prop.rotation.z += 0.18 + aircraft.throttle * 1.7;
     }
 
+    if (plane.userData.gearParts) {
+      const gearVisible = aircraft.gearDown && !aircraft.gearBroken;
+      plane.userData.gearParts.forEach(part => { part.visible = gearVisible; });
+    }
+
     const shadow = plane.userData.shadow;
     if (shadow) {
       shadow.position.x = aircraft.position.x;
@@ -3027,6 +3212,7 @@
     marker.visible = false;
     clearMissionObjects();
     clearProjectiles();
+    clearFailure();
 
     el("message").innerHTML =
       (extraText ? extraText + " " : "") +
@@ -3081,6 +3267,10 @@
       targetIndex: 0,
       enemiesDown: 0
     };
+    clearFailure();
+    failureTimer = gameMode === "career" && careerDifficulty === "hard" && !missionUsesClearChallengeWeather(mission)
+      ? 70 + Math.random() * 110
+      : Infinity;
 
     const clearChallengeWeather = missionUsesClearChallengeWeather(mission);
     if (clearChallengeWeather) {
@@ -3223,6 +3413,8 @@
     lastLanding = null;
     clearMissionObjects();
     clearProjectiles();
+    clearFailure();
+    failureTimer = Infinity;
 
     if (gameMode === "free") {
       ownedAircraft = new Set(AIRCRAFT_TYPES.map(type => type.id));
@@ -3334,6 +3526,7 @@
       meta.innerHTML =
         "Preço: <span class=\"shop-price\">" + (gameMode === "free" ? "Grátis" : fmtMoney(type.price)) + "</span><br>" +
         "Máx: " + type.maxSpeed + " km/h | Stall: " + type.stallSpeed + " km/h | Decolagem: " + type.takeoff + " km/h<br>" +
+        "Limite do trem: " + gearLimitKmh(type) + " km/h<br>" +
         "Estabilidade: " + Math.round((type.stability || 1) * 100) + "%" + weaponsText;
 
       info.append(title, meta);
@@ -3482,7 +3675,7 @@
 
     const target = activeMission.to;
     const distance = dist2(aircraft.position.x, aircraft.position.z, target.x, target.z);
-    const approachDistance = Math.max(3400, target.length * 2.2);
+    const approachDistance = Math.max(6200, target.length * 3.15);
     const route = approachRouteForAirport(target);
     const routeDistance = dist2(aircraft.position.x, aircraft.position.z, route.x, route.z);
 
@@ -3738,6 +3931,8 @@
       ? Math.round(aircraft.speedBrake * 100) + "%"
       : "Off";
     el("speedBrake").className = aircraft.speedBrake > 0.05 ? "warn" : "";
+    el("landingGear").textContent = landingGearLabel() + " (" + gearLimitKmh() + " km/h)";
+    el("landingGear").className = aircraft.gearBroken ? "bad" : !aircraft.gearDown ? "warn" : "";
     el("boost").textContent = hudInput.boost ? "On" : "Off";
     el("boost").className = hudInput.boost ? "warn" : "";
     el("aoa").textContent = THREE.Math.radToDeg(aircraft.aoa).toFixed(1);
@@ -3754,6 +3949,9 @@
     if (!gameStarted) status = "Escolha um modo";
     else if (aircraft.exploded) status = "Explodiu! Aperte R";
     else if (aircraft.crashed) status = "Acidente! Aperte R";
+    else if (activeFailure) status = activeFailure.title + " - aperte F";
+    else if (aircraft.gearBroken) status = "Trem quebrado: pouso muito suave";
+    else if (aircraft.gearDown && !aircraft.onGround && speedKmh() > gearLimitKmh() * 0.92) status = "Recolha o trem de pouso";
     else if (aircraft.stall) status = "STALL abaixo de " + aircraftType.stallSpeed + " km/h";
     else if (lowSpeedWarning) status = "Velocidade baixa";
     else if (altitude() > 12) status = "Voando";
@@ -3766,7 +3964,7 @@
 
     const statusEl = el("status");
     statusEl.textContent = status;
-    statusEl.className = aircraft.crashed ? "bad" : aircraft.stall || lowSpeedWarning ? "warn" : altitude() > 12 ? "good" : "";
+    statusEl.className = aircraft.crashed ? "bad" : aircraft.stall || lowSpeedWarning || activeFailure || aircraft.gearBroken ? "warn" : altitude() > 12 ? "good" : "";
 
     const landingEl = el("landingQuality");
     landingEl.textContent = lastLanding ? lastLanding.text : "--";
@@ -3810,7 +4008,8 @@
     el("compactAircraft").textContent = aircraftType.name;
     el("compactAltitude").textContent = Math.round(altitude()) + " m";
     el("compactThrottle").textContent = Math.round(aircraft.throttle * 100) + "%" +
-      (aircraft.speedBrake > 0.05 ? " | SB " + Math.round(aircraft.speedBrake * 100) + "%" : "");
+      (aircraft.speedBrake > 0.05 ? " | SB " + Math.round(aircraft.speedBrake * 100) + "%" : "") +
+      (aircraft.gearBroken ? " | Trem quebrado" : aircraft.gearDown ? " | Trem" : "");
     el("compactLanding").textContent = lastLanding ? lastLanding.text : status;
   }
 
@@ -3819,6 +4018,8 @@
     if (once("2")) switchAircraft(15);
     if (once("3")) switchAircraft(AIRCRAFT_TYPES.length - 1);
     if (once("g")) cycleWeapon();
+    if (once("u")) toggleLandingGear();
+    if (once("f")) repairFailureCommand();
     if (once(" ")) fireSelectedWeapon();
     if (once("l")) setShopOpen(!shopOpen);
     if (once("i")) setHudHidden(!hudHidden);

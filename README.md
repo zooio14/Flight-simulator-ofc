@@ -18,6 +18,8 @@ Abra o jogo, coloque o nome do piloto, escolha um modo e use:
 - 3: caca final
 - Espaco: atirar com a arma selecionada
 - G: alternar entre misseis e canhao
+- U: abrir/fechar trem de pouso
+- F: corrigir pane quando a carreira dificil pedir
 - L: loja de avioes
 - I: esconder/mostrar informacoes
 - C: configuracoes
@@ -51,6 +53,7 @@ Abra o jogo, coloque o nome do piloto, escolha um modo e use:
 - Touch com joystick, leme e alavanca vertical de potencia na parte de baixo
 - No touch, puxar a alavanca de potencia abaixo de 0% abre o speed brake
 - Barra superior touch com Freio, Boost e botao Comandos para mostrar/ocultar reset, loja, info, config, camera, qualidade, hitboxes, missoes e troca de aviao
+- Comando Trem no touch para abrir/fechar o trem de pouso
 - Em cacas armados, os botoes Atirar e Arma aparecem automaticamente no topo mesmo com a lista de comandos fechada
 - Sistema de clima com ensolarado, parcialmente nublado, nublado, nevoa, chuva leve, chuva forte, chuva pesada, tempestade, vento cruzado, vento muito pesado, neve, turbulencia, nevoa fechada, calor forte, granizo e gelo
 - Sistema de horario com dia, fim de tarde e noite, mudando luz, cor do ceu, neblina e exposicao
@@ -60,12 +63,13 @@ Abra o jogo, coloque o nome do piloto, escolha um modo e use:
 - Vento muito pesado desvia a trajetoria no pouso e exige correcao lateral
 - Tempestade e chuva pesada deixam o pouso mais sensivel a impacto, alinhamento, banco e velocidade
 - Carreira dificil sorteia clima e horario nas missoes normais; argolas e PvP ficam com clima limpo e horario variavel
+- Carreira dificil pode gerar pane de motor, problema na asa ou comandos desalinhados, com instrucoes na tela para consertar usando F
 - Pista molhada ou com neve reduz aderencia e deixa pouso/frenagem mais exigentes
 - Carreira dificil paga bonus de missao quando o voo acontece em clima ruim
 - Loja com comprar/equipar e estatisticas de velocidade, stall e decolagem
 - Mapa aumentado para 48 km x 48 km
 - 22 aeroportos espalhados pelo mundo
-- Cidades urbanas com torres, parques e ruas
+- Cidades urbanas mais densas com torres, arranha-ceus, parques e ruas
 - Vilas rurais com casas, celeiros, silos e campos
 - 25 missoes: passageiros, carga, emergencia, operacao militar, argolas e PvP simulado
 - Missoes PvP so liberam quando o jogador desbloqueia qualquer um dos 6 cacas de PvP
@@ -77,6 +81,7 @@ Abra o jogo, coloque o nome do piloto, escolha um modo e use:
 - Canhao mais facil de acertar por colisao maior, mas sem teleguiar
 - Nariz dos cacas remodelado para ficar mais reto e menos pontudo
 - Mini mapa circular com rota ate um ponto de aproximacao antes da pista
+- Mini mapa coloca a bola azul mais longe da pista para dar mais tempo de alinhar
 - Radar superior que orienta o jeito mais facil de chegar alinhado para pousar
 - Camera terceira pessoa presa atras do aviao, com suavizacao por rumo
 - HUD compacto quando as informacoes laterais sao escondidas
@@ -87,6 +92,8 @@ Abra o jogo, coloque o nome do piloto, escolha um modo e use:
 - Pouso pesado quebra o aviao, mas nao explode automaticamente
 - Fisica melhorada: nariz para cima perde energia, mergulho ganha velocidade, arrasto segura a velocidade maxima
 - Speed brake aerodinamico: segure S depois de zerar o motor ou negative a alavanca touch para frear no ar
+- Aviao plana melhor sem potencia, e voos mais altos ficam mais estaveis
+- Trem de pouso tem limite de velocidade por aviao; se quebrar, ainda da para pousar, mas precisa ser extremamente suave
 - Decolagem mais dificil: o aviao precisa passar da velocidade certa e puxar o manche para sair do chao
 - Stall baseado em velocidade minima especifica de cada aeronave, um pouco mais exigente
 - Modelos 3D com escala e cores por aeronave
