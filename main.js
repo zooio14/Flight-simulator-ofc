@@ -48,6 +48,12 @@
     { id: "icing", name: "Gelo em baixa temperatura", sky: 0xb7c6d4, fog: 0xd4dde5, fogNear: 430, fogFar: 11500, wind: 16, gust: 12, turbulence: 0.2, liftPenalty: 0.14, dragBonus: 0.11, rain: 0.15, snow: 0.55, reward: 1.46 }
   ];
 
+  const TIME_OF_DAY_TYPES = [
+    { id: "day", name: "Dia", tint: 0xffffff, tintAmount: 0, fogAmount: 0, sun: 1, hemi: 1.55, exposure: 1.03, sunPosition: [1200, 2200, 800], fogMultiplier: 1 },
+    { id: "sunset", name: "Fim de tarde", tint: 0xffa45c, tintAmount: 0.24, fogAmount: 0.16, sun: 0.72, hemi: 1.08, exposure: 0.94, sunPosition: [-1600, 760, 900], fogMultiplier: 0.92 },
+    { id: "night", name: "Noite", tint: 0x07111f, tintAmount: 0.78, fogAmount: 0.54, sun: 0.18, hemi: 0.46, exposure: 0.78, sunPosition: [-900, 540, -1200], fogMultiplier: 0.68 }
+  ];
+
   const AIRCRAFT_TYPES = [
     { id: "cessna", name: "Cessna velho de aeroclube", model: "cessna", price: 0, takeoff: 98, landingMax: 180, maxSpeed: 320, thrust: 58, boost: 1.12, drag: 0.00185, lift: 17.4, control: 1.12, stallAngle: 22, stallSpeed: 72, cameraBack: 34, hitboxRadius: 7, color: 0xf3f0df, accent: 0xb43732, scale: 0.96 },
     { id: "trainer", name: "Treinador leve OFC-120", model: "cessna", price: 2400, takeoff: 92, landingMax: 185, maxSpeed: 350, thrust: 65, boost: 1.16, drag: 0.0017, lift: 18.2, control: 1.24, stallAngle: 23, stallSpeed: 68, cameraBack: 34, hitboxRadius: 7, color: 0xffffff, accent: 0x2d6fd3, scale: 1 },
@@ -319,7 +325,8 @@
 
   const camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 56000);
 
-  scene.add(new THREE.HemisphereLight(0xf7fbff, 0x4a7a4c, 1.55));
+  const hemisphereLight = new THREE.HemisphereLight(0xf7fbff, 0x4a7a4c, 1.55);
+  scene.add(hemisphereLight);
   const sun = new THREE.DirectionalLight(0xfff4df, 1.85);
   sun.position.set(1200, 2200, 800);
   scene.add(sun);
@@ -333,6 +340,9 @@
   let cameraMode = 0;
   let careerDifficulty = "easy";
   let activeWeather = WEATHER_TYPES[0];
+  let activeTimeOfDay = TIME_OF_DAY_TYPES[0];
+  let freeWeatherId = "sunny";
+  let freeTimeId = "day";
   let weatherTimer = 0;
   let lightningTimer = 0;
   let weatherWindDirection = Math.PI * 0.35;
@@ -370,6 +380,8 @@
   const legacyCareerKey = name => "flight-simulator-ofc-career-" + pilotSlug(name);
   const maxSpeedMS = () => aircraftType.maxSpeed / 3.6;
   const aircraftById = id => AIRCRAFT_TYPES.find(type => type.id === id);
+  const weatherById = id => WEATHER_TYPES.find(weather => weather.id === id) || WEATHER_TYPES[0];
+  const timeOfDayById = id => TIME_OF_DAY_TYPES.find(time => time.id === id) || TIME_OF_DAY_TYPES[0];
   const ownsAircraftId = id => gameMode === "free" || ownedAircraft.has(id);
   const isFighterType = type => type && (type.model === "fighter" || type.model === "f22");
   const isCombatFighterId = id => COMBAT_FIGHTER_IDS.includes(id);
@@ -450,7 +462,15 @@
   }
 
   function weatherEnabled() {
-    return gameMode === "career" && careerDifficulty === "hard";
+    return gameMode === "free" || (gameMode === "career" && careerDifficulty === "hard");
+  }
+
+  function randomTimeOfDay() {
+    return TIME_OF_DAY_TYPES[Math.floor(Math.random() * TIME_OF_DAY_TYPES.length)];
+  }
+
+  function blendedColor(baseHex, tintHex, amount) {
+    return new THREE.Color(baseHex).lerp(new THREE.Color(tintHex), amount);
   }
 
   function createWeatherParticles(weather) {
@@ -488,16 +508,37 @@
     weatherGroup.add(points);
   }
 
-  function applyWeather(weather) {
+  function applyEnvironmentColors(flash = false) {
+    if (flash) {
+      sun.intensity = Math.max(2.35, 2.7 * activeTimeOfDay.sun);
+      scene.background.setHex(0x9fb5cf);
+      return;
+    }
+
+    const sky = blendedColor(activeWeather.sky, activeTimeOfDay.tint, activeTimeOfDay.tintAmount);
+    const fog = blendedColor(activeWeather.fog, activeTimeOfDay.tint, activeTimeOfDay.fogAmount);
+    const weatherLight = activeWeather.lightning
+      ? 0.72
+      : clamp(1.85 - activeWeather.turbulence * 1.8 - activeWeather.rain * 0.55 - activeWeather.snow * 0.35, 0.65, 1.85);
+    const sunPos = activeTimeOfDay.sunPosition;
+
+    scene.background = sky;
+    scene.fog.color.copy(fog);
+    scene.fog.near = activeWeather.fogNear;
+    scene.fog.far = Math.min(activeWeather.fogFar * activeTimeOfDay.fogMultiplier, quality.fog);
+    sun.position.set(sunPos[0], sunPos[1], sunPos[2]);
+    sun.intensity = weatherLight * activeTimeOfDay.sun;
+    hemisphereLight.intensity = activeTimeOfDay.hemi;
+    renderer.toneMappingExposure = activeTimeOfDay.exposure;
+  }
+
+  function applyWeather(weather, timeOfDay = activeTimeOfDay) {
     activeWeather = weather || WEATHER_TYPES[0];
+    activeTimeOfDay = timeOfDay || TIME_OF_DAY_TYPES[0];
     weatherWindDirection = Math.random() * Math.PI * 2;
     lightningTimer = activeWeather.lightning ? 2 + Math.random() * 5 : 0;
 
-    scene.background = new THREE.Color(activeWeather.sky);
-    scene.fog.color.setHex(activeWeather.fog);
-    scene.fog.near = activeWeather.fogNear;
-    scene.fog.far = Math.min(activeWeather.fogFar, quality.fog);
-    sun.intensity = activeWeather.lightning ? 0.72 : clamp(1.85 - activeWeather.turbulence * 1.8 - activeWeather.rain * 0.55 - activeWeather.snow * 0.35, 0.65, 1.85);
+    applyEnvironmentColors(false);
     createWeatherParticles(activeWeather);
   }
 
@@ -507,16 +548,24 @@
   }
 
   function setWeatherForMode(force = false) {
-    if (!weatherEnabled()) {
-      if (force || activeWeather.id !== "sunny") applyWeather(WEATHER_TYPES[0]);
+    if (gameMode === "free") {
+      applyWeather(weatherById(freeWeatherId), timeOfDayById(freeTimeId));
       weatherTimer = 0;
       return;
     }
 
-    if (force || weatherTimer <= 0) {
-      applyWeather(chooseHardWeather());
-      weatherTimer = 80 + Math.random() * 80;
+    if (gameMode === "career" && careerDifficulty === "hard") {
+      if (force || weatherTimer <= 0) {
+        applyWeather(chooseHardWeather(), randomTimeOfDay());
+        weatherTimer = 80 + Math.random() * 80;
+      }
+      return;
     }
+
+    if (force || activeWeather.id !== "sunny" || activeTimeOfDay.id !== "day") {
+      applyWeather(WEATHER_TYPES[0], TIME_OF_DAY_TYPES[0]);
+    }
+    weatherTimer = 0;
   }
 
   function weatherWindVector() {
@@ -528,10 +577,10 @@
   }
 
   function updateWeather(dt) {
-    if (weatherEnabled()) {
+    if (gameMode === "career" && careerDifficulty === "hard") {
       weatherTimer -= dt;
       if (weatherTimer <= 0) setWeatherForMode(true);
-    } else if (activeWeather.id !== "sunny") {
+    } else if (gameMode !== "free" && (activeWeather.id !== "sunny" || activeTimeOfDay.id !== "day")) {
       setWeatherForMode(true);
     }
 
@@ -562,13 +611,11 @@
     if (activeWeather.lightning) {
       lightningTimer -= dt;
       if (lightningTimer < 0.12) {
-        sun.intensity = 2.7;
-        scene.background.setHex(0x9fb5cf);
+        applyEnvironmentColors(true);
       }
       if (lightningTimer <= 0) {
         lightningTimer = 4 + Math.random() * 7;
-        scene.background.setHex(activeWeather.sky);
-        sun.intensity = 0.72;
+        applyEnvironmentColors(false);
       }
     }
   }
@@ -1638,16 +1685,16 @@
     const careerEasyButton = el("startCareerEasy");
     const careerHardButton = el("startCareerHard");
     const nameInput = el("pilotName");
-    if (freeButton) freeButton.disabled = !logged;
-    if (careerEasyButton) careerEasyButton.disabled = !logged;
-    if (careerHardButton) careerHardButton.disabled = !logged;
+    if (freeButton) freeButton.disabled = false;
+    if (careerEasyButton) careerEasyButton.disabled = false;
+    if (careerHardButton) careerHardButton.disabled = false;
     if (nameInput && logged) nameInput.value = playerName;
     el("playerLabel").textContent = logged ? playerName : "--";
     const status = el("profileStatus");
     if (status) {
       status.textContent = logged
         ? "Piloto " + playerName + " carregado. Cada modo carreira salva separado."
-        : "Seu modo carreira sera salvo neste navegador.";
+        : "Digite seu nome ou clique direto para jogar como Piloto.";
     }
   }
 
@@ -1662,6 +1709,55 @@
     el("message").innerHTML = savedEasy || savedHard
       ? "Carreira de " + playerName + " encontrada. Escolha fácil ou difícil para continuar."
       : "Piloto " + playerName + " pronto. Comece uma carreira ou jogue livre.";
+  }
+
+  function populateFreeSetup() {
+    const weatherSelect = el("freeWeatherSelect");
+    const timeSelect = el("freeTimeSelect");
+
+    if (weatherSelect && !weatherSelect.children.length) {
+      WEATHER_TYPES.forEach(weather => {
+        const option = document.createElement("option");
+        option.value = weather.id;
+        option.textContent = weather.name;
+        weatherSelect.appendChild(option);
+      });
+    }
+
+    if (timeSelect && !timeSelect.children.length) {
+      TIME_OF_DAY_TYPES.forEach(time => {
+        const option = document.createElement("option");
+        option.value = time.id;
+        option.textContent = time.name;
+        timeSelect.appendChild(option);
+      });
+    }
+
+    if (weatherSelect) weatherSelect.value = freeWeatherId;
+    if (timeSelect) timeSelect.value = freeTimeId;
+  }
+
+  function showFreeSetup() {
+    populateFreeSetup();
+    const startScreen = el("startScreen");
+    const freeSetupScreen = el("freeSetupScreen");
+    if (startScreen) startScreen.style.display = "none";
+    if (freeSetupScreen) freeSetupScreen.hidden = false;
+  }
+
+  function backToStartScreen() {
+    const startScreen = el("startScreen");
+    const freeSetupScreen = el("freeSetupScreen");
+    if (freeSetupScreen) freeSetupScreen.hidden = true;
+    if (startScreen) startScreen.style.display = "flex";
+  }
+
+  function startFreeFromSetup() {
+    const weatherSelect = el("freeWeatherSelect");
+    const timeSelect = el("freeTimeSelect");
+    freeWeatherId = weatherSelect ? weatherSelect.value : "sunny";
+    freeTimeId = timeSelect ? timeSelect.value : "day";
+    startGame("free");
   }
 
   function switchAircraft(index) {
@@ -2534,7 +2630,7 @@
   function completeActiveMission(extraText, bonus = 0) {
     if (!activeMission || activeMission.completed) return;
 
-    const weatherBonus = weatherEnabled()
+    const weatherBonus = gameMode === "career" && careerDifficulty === "hard"
       ? Math.round(activeMission.data.reward * ((activeWeather.reward || 1) - 1))
       : 0;
     const payout = activeMission.data.reward + bonus + weatherBonus;
@@ -2598,6 +2694,8 @@
       enemiesDown: 0
     };
 
+    if (gameMode === "career" && careerDifficulty === "hard") setWeatherForMode(true);
+
     resetToAirport(activeMission.from);
     buildMissionChallenge(activeMission);
     if (mission.challenge) updateMissionMarker();
@@ -2605,7 +2703,10 @@
       marker.visible = true;
       marker.position.set(activeMission.to.x, 12, activeMission.to.z);
     }
-    el("message").innerHTML = missionBrief(activeMission) + autoSelected + " Pare no terminal e decole quando estiver pronto.";
+    const weatherText = gameMode === "career" && careerDifficulty === "hard"
+      ? " Clima sorteado: " + activeWeather.name + ", " + activeTimeOfDay.name + "."
+      : "";
+    el("message").innerHTML = missionBrief(activeMission) + autoSelected + weatherText + " Pare no terminal e decole quando estiver pronto.";
   }
 
   function nextMission() {
@@ -2752,9 +2853,11 @@
 
     const startScreen = el("startScreen");
     if (startScreen) startScreen.style.display = "none";
+    const freeSetupScreen = el("freeSetupScreen");
+    if (freeSetupScreen) freeSetupScreen.hidden = true;
 
     el("message").innerHTML = gameMode === "free"
-      ? "Modo livre iniciado: todos os aviões estão liberados."
+      ? "Modo livre iniciado: todos os aviões liberados, clima " + activeWeather.name + " e horário " + activeTimeOfDay.name + "."
       : careerDifficulty === "hard"
         ? "Carreira difícil iniciada para " + playerName + ": clima, vento, turbulência e pista molhada ativos."
         : "Carreira fácil iniciada para " + playerName + ": sem clima difícil, progresso salvo automaticamente.";
@@ -3220,8 +3323,10 @@
     el("weaponInfo").textContent = selectedWeaponLabel();
     el("fps").textContent = fpsValue;
     const weather = weatherEnabled() ? activeWeather : WEATHER_TYPES[0];
+    const timeOfDay = weatherEnabled() ? activeTimeOfDay : TIME_OF_DAY_TYPES[0];
     const windTop = weather.wind + weather.gust;
     el("weatherName").textContent = weatherEnabled() ? weather.name : "Ensolarado";
+    el("timeLabel").textContent = timeOfDay.name;
     el("windInfo").textContent = windTop > 0
       ? Math.round(weather.wind * 3.6) + "-" + Math.round(windTop * 3.6) + " km/h"
       : "Calmo";
@@ -3342,6 +3447,10 @@
     const startFree = el("startFree");
     const startCareerEasy = el("startCareerEasy");
     const startCareerHard = el("startCareerHard");
+    const freeBack = el("freeBack");
+    const freeLaunch = el("freeLaunch");
+    const freeWeatherSelect = el("freeWeatherSelect");
+    const freeTimeSelect = el("freeTimeSelect");
     const loginButton = el("loginButton");
     const pilotInput = el("pilotName");
     const shopToggle = el("shopToggle");
@@ -3358,9 +3467,20 @@
         if (event.key === "Enter") loginPilot();
       });
     }
-    if (startFree) startFree.addEventListener("click", () => startGame("free"));
+    populateFreeSetup();
+    if (startFree) startFree.addEventListener("click", showFreeSetup);
     if (startCareerEasy) startCareerEasy.addEventListener("click", () => startGame("careerEasy"));
     if (startCareerHard) startCareerHard.addEventListener("click", () => startGame("careerHard"));
+    if (freeBack) freeBack.addEventListener("click", backToStartScreen);
+    if (freeLaunch) freeLaunch.addEventListener("click", startFreeFromSetup);
+    if (freeWeatherSelect) freeWeatherSelect.addEventListener("change", () => {
+      freeWeatherId = freeWeatherSelect.value;
+      if (!gameStarted) applyWeather(weatherById(freeWeatherId), timeOfDayById(freeTimeId));
+    });
+    if (freeTimeSelect) freeTimeSelect.addEventListener("change", () => {
+      freeTimeId = freeTimeSelect.value;
+      if (!gameStarted) applyWeather(weatherById(freeWeatherId), timeOfDayById(freeTimeId));
+    });
     if (shopToggle) shopToggle.addEventListener("click", () => setShopOpen(!shopOpen));
     if (shopClose) shopClose.addEventListener("click", () => setShopOpen(false));
     if (hudToggle) hudToggle.addEventListener("click", () => setHudHidden(!hudHidden));

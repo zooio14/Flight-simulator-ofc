@@ -18,19 +18,41 @@
     <div class="start-content">
       <p class="start-kicker">Criado por Guilherme Trecenti</p>
       <h1>Flight Simulator OFC</h1>
-      <p class="start-subtitle">Entre com seu piloto e escolha como quer voar.</p>
+      <p class="start-subtitle">Escolha como quer voar. Se nao digitar nome, o jogo usa Piloto.</p>
       <div class="login-panel">
         <label for="pilotName">Piloto</label>
         <div class="login-row">
           <input id="pilotName" type="text" maxlength="24" placeholder="Seu nome" autocomplete="nickname" />
           <button id="loginButton" type="button">Entrar</button>
         </div>
-        <p id="profileStatus">Seu modo carreira sera salvo neste navegador.</p>
+        <p id="profileStatus">O modo carreira sera salvo neste navegador.</p>
       </div>
       <div class="start-actions">
-        <button id="startFree" type="button" disabled>Jogar livre</button>
-        <button id="startCareerEasy" type="button" disabled>Carreira facil</button>
-        <button id="startCareerHard" type="button" disabled>Carreira dificil com clima</button>
+        <button id="startFree" type="button">Jogar livre</button>
+        <button id="startCareerEasy" type="button">Carreira facil</button>
+        <button id="startCareerHard" type="button">Carreira dificil com clima</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="freeSetupScreen" hidden>
+    <div class="free-setup-content">
+      <p class="start-kicker">Modo livre</p>
+      <h2>Escolha clima e horario</h2>
+      <p class="start-subtitle">No modo livre todos os avioes ficam liberados e voce escolhe a condicao do voo.</p>
+      <div class="free-options">
+        <label for="freeWeatherSelect">
+          Clima
+          <select id="freeWeatherSelect"></select>
+        </label>
+        <label for="freeTimeSelect">
+          Horario
+          <select id="freeTimeSelect"></select>
+        </label>
+      </div>
+      <div class="start-actions">
+        <button id="freeBack" type="button">Voltar</button>
+        <button id="freeLaunch" type="button">Iniciar voo livre</button>
       </div>
     </div>
   </div>
@@ -64,6 +86,7 @@
       FPS: <span id="fps">0</span><br />
       Qualidade: <span id="quality">Alta</span><br />
       Tempo: <span id="weatherName">Ensolarado</span><br />
+      Horário: <span id="timeLabel">Dia</span><br />
       Vento: <span id="windInfo">Calmo</span><br />
       Turbulência: <span id="turbulenceInfo">0%</span><br />
       Velocidade: <span id="speed">0</span> km/h<br />

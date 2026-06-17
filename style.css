@@ -22,7 +22,8 @@ canvas {
   z-index: 100;
 }
 
-#startScreen {
+#startScreen,
+#freeSetupScreen {
   position: fixed;
   inset: 0;
   z-index: 80;
@@ -38,8 +39,23 @@ canvas {
   text-align: center;
 }
 
+#freeSetupScreen[hidden] {
+  display: none;
+}
+
 .start-content {
   width: min(680px, calc(100vw - 28px));
+}
+
+.free-setup-content {
+  width: min(560px, calc(100vw - 28px));
+}
+
+.free-setup-content h2 {
+  margin: 0;
+  font-size: 42px;
+  line-height: 1;
+  text-shadow: 0 12px 38px rgba(0, 0, 0, 0.45);
 }
 
 .start-kicker {
@@ -87,7 +103,8 @@ canvas {
   gap: 8px;
 }
 
-input {
+input,
+select {
   min-width: 0;
   border: 1px solid rgba(255, 255, 255, 0.22);
   border-radius: 8px;
@@ -101,6 +118,11 @@ input::placeholder {
   color: rgba(255, 255, 255, 0.45);
 }
 
+select {
+  width: 100%;
+  appearance: none;
+}
+
 #profileStatus {
   margin: 8px 0 0;
   color: rgba(255, 255, 255, 0.72);
@@ -112,6 +134,23 @@ input::placeholder {
   justify-content: center;
   gap: 12px;
   flex-wrap: wrap;
+}
+
+.free-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  width: min(520px, 100%);
+  margin: 0 auto 18px;
+  text-align: left;
+}
+
+.free-options label {
+  display: grid;
+  gap: 6px;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 12px;
+  font-weight: 700;
 }
 
 button {
@@ -136,10 +175,18 @@ button:disabled {
 
 #startFree,
 #startCareerEasy,
-#startCareerHard {
+#startCareerHard,
+#freeBack,
+#freeLaunch {
   min-width: 156px;
   padding: 12px 18px;
   font-size: 16px;
+}
+
+@media (max-width: 560px) {
+  .free-options {
+    grid-template-columns: 1fr;
+  }
 }
 
 #topControls {
