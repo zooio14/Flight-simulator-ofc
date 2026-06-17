@@ -259,6 +259,10 @@ button:disabled {
   gap: 7px;
 }
 
+.segmented-control.two-options {
+  grid-template-columns: repeat(2, 1fr);
+}
+
 .segmented-control button.active {
   border-color: rgba(102, 202, 255, 0.9);
   background: rgba(34, 126, 166, 0.88);

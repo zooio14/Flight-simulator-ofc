@@ -345,6 +345,7 @@
   let touchCommandsOpen = false;
   let controlMode = localStorage.getItem("flight-simulator-ofc-control-mode") || "keyboard";
   let controlSensitivity = Number(localStorage.getItem("flight-simulator-ofc-control-sensitivity")) || 1;
+  let pitchInverted = localStorage.getItem("flight-simulator-ofc-pitch-inverted") !== "false";
   if (!["keyboard", "mouse", "touch"].includes(controlMode)) controlMode = "keyboard";
   controlSensitivity = Math.max(0.45, Math.min(1.75, controlSensitivity));
   let mouseControl = { x: 0, y: 0 };
@@ -474,7 +475,8 @@
   }
 
   function flightInput() {
-    const keyboardElevator = (down("arrowdown") ? 1 : 0) - (down("arrowup") ? 1 : 0);
+    const pitchAxis = pitchInverted ? 1 : -1;
+    const keyboardElevator = ((down("arrowdown") ? 1 : 0) - (down("arrowup") ? 1 : 0)) * pitchAxis;
     const keyboardAileron = (down("arrowleft") ? 1 : 0) - (down("arrowright") ? 1 : 0);
     const keyboardRudder = (down("a") ? 1 : 0) - (down("d") ? 1 : 0);
     let elevator = keyboardElevator;
@@ -482,11 +484,11 @@
     let rudder = keyboardRudder;
 
     if (controlMode === "mouse") {
-      elevator = clamp(mouseControl.y * controlSensitivity, -1, 1);
+      elevator = clamp(mouseControl.y * pitchAxis * controlSensitivity, -1, 1);
       aileron = clamp(-mouseControl.x * controlSensitivity, -1, 1);
       rudder = clamp(-mouseControl.x * controlSensitivity * 0.42 + keyboardRudder * 0.45, -1, 1);
     } else if (controlMode === "touch") {
-      elevator = clamp(touchControl.y * controlSensitivity, -1, 1);
+      elevator = clamp(touchControl.y * pitchAxis * controlSensitivity, -1, 1);
       aileron = clamp(-touchControl.x * controlSensitivity, -1, 1);
       rudder = clamp(touchRudder + keyboardRudder * 0.35, -1, 1);
     }
@@ -1749,6 +1751,10 @@
       button.classList.toggle("active", button.dataset.controlMode === controlMode);
     });
 
+    document.querySelectorAll("[data-pitch-inverted]").forEach(button => {
+      button.classList.toggle("active", button.dataset.pitchInverted === String(pitchInverted));
+    });
+
     const sensitivity = el("controlSensitivity");
     if (sensitivity) sensitivity.value = controlSensitivity;
     const cameraLabel = el("cameraModeLabel");
@@ -1793,6 +1799,12 @@
   function setControlSensitivity(value) {
     controlSensitivity = clamp(Number(value) || 1, 0.45, 1.75);
     localStorage.setItem("flight-simulator-ofc-control-sensitivity", String(controlSensitivity));
+    updateSettingsUi();
+  }
+
+  function setPitchInverted(value) {
+    pitchInverted = value === true || value === "true";
+    localStorage.setItem("flight-simulator-ofc-pitch-inverted", String(pitchInverted));
     updateSettingsUi();
   }
 
@@ -3713,7 +3725,7 @@
     else if (aircraft.stall) status = "STALL abaixo de " + aircraftType.stallSpeed + " km/h";
     else if (lowSpeedWarning) status = "Velocidade baixa";
     else if (altitude() > 12) status = "Voando";
-    else if (aircraft.onGround && speedKmh() > aircraftType.takeoff * 1.12 && hudInput.elevator <= 0.05) status = "Puxe para baixo para decolar";
+    else if (aircraft.onGround && speedKmh() > aircraftType.takeoff * 1.12 && hudInput.elevator <= 0.05) status = "Puxe o manche para decolar";
     else if (aircraft.onGround && speedKmh() > aircraftType.takeoff * 1.12) status = "Rotação de decolagem";
 
     if (Math.abs(aircraft.position.x) > HALF || Math.abs(aircraft.position.z) > HALF) {
@@ -3851,6 +3863,9 @@
     if (touchCommandsToggle) touchCommandsToggle.addEventListener("click", toggleTouchCommands);
     document.querySelectorAll("[data-control-mode]").forEach(button => {
       button.addEventListener("click", () => setControlMode(button.dataset.controlMode));
+    });
+    document.querySelectorAll("[data-pitch-inverted]").forEach(button => {
+      button.addEventListener("click", () => setPitchInverted(button.dataset.pitchInverted));
     });
     setupPointerControls();
 

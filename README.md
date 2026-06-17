@@ -11,7 +11,7 @@ Abra o jogo, coloque o nome do piloto, escolha um modo e use:
 - W: acelerar
 - S: reduzir motor; segurando depois de 0% abre o speed brake
 - Shift: turbo
-- Setas: pitch invertido e roll; seta para baixo puxa o manche e faz subir, seta para cima empurra e faz descer
+- Setas: pitch e roll; em Config voce escolhe manche invertido ou normal
 - A/D: yaw
 - 1: Cessna inicial
 - 2: airliner medio
@@ -46,6 +46,7 @@ Abra o jogo, coloque o nome do piloto, escolha um modo e use:
 - Botoes de modo sempre visiveis: se o jogador nao digitar nome, entra como Piloto
 - Tela do modo livre para escolher clima e horario antes de iniciar
 - Centro de configuracoes aberto pela tecla C ou pelo botao Config
+- Configuracao de manche invertido ou normal para teclado, mouse e touch
 - Controle por teclado, mouse ou touch para iPad, com sensibilidade ajustavel
 - Touch com joystick, leme e alavanca vertical de potencia na parte de baixo
 - No touch, puxar a alavanca de potencia abaixo de 0% abre o speed brake
@@ -84,7 +85,7 @@ Abra o jogo, coloque o nome do piloto, escolha um modo e use:
 - Pouso pesado quebra o aviao, mas nao explode automaticamente
 - Fisica melhorada: nariz para cima perde energia, mergulho ganha velocidade, arrasto segura a velocidade maxima
 - Speed brake aerodinamico: segure S depois de zerar o motor ou negative a alavanca touch para frear no ar
-- Decolagem mais dificil: o aviao precisa passar da velocidade certa e puxar o manche para baixo para sair do chao
+- Decolagem mais dificil: o aviao precisa passar da velocidade certa e puxar o manche para sair do chao
 - Stall baseado em velocidade minima especifica de cada aeronave, um pouco mais exigente
 - Modelos 3D com escala e cores por aeronave
 
