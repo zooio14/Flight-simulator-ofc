@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Flight Simulator OFC V8</title>
+  <title>Flight Simulator OFC V9</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div id="loading">
     <div>
-      <h1>Flight Simulator OFC V8</h1>
+      <h1>Flight Simulator OFC V9</h1>
       <p>Carregando fisica, carreira salva, cidades e radar...</p>
     </div>
   </div>
@@ -40,7 +40,7 @@
   </div>
 
   <div id="hud">
-    <h2>FLIGHT SIMULATOR OFC V8</h2>
+    <h2>FLIGHT SIMULATOR OFC V9</h2>
 
     <div class="panel">
       <b>Controles</b><br />
@@ -49,6 +49,7 @@
       ↑/↓: pitch | ←/→: roll<br />
       A/D: yaw<br />
       1/2/3: atalhos de avião<br />
+      Espaço: atirar | G: trocar arma<br />
       L: loja | I: esconder info<br />
       C: câmera | Q: qualidade | H: hitboxes | R: reset<br />
       N: missão aleatória | M: próxima missão
@@ -58,6 +59,7 @@
       Piloto: <span id="playerLabel">--</span><br />
       Modo: <span id="modeLabel">Menu</span><br />
       Avião: <span id="aircraftName">Leve</span><br />
+      Arma: <span id="weaponInfo">--</span><br />
       FPS: <span id="fps">0</span><br />
       Qualidade: <span id="quality">Alta</span><br />
       Velocidade: <span id="speed">0</span> km/h<br />
@@ -124,7 +126,7 @@
   </div>
 
   <div id="message">
-    V8: login, carreira salva, cidades, fisica melhorada e radar de aproximação.
+    V9: caças armados, missões PvP, argolas, carreira salva e fisica mais exigente.
   </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>

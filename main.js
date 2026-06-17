@@ -54,32 +54,42 @@
     { id: "cargo", name: "Cargueiro pesado", model: "cargo", price: 1250000, takeoff: 260, landingMax: 330, maxSpeed: 820, thrust: 230, boost: 1.1, drag: 0.00078, lift: 16.4, control: 0.48, stallAngle: 19, stallSpeed: 182, cameraBack: 82, hitboxRadius: 19, color: 0xd8dde0, accent: 0x2f5c44, scale: 1.42 },
     { id: "f16", name: "Caça leve inspirado no F-16", model: "fighter", price: 1800000, takeoff: 135, landingMax: 255, maxSpeed: 1450, thrust: 195, boost: 1.34, drag: 0.00055, lift: 21.2, control: 1.55, stallAngle: 28, stallSpeed: 112, cameraBack: 42, hitboxRadius: 10, color: 0x909aa2, accent: 0x39424b, scale: 0.98 },
     { id: "f35", name: "Caça stealth moderno", model: "fighter", price: 2400000, takeoff: 142, landingMax: 260, maxSpeed: 1650, thrust: 220, boost: 1.38, drag: 0.0005, lift: 21.8, control: 1.7, stallAngle: 29, stallSpeed: 108, cameraBack: 43, hitboxRadius: 10, color: 0x7f8992, accent: 0x2c343c, scale: 1.02 },
-    { id: "f22", name: "Caça stealth inspirado no F-22", model: "f22", price: 3200000, takeoff: 145, landingMax: 260, maxSpeed: 1900, thrust: 248, boost: 1.42, drag: 0.00048, lift: 22.8, control: 1.85, stallAngle: 30, stallSpeed: 105, cameraBack: 44, hitboxRadius: 10, color: 0x8b959d, accent: 0x303842, scale: 1.05 }
+    { id: "f22", name: "Caça stealth inspirado no F-22", model: "f22", price: 3200000, takeoff: 145, landingMax: 260, maxSpeed: 1900, thrust: 248, boost: 1.42, drag: 0.00048, lift: 22.8, control: 1.85, stallAngle: 30, stallSpeed: 105, cameraBack: 44, hitboxRadius: 10, color: 0x8b959d, accent: 0x303842, scale: 1.05, weapons: { missiles: 6, cannon: true } },
+    { id: "f15ex", name: "Caça pesado F-15EX armado", model: "fighter", price: 2100000, takeoff: 166, landingMax: 270, maxSpeed: 2150, thrust: 300, boost: 1.4, drag: 0.00042, lift: 23.2, control: 1.55, stallAngle: 30, stallSpeed: 126, cameraBack: 47, hitboxRadius: 11, color: 0x7d858b, accent: 0x222c36, scale: 1.12, weapons: { missiles: 8, cannon: true } },
+    { id: "rafale", name: "Caça naval Rafale armado", model: "fighter", price: 2450000, takeoff: 158, landingMax: 265, maxSpeed: 1980, thrust: 286, boost: 1.44, drag: 0.00039, lift: 24.2, control: 1.62, stallAngle: 31, stallSpeed: 118, cameraBack: 45, hitboxRadius: 10, color: 0x8f969c, accent: 0x343a42, scale: 1.02, weapons: { missiles: 6, cannon: true } },
+    { id: "typhoon", name: "Caça Eurofighter armado", model: "fighter", price: 2850000, takeoff: 162, landingMax: 270, maxSpeed: 2280, thrust: 318, boost: 1.46, drag: 0.00037, lift: 24.8, control: 1.7, stallAngle: 31, stallSpeed: 120, cameraBack: 45, hitboxRadius: 10, color: 0x9ca3aa, accent: 0x2f3b47, scale: 1.04, weapons: { missiles: 8, cannon: true } },
+    { id: "su57", name: "Caça stealth Su-57 armado", model: "fighter", price: 3400000, takeoff: 170, landingMax: 278, maxSpeed: 2400, thrust: 340, boost: 1.5, drag: 0.00035, lift: 25.4, control: 1.78, stallAngle: 32, stallSpeed: 124, cameraBack: 48, hitboxRadius: 11, color: 0x6f7a80, accent: 0x273138, scale: 1.13, weapons: { missiles: 10, cannon: true } },
+    { id: "ofcx", name: "Caça experimental OFC-X armado", model: "fighter", price: 4300000, takeoff: 180, landingMax: 290, maxSpeed: 2850, thrust: 390, boost: 1.56, drag: 0.00031, lift: 26.6, control: 1.86, stallAngle: 33, stallSpeed: 128, cameraBack: 51, hitboxRadius: 12, color: 0x202b34, accent: 0x66caff, scale: 1.18, weapons: { missiles: 12, cannon: true } }
   ];
 
   const AIRCRAFT_TUNING = [
-    ["cessna", 0, 330, 112, 82, 62, 0.92, 0.78, 0.00172],
-    ["trainer", 1800, 365, 112, 78, 73, 1.02, 0.88, 0.00156],
-    ["piper", 3900, 405, 126, 84, 82, 1.04, 0.9, 0.00143],
-    ["taildragger", 6200, 330, 96, 68, 78, 1.06, 0.86, 0.0017],
-    ["baron", 10500, 535, 150, 98, 99, 1.1, 0.96, 0.00112],
-    ["caravan", 17000, 500, 154, 96, 105, 1.08, 0.95, 0.00118],
-    ["kingair", 29000, 650, 168, 110, 124, 1.16, 1.02, 0.00095],
-    ["pc12", 42000, 740, 172, 114, 134, 1.2, 1.08, 0.00086],
-    ["tbm", 56000, 850, 178, 122, 150, 1.24, 1.1, 0.00078],
-    ["learjet", 76000, 890, 196, 138, 150, 1.26, 1.08, 0.00072],
-    ["citation", 98000, 940, 190, 134, 164, 1.3, 1.12, 0.00067],
-    ["embraer", 145000, 915, 215, 150, 174, 1.34, 1.06, 0.00069],
-    ["atr", 168000, 650, 190, 132, 158, 1.28, 1.02, 0.00091],
-    ["dash8", 205000, 720, 198, 140, 168, 1.34, 1.04, 0.00085],
-    ["crj", 260000, 930, 225, 162, 184, 1.38, 1.08, 0.00065],
-    ["a320", 420000, 955, 242, 172, 196, 1.46, 1.1, 0.00062],
-    ["boeing", 520000, 980, 235, 168, 210, 1.5, 1.12, 0.00058],
-    ["widebody", 740000, 1010, 278, 190, 242, 1.58, 1.02, 0.00054],
-    ["cargo", 920000, 860, 292, 198, 258, 1.55, 0.96, 0.00066],
-    ["f16", 1250000, 1650, 158, 124, 235, 1.62, 1.34, 0.00047],
-    ["f35", 1500000, 1820, 164, 120, 258, 1.72, 1.42, 0.00043],
-    ["f22", 1800000, 2050, 168, 118, 288, 1.82, 1.52, 0.0004]
+    ["cessna", 0, 330, 138, 86, 60, 0.52, 1.04, 0.00178],
+    ["trainer", 1800, 365, 134, 82, 70, 0.64, 1.02, 0.0016],
+    ["piper", 3900, 405, 148, 88, 80, 0.72, 1, 0.00146],
+    ["taildragger", 6200, 330, 120, 72, 76, 0.78, 0.96, 0.00174],
+    ["baron", 10500, 535, 170, 104, 99, 0.88, 0.98, 0.00113],
+    ["caravan", 17000, 500, 178, 102, 105, 0.92, 0.96, 0.0012],
+    ["kingair", 29000, 650, 192, 116, 124, 1.02, 0.96, 0.00096],
+    ["pc12", 42000, 740, 198, 120, 134, 1.08, 0.98, 0.00086],
+    ["tbm", 56000, 850, 205, 128, 150, 1.16, 1, 0.00078],
+    ["learjet", 76000, 890, 225, 144, 150, 1.2, 0.98, 0.00072],
+    ["citation", 98000, 940, 220, 140, 164, 1.28, 1, 0.00067],
+    ["embraer", 145000, 915, 245, 156, 174, 1.34, 0.96, 0.00069],
+    ["atr", 168000, 650, 215, 138, 158, 1.32, 0.94, 0.00091],
+    ["dash8", 205000, 720, 225, 146, 168, 1.38, 0.95, 0.00085],
+    ["crj", 260000, 930, 255, 168, 184, 1.46, 0.96, 0.00065],
+    ["a320", 420000, 955, 275, 178, 196, 1.56, 0.94, 0.00062],
+    ["boeing", 520000, 980, 270, 174, 210, 1.62, 0.94, 0.00058],
+    ["widebody", 740000, 1010, 315, 196, 242, 1.72, 0.9, 0.00054],
+    ["cargo", 920000, 860, 330, 204, 258, 1.7, 0.88, 0.00066],
+    ["f16", 1250000, 1650, 185, 128, 235, 1.78, 1.06, 0.00047],
+    ["f35", 1500000, 1820, 190, 124, 258, 1.9, 1.08, 0.00043],
+    ["f22", 1800000, 2050, 195, 122, 288, 2.05, 1.1, 0.0004],
+    ["f15ex", 2100000, 2150, 205, 130, 300, 2.12, 1.1, 0.00042],
+    ["rafale", 2450000, 1980, 195, 122, 286, 2.18, 1.12, 0.00039],
+    ["typhoon", 2850000, 2280, 200, 124, 318, 2.24, 1.14, 0.00037],
+    ["su57", 3400000, 2400, 210, 128, 340, 2.32, 1.16, 0.00035],
+    ["ofcx", 4300000, 2850, 225, 132, 390, 2.45, 1.18, 0.00031]
   ];
 
   AIRCRAFT_TUNING.forEach(([id, price, maxSpeed, takeoff, stallSpeed, thrust, stability, control, drag]) => {
@@ -87,6 +97,8 @@
     if (!type) return;
     Object.assign(type, { price, maxSpeed, takeoff, stallSpeed, thrust, stability, control, drag });
   });
+
+  const COMBAT_FIGHTER_IDS = ["f22", "f15ex", "rafale", "typhoon", "su57", "ofcx"];
 
   const AIRPORTS = [
     { id: "OFC", name: "Aeroporto Central OFC", x: 0, z: 1800, heading: 180, length: 2600 },
@@ -160,7 +172,106 @@
     { title: "Linha litoral", type: "passageiros", from: "LITORAL", to: "ARQ", reward: 13200, passengers: 74, text: "Cruze o litoral até o arquipélago." },
     { title: "Fronteira médica", type: "emergência", from: "FRONTEIRA", to: "CAPITAL", reward: 12500, passengers: 3, text: "Transporte equipe médica para a capital." },
     { title: "Treino militar avançado", type: "militar", from: "BASEALTA", to: "NAVAL", reward: 14800, cargo: "plano de voo", text: "Rota militar de alta velocidade até a base naval." },
-    { title: "Volta do mundo OFC", type: "passageiros", from: "CAPITAL", to: "BASEALTA", reward: 18000, passengers: 210, text: "Grande rota do mapa expandido para aviões de alto nível." }
+    { title: "Volta do mundo OFC", type: "passageiros", from: "CAPITAL", to: "BASEALTA", reward: 18000, passengers: 210, text: "Grande rota do mapa expandido para aviões de alto nível." },
+    {
+      title: "Argolas do F-16",
+      type: "argolas",
+      from: "NAVAL",
+      to: "NAVAL",
+      reward: 24000,
+      requiredAircraft: "f16",
+      challenge: "rings",
+      course: 12,
+      rings: [
+        { forward: 1200, side: 0, y: 170 },
+        { forward: 2100, side: -360, y: 230 },
+        { forward: 3000, side: 360, y: 310 },
+        { forward: 4050, side: 0, y: 260 },
+        { forward: 5200, side: -520, y: 210 },
+        { forward: 6400, side: 220, y: 185 }
+      ],
+      text: "Passe pelas argolas em sequência com velocidade e controle."
+    },
+    {
+      title: "Corredor furtivo F-22",
+      type: "argolas",
+      from: "BASEALTA",
+      to: "BASEALTA",
+      reward: 42000,
+      requiredAircraft: "f22",
+      challenge: "rings",
+      course: 300,
+      rings: [
+        { forward: 1500, side: 0, y: 260 },
+        { forward: 2600, side: 480, y: 360 },
+        { forward: 3800, side: -380, y: 430 },
+        { forward: 5050, side: 620, y: 360 },
+        { forward: 6400, side: 0, y: 280 },
+        { forward: 7600, side: -640, y: 340 },
+        { forward: 9000, side: 180, y: 260 }
+      ],
+      text: "Use a estabilidade do F-22 ou melhor para cruzar o corredor aéreo."
+    },
+    {
+      title: "PvP simulado F-15EX",
+      type: "pvp",
+      from: "DESERTO",
+      to: "DESERTO",
+      reward: 56000,
+      requiredGroup: "combatFighter",
+      challenge: "combat",
+      course: 270,
+      enemies: 3,
+      text: "Derrube os rivais no ar usando mísseis ou canhão."
+    },
+    {
+      title: "Patrulha armada Rafale",
+      type: "pvp",
+      from: "LITORAL",
+      to: "LITORAL",
+      reward: 68000,
+      requiredGroup: "combatFighter",
+      challenge: "combat",
+      course: 35,
+      enemies: 4,
+      text: "Defenda a costa em um duelo aéreo contra rivais rápidos."
+    },
+    {
+      title: "Interceptação Typhoon",
+      type: "pvp",
+      from: "NORTE",
+      to: "NORTE",
+      reward: 82000,
+      requiredGroup: "combatFighter",
+      challenge: "combat",
+      course: 70,
+      enemies: 5,
+      text: "Intercepte uma formação rival antes que ela atravesse o setor."
+    },
+    {
+      title: "Sombra Su-57",
+      type: "pvp",
+      from: "GLACIAL",
+      to: "GLACIAL",
+      reward: 98000,
+      requiredGroup: "combatFighter",
+      challenge: "combat",
+      course: 225,
+      enemies: 6,
+      text: "Use o caça stealth para vencer rivais de alta altitude."
+    },
+    {
+      title: "Arena final OFC-X",
+      type: "pvp",
+      from: "CAPITAL",
+      to: "CAPITAL",
+      reward: 135000,
+      requiredGroup: "combatFighter",
+      challenge: "combat",
+      course: 180,
+      enemies: 8,
+      text: "Missão final: combate aéreo pesado com todos os sistemas liberados."
+    }
   ];
 
   let qualityIndex = 2;
@@ -206,6 +317,11 @@
   let money = 0;
   let completed = 0;
   let explosions = [];
+  let projectiles = [];
+  let missionObjects = [];
+  let weaponCooldown = 0;
+  let missileAmmo = 0;
+  let selectedWeapon = "missile";
   let plane = null;
   let lastLanding = null;
   let showHitboxes = false;
@@ -226,6 +342,38 @@
   const fmtGameMoney = () => gameMode === "free" ? "Livre" : fmtMoney(money);
   const careerKey = name => "flight-simulator-ofc-career-" + name.trim().toLowerCase().replace(/[^a-z0-9_-]/g, "-");
   const maxSpeedMS = () => aircraftType.maxSpeed / 3.6;
+  const aircraftById = id => AIRCRAFT_TYPES.find(type => type.id === id);
+  const ownsAircraftId = id => gameMode === "free" || ownedAircraft.has(id);
+  const isCombatFighterId = id => COMBAT_FIGHTER_IDS.includes(id);
+  const currentIsCombatFighter = () => isCombatFighterId(aircraftType.id);
+
+  function bestOwnedCombatFighterIndex() {
+    for (let i = COMBAT_FIGHTER_IDS.length - 1; i >= 0; i--) {
+      const id = COMBAT_FIGHTER_IDS[i];
+      if (ownsAircraftId(id)) return AIRCRAFT_TYPES.findIndex(type => type.id === id);
+    }
+    return -1;
+  }
+
+  function hasCombatFighterUnlocked() {
+    return bestOwnedCombatFighterIndex() >= 0;
+  }
+
+  function missionRequirementText(mission) {
+    if (mission.requiredGroup === "combatFighter") return "um dos 6 caças armados: F-22, F-15EX, Rafale, Typhoon, Su-57 ou OFC-X";
+    if (mission.requiredAircraft) {
+      const type = aircraftById(mission.requiredAircraft);
+      return type ? type.name : mission.requiredAircraft;
+    }
+    return "";
+  }
+
+  function missionUnlocked(mission) {
+    if (!mission) return false;
+    if (mission.requiredGroup === "combatFighter") return hasCombatFighterUnlocked();
+    if (mission.requiredAircraft) return ownsAircraftId(mission.requiredAircraft);
+    return true;
+  }
 
   window.addEventListener("keydown", event => {
     const key = event.key.toLowerCase();
@@ -311,6 +459,43 @@
 
   function allColliders() {
     return staticColliders.concat(dynamicColliders);
+  }
+
+  function clearProjectiles() {
+    projectiles.forEach(projectile => scene.remove(projectile));
+    projectiles = [];
+    weaponCooldown = 0;
+  }
+
+  function clearMissionObjects() {
+    missionObjects.forEach(object => {
+      if (object.userData && object.userData.shadow) scene.remove(object.userData.shadow);
+      scene.remove(object);
+    });
+    missionObjects = [];
+  }
+
+  function resetWeaponAmmo() {
+    missileAmmo = aircraftType.weapons ? aircraftType.weapons.missiles : 0;
+    selectedWeapon = aircraftType.weapons ? "missile" : "cannon";
+    weaponCooldown = 0;
+  }
+
+  function selectedWeaponLabel() {
+    if (!aircraftType.weapons) return "--";
+    return selectedWeapon === "missile"
+      ? "Mísseis (" + missileAmmo + ")"
+      : "Canhão";
+  }
+
+  function cycleWeapon() {
+    if (!aircraftType.weapons) {
+      el("message").innerHTML = "Este avião não tem armas.";
+      return;
+    }
+
+    selectedWeapon = selectedWeapon === "missile" ? "cannon" : "missile";
+    el("message").innerHTML = "Arma selecionada: " + selectedWeaponLabel() + ". Espaço para atirar.";
   }
 
   function clearHitboxHelpers() {
@@ -1126,6 +1311,34 @@
     noseSensor.position.set(0, 0.72, -13.2);
     g.add(noseSensor);
 
+    if (type.weapons) {
+      const missileMat = new THREE.MeshLambertMaterial({ color: 0xe8edf0 });
+      const tipMat = new THREE.MeshLambertMaterial({ color: 0xd13b32 });
+      [-1, 1].forEach(side => {
+        [4.8, 7.1].forEach((xBase, index) => {
+          const missile = new THREE.Mesh(new THREE.CylinderGeometry(0.17, 0.17, 3.1, 12), missileMat);
+          missile.rotation.x = Math.PI / 2;
+          missile.position.set(side * xBase, -0.18, -2.6 + index * 2.7);
+          g.add(missile);
+
+          const tip = new THREE.Mesh(new THREE.ConeGeometry(0.19, 0.52, 12), tipMat);
+          tip.rotation.x = -Math.PI / 2;
+          tip.position.set(side * xBase, -0.18, -4.42 + index * 2.7);
+          g.add(tip);
+        });
+
+        const rail = new THREE.Mesh(new THREE.BoxGeometry(4.7, 0.12, 0.28), edgeDark);
+        rail.position.set(side * 5.7, -0.28, -1.28);
+        rail.rotation.y = side * 0.08;
+        g.add(rail);
+      });
+
+      const cannon = new THREE.Mesh(new THREE.CylinderGeometry(0.13, 0.13, 1.8, 10), edgeDark);
+      cannon.rotation.x = Math.PI / 2;
+      cannon.position.set(0.72, 0.52, -12.8);
+      g.add(cannon);
+    }
+
     const fakeProp = new THREE.Object3D();
     g.add(fakeProp);
     g.userData.prop = fakeProp;
@@ -1189,6 +1402,8 @@
     aircraft.exploded = false;
     aircraft.onGround = true;
     lastLanding = null;
+    clearProjectiles();
+    resetWeaponAmmo();
     plane.visible = true;
     syncPlane();
     resetCameraRig();
@@ -1527,7 +1742,7 @@
     aircraft.stall = aircraft.stallPressure > 0.68;
 
     const takeoffGate = aircraft.onGround
-      ? clamp((speedKmh - aircraftType.takeoff * 0.86) / (aircraftType.takeoff * 0.22), 0, 1)
+      ? clamp((speedKmh - aircraftType.takeoff * 0.98) / (aircraftType.takeoff * 0.18), 0, 1)
       : 1;
     const speedLift = clamp((horizontalSpeed - stallSpeedMS * 0.62) / (stallSpeedMS * 1.2), 0, 1.62);
     const angleLift = clamp(0.55 + aircraft.pitch * 1.25 + aoa * 0.95, -0.25, 1.55);
@@ -1535,8 +1750,9 @@
     const liftAccel = speedLift * angleLift * aircraftType.lift * stallLiftPenalty * takeoffGate;
 
     aircraft.velocity.y += liftAccel * dt;
-    if (aircraft.onGround && speedKmh < aircraftType.takeoff * 0.98) {
+    if (aircraft.onGround && speedKmh < aircraftType.takeoff * 1.08) {
       aircraft.velocity.y = Math.min(aircraft.velocity.y, 0);
+      if (speedKmh < aircraftType.takeoff * 0.92) aircraft.pitch = Math.min(aircraft.pitch, 0.12);
     }
 
     const authorityBase = clamp(horizontalSpeed / (stallSpeedMS * 0.9), 0.18, 1.55);
@@ -1719,6 +1935,109 @@
     }
   }
 
+  function removeProjectile(index) {
+    if (!projectiles[index]) return;
+    scene.remove(projectiles[index]);
+    projectiles.splice(index, 1);
+  }
+
+  function damageEnemyTarget(target, amount) {
+    if (!target || !target.alive || !activeMission || activeMission.completed) return;
+
+    target.health -= amount;
+    if (target.health > 0) {
+      el("message").innerHTML = "Acertou o rival. Continue atacando.";
+      return;
+    }
+
+    target.alive = false;
+    target.object.visible = false;
+    if (target.object.userData.shadow) target.object.userData.shadow.visible = false;
+    activeMission.enemiesDown++;
+    createExplosion(target.object.position.clone());
+
+    if (activeMission.enemiesDown >= activeMission.targets.length) {
+      completeActiveMission("PvP simulado vencido!");
+    } else {
+      el("message").innerHTML =
+        "Rival derrubado: " + activeMission.enemiesDown + "/" + activeMission.targets.length + ". Siga o radar.";
+    }
+  }
+
+  function fireSelectedWeapon() {
+    fireWeapon(selectedWeapon);
+  }
+
+  function fireWeapon(kind) {
+    if (!aircraftType.weapons || aircraft.crashed || aircraft.exploded) {
+      el("message").innerHTML = "Este avião não tem armas.";
+      return;
+    }
+
+    if (weaponCooldown > 0) return;
+
+    if (kind === "missile" && missileAmmo <= 0) {
+      selectedWeapon = "cannon";
+      el("message").innerHTML = "Sem mísseis. Arma trocada para canhão.";
+      return;
+    }
+
+    const fwd = forwardVector();
+    const isMissile = kind === "missile";
+    const mesh = new THREE.Mesh(
+      isMissile ? new THREE.CylinderGeometry(0.32, 0.32, 4.2, 12) : new THREE.SphereGeometry(0.34, 8, 6),
+      new THREE.MeshBasicMaterial({ color: isMissile ? 0xffdf64 : 0x66caff })
+    );
+    mesh.rotation.order = "YXZ";
+    mesh.rotation.y = aircraft.yaw;
+    mesh.rotation.x = Math.PI / 2 + aircraft.pitch;
+    mesh.position.copy(aircraft.position).addScaledVector(fwd, 18);
+    mesh.userData.vel = fwd.clone().multiplyScalar(isMissile ? 540 : 780).add(aircraft.velocity.clone());
+    mesh.userData.life = isMissile ? 5.2 : 1.25;
+    mesh.userData.kind = kind;
+    mesh.userData.damage = isMissile ? 2 : 1;
+    mesh.userData.radius = isMissile ? 155 : 58;
+
+    scene.add(mesh);
+    projectiles.push(mesh);
+
+    if (isMissile) missileAmmo--;
+    weaponCooldown = isMissile ? 0.72 : 0.15;
+    el("message").innerHTML = isMissile
+      ? "Míssil disparado. Restam " + missileAmmo + "."
+      : "Canhão disparado.";
+  }
+
+  function updateProjectiles(dt) {
+    weaponCooldown = Math.max(0, weaponCooldown - dt);
+
+    for (let i = projectiles.length - 1; i >= 0; i--) {
+      const shot = projectiles[i];
+      shot.userData.life -= dt;
+      shot.position.addScaledVector(shot.userData.vel, dt);
+
+      if (shot.userData.kind === "missile") {
+        shot.rotation.z += dt * 8;
+      }
+
+      let hit = false;
+      if (activeMission && activeMission.data.challenge === "combat" && !activeMission.completed) {
+        for (const target of activeMission.targets) {
+          if (!target.alive) continue;
+          if (shot.position.distanceTo(target.object.position) < target.radius + shot.userData.radius) {
+            damageEnemyTarget(target, shot.userData.damage);
+            hit = true;
+            break;
+          }
+        }
+      }
+
+      if (hit || shot.userData.life <= 0) {
+        removeProjectile(i);
+      }
+    }
+  }
+
   function syncPlane() {
     plane.position.copy(aircraft.position);
     plane.rotation.order = "YXZ";
@@ -1769,9 +2088,221 @@
     return group;
   }
 
+  function missionCoursePoint(origin, course, forward, side, y) {
+    const angle = THREE.Math.degToRad(course);
+    const dirX = Math.sin(angle);
+    const dirZ = -Math.cos(angle);
+    const rightX = Math.cos(angle);
+    const rightZ = Math.sin(angle);
+    return new THREE.Vector3(
+      origin.x + dirX * forward + rightX * side,
+      y,
+      origin.z + dirZ * forward + rightZ * side
+    );
+  }
+
+  function createRingTarget(position, course, index) {
+    const group = new THREE.Group();
+    const ringMat = new THREE.MeshBasicMaterial({ color: 0x66caff, transparent: true, opacity: 0.86 });
+    const coreMat = new THREE.MeshBasicMaterial({ color: 0xffd84d, transparent: true, opacity: 0.7 });
+    const ring = new THREE.Mesh(new THREE.TorusGeometry(108, 6, 12, 72), ringMat);
+    const core = new THREE.Mesh(new THREE.TorusGeometry(26, 3, 8, 32), coreMat);
+    const beacon = new THREE.Mesh(new THREE.SphereGeometry(8, 12, 8), coreMat);
+
+    ring.rotation.y = THREE.Math.degToRad(course);
+    core.rotation.y = THREE.Math.degToRad(course);
+    group.add(ring, core, beacon);
+    group.position.copy(position);
+    group.userData.missionKind = "ring";
+    group.userData.baseScale = 1;
+
+    scene.add(group);
+    missionObjects.push(group);
+
+    return {
+      kind: "ring",
+      object: group,
+      radius: 118,
+      index,
+      passed: false
+    };
+  }
+
+  function createEnemyTarget(position, course, index) {
+    const enemy = createF22Like({
+      id: "rival",
+      color: 0x5f6972,
+      accent: 0xc53b32,
+      scale: 0.82,
+      model: "fighter"
+    });
+
+    enemy.position.copy(position);
+    enemy.rotation.order = "YXZ";
+    enemy.rotation.y = THREE.Math.degToRad(course + 180 + index * 7);
+    enemy.userData.missionKind = "enemy";
+    enemy.userData.base = position.clone();
+    enemy.userData.phase = index * 1.37;
+    enemy.userData.lastPosition = position.clone();
+
+    scene.add(enemy);
+    missionObjects.push(enemy);
+
+    const target = {
+      kind: "enemy",
+      object: enemy,
+      radius: 145,
+      index,
+      health: 2,
+      alive: true
+    };
+    enemy.userData.targetRef = target;
+    return target;
+  }
+
+  function buildMissionChallenge(state) {
+    state.targets = [];
+    state.targetIndex = 0;
+    state.enemiesDown = 0;
+
+    if (!state.data.challenge) return;
+
+    const origin = state.from;
+    const course = state.data.course || origin.heading;
+
+    if (state.data.challenge === "rings") {
+      state.targets = state.data.rings.map((ring, index) =>
+        createRingTarget(missionCoursePoint(origin, course, ring.forward, ring.side, ring.y), course, index)
+      );
+      return;
+    }
+
+    if (state.data.challenge === "combat") {
+      const count = state.data.enemies || 3;
+      for (let i = 0; i < count; i++) {
+        const side = (i - (count - 1) / 2) * 430 + (i % 2 === 0 ? -220 : 220);
+        const forward = 2100 + i * 640;
+        const y = 330 + (i % 3) * 105;
+        state.targets.push(createEnemyTarget(missionCoursePoint(origin, course, forward, side, y), course, i));
+      }
+    }
+  }
+
+  function activeMissionTarget() {
+    if (!activeMission || activeMission.completed || !activeMission.data.challenge) return null;
+
+    if (activeMission.data.challenge === "rings") {
+      return activeMission.targets[activeMission.targetIndex] || null;
+    }
+
+    if (activeMission.data.challenge === "combat") {
+      return activeMission.targets.find(target => target.alive) || null;
+    }
+
+    return null;
+  }
+
+  function updateMissionMarker() {
+    const target = activeMissionTarget();
+    if (!target) {
+      marker.visible = false;
+      return;
+    }
+
+    marker.visible = true;
+    marker.position.copy(target.object.position);
+    marker.position.y = Math.max(12, target.object.position.y);
+  }
+
+  function updateMissionObjects(dt) {
+    if (!activeMission || !activeMission.data.challenge) return;
+
+    const now = performance.now() * 0.001;
+
+    activeMission.targets.forEach(target => {
+      if (target.kind === "ring" && !target.passed) {
+        const pulse = 1 + Math.sin(now * 3.2 + target.index) * 0.045;
+        target.object.scale.setScalar(pulse);
+        target.object.rotation.z += dt * 0.45;
+      }
+
+      if (target.kind === "enemy" && target.alive) {
+        const enemy = target.object;
+        const base = enemy.userData.base;
+        const phase = enemy.userData.phase;
+        enemy.userData.lastPosition.copy(enemy.position);
+        enemy.position.set(
+          base.x + Math.sin(now * 0.72 + phase) * 360,
+          base.y + Math.sin(now * 1.18 + phase) * 72,
+          base.z + Math.cos(now * 0.68 + phase) * 300
+        );
+        const move = enemy.position.clone().sub(enemy.userData.lastPosition);
+        if (move.lengthSq() > 0.001) {
+          enemy.rotation.y = Math.atan2(move.x, -move.z);
+          enemy.rotation.z = clamp(-move.x * 0.006, -0.55, 0.55);
+        }
+
+        if (enemy.userData.shadow) {
+          enemy.userData.shadow.position.x = enemy.position.x;
+          enemy.userData.shadow.position.z = enemy.position.z;
+          enemy.userData.shadow.material.opacity = clamp(0.17 - enemy.position.y / 1600, 0.015, 0.13);
+          enemy.userData.shadow.scale.setScalar(clamp(1 + enemy.position.y / 240, 1.1, 7));
+          enemy.userData.shadow.visible = enemy.visible;
+        }
+      }
+    });
+  }
+
+  function completeActiveMission(extraText, bonus = 0) {
+    if (!activeMission || activeMission.completed) return;
+
+    const payout = activeMission.data.reward + bonus;
+    activeMission.completed = true;
+    completed++;
+    if (gameMode !== "free") money += payout;
+    marker.visible = false;
+    clearMissionObjects();
+    clearProjectiles();
+
+    el("message").innerHTML =
+      (extraText ? extraText + " " : "") +
+      "Missão concluída! " + missionManifest(activeMission.data) + ". Recompensa " + fmtMoney(activeMission.data.reward) +
+      (bonus ? " + bônus " + fmtMoney(bonus) : "") +
+      ". Aperte N ou M para outra missão.";
+
+    saveCareer();
+    renderShop();
+  }
+
   function startMission(index) {
     missionIndex = index;
     const mission = MISSIONS[missionIndex];
+    if (!mission) return;
+
+    if (!missionUnlocked(mission)) {
+      el("message").innerHTML = mission.title + " bloqueada. Desbloqueie " + missionRequirementText(mission) + ".";
+      setShopOpen(true);
+      return;
+    }
+
+    let autoSelected = "";
+    if (mission.challenge === "combat" && !currentIsCombatFighter()) {
+      const fighterIndex = bestOwnedCombatFighterIndex();
+      if (fighterIndex < 0) {
+        el("message").innerHTML = mission.title + " bloqueada. Compre um dos 6 caças armados para liberar PvP.";
+        setShopOpen(true);
+        return;
+      }
+
+      aircraftIndex = fighterIndex;
+      aircraftType = AIRCRAFT_TYPES[aircraftIndex];
+      makePlaneModel(aircraftType);
+      autoSelected = " Equipei automaticamente " + aircraftType.name + ".";
+      renderShop();
+    }
+
+    clearMissionObjects();
+    clearProjectiles();
 
     activeMission = {
       data: mission,
@@ -1779,35 +2310,90 @@
       to: airport(mission.to),
       boarded: false,
       airborne: false,
-      completed: false
+      completed: false,
+      targets: [],
+      targetIndex: 0,
+      enemiesDown: 0
     };
 
     resetToAirport(activeMission.from);
-    marker.visible = true;
-    marker.position.set(activeMission.to.x, 12, activeMission.to.z);
-    el("message").innerHTML = missionBrief(activeMission) + " Pare no terminal e decole quando estiver pronto.";
+    buildMissionChallenge(activeMission);
+    if (mission.challenge) updateMissionMarker();
+    else {
+      marker.visible = true;
+      marker.position.set(activeMission.to.x, 12, activeMission.to.z);
+    }
+    el("message").innerHTML = missionBrief(activeMission) + autoSelected + " Pare no terminal e decole quando estiver pronto.";
   }
 
   function nextMission() {
-    startMission((missionIndex + 1 + MISSIONS.length) % MISSIONS.length);
+    for (let i = 1; i <= MISSIONS.length; i++) {
+      const index = (missionIndex + i + MISSIONS.length) % MISSIONS.length;
+      if (missionUnlocked(MISSIONS[index])) {
+        startMission(index);
+        return;
+      }
+    }
+    el("message").innerHTML = "Nenhuma missão liberada ainda. Compre aviões melhores para abrir novos desafios.";
   }
 
   function randomMission() {
-    startMission(Math.floor(Math.random() * MISSIONS.length));
+    const available = MISSIONS
+      .map((mission, index) => ({ mission, index }))
+      .filter(item => missionUnlocked(item.mission));
+
+    if (!available.length) {
+      el("message").innerHTML = "Nenhuma missão liberada ainda. Compre aviões melhores para abrir novos desafios.";
+      return;
+    }
+
+    startMission(available[Math.floor(Math.random() * available.length)].index);
   }
 
-  function updateMission() {
+  function updateMission(dt) {
     if (!activeMission) return;
+
+    if (activeMission.data.challenge) {
+      updateMissionObjects(dt);
+      updateMissionMarker();
+    }
 
     const distance = dist2(aircraft.position.x, aircraft.position.z, activeMission.to.x, activeMission.to.z);
     const fromDistance = dist2(aircraft.position.x, aircraft.position.z, activeMission.from.x, activeMission.from.z);
 
     if (!activeMission.boarded && aircraft.onGround && fromDistance < 420 && aircraft.throttle < 0.12) {
       activeMission.boarded = true;
-      el("message").innerHTML = missionBrief(activeMission) + " Embarque concluído. Decole e siga o radar.";
+      el("message").innerHTML = missionBrief(activeMission) + " Preparação concluída. Decole e siga o radar.";
     }
 
     if (activeMission.boarded && altitude() > 30) activeMission.airborne = true;
+
+    if (activeMission.data.challenge === "rings" && activeMission.boarded && activeMission.airborne && !activeMission.completed) {
+      const target = activeMissionTarget();
+      if (target) {
+        const distanceToRing = aircraft.position.distanceTo(target.object.position);
+        if (distanceToRing < target.radius) {
+          target.passed = true;
+          target.object.visible = false;
+          activeMission.targetIndex++;
+
+          if (activeMission.targetIndex >= activeMission.targets.length) {
+            completeActiveMission("Desafio de argolas concluído!");
+          } else {
+            el("message").innerHTML =
+              "Argola " + activeMission.targetIndex + "/" + activeMission.targets.length + " concluída. Siga para a próxima.";
+          }
+        }
+      }
+      return;
+    }
+
+    if (activeMission.data.challenge === "combat" && activeMission.boarded && activeMission.airborne && !activeMission.completed) {
+      if (activeMission.enemiesDown >= activeMission.targets.length) completeActiveMission("PvP simulado vencido!");
+      return;
+    }
+
+    if (activeMission.data.challenge) return;
 
     if (
       activeMission.boarded &&
@@ -1819,22 +2405,14 @@
       !activeMission.completed
     ) {
       const landingBonus = lastLanding && lastLanding.airportId === activeMission.to.id ? lastLanding.bonus : 0;
-      const payout = activeMission.data.reward + landingBonus;
-      activeMission.completed = true;
-      completed++;
-      if (gameMode !== "free") money += payout;
-      marker.visible = false;
-      el("message").innerHTML =
-        "Missão concluída! " + missionManifest(activeMission.data) + ". Recompensa " + fmtMoney(activeMission.data.reward) +
-        (landingBonus ? " + bônus de pouso " + fmtMoney(landingBonus) : "") +
-        ". Aperte N ou M para outra missão.";
-      saveCareer();
-      renderShop();
+      completeActiveMission("Pouso registrado.", landingBonus);
     }
   }
 
   function missionManifest(mission) {
     if (!mission) return "--";
+    if (mission.challenge === "rings") return mission.rings.length + " argolas";
+    if (mission.challenge === "combat") return mission.enemies + " rivais aéreos";
     if (mission.passengers) return mission.passengers + " passageiros";
     if (mission.cargo) return "Carga: " + mission.cargo;
     return mission.type || "voo livre";
@@ -1842,6 +2420,9 @@
 
   function missionBrief(missionState) {
     const mission = missionState.data;
+    if (mission.challenge) {
+      return mission.title + ": " + missionManifest(mission) + " saindo de " + missionState.from.name + ".";
+    }
     return mission.title + ": " + missionManifest(mission) + " de " + missionState.from.name + " para " + missionState.to.name + ".";
   }
 
@@ -1859,6 +2440,8 @@
     money = 0;
     marker.visible = false;
     lastLanding = null;
+    clearMissionObjects();
+    clearProjectiles();
 
     if (gameMode === "free") {
       ownedAircraft = new Set(AIRCRAFT_TYPES.map(type => type.id));
@@ -1956,10 +2539,13 @@
 
       const meta = document.createElement("div");
       meta.className = "shop-meta";
+      const weaponsText = type.weapons
+        ? "<br>Armas: " + type.weapons.missiles + " mísseis + canhão" + (isCombatFighterId(type.id) ? " | libera PvP" : "")
+        : "";
       meta.innerHTML =
         "Preço: <span class=\"shop-price\">" + (gameMode === "free" ? "Grátis" : fmtMoney(type.price)) + "</span><br>" +
         "Máx: " + type.maxSpeed + " km/h | Stall: " + type.stallSpeed + " km/h | Decolagem: " + type.takeoff + " km/h<br>" +
-        "Estabilidade: " + Math.round((type.stability || 1) * 100) + "%";
+        "Estabilidade: " + Math.round((type.stability || 1) * 100) + "%" + weaponsText;
 
       info.append(title, meta);
 
@@ -2062,6 +2648,46 @@
         error: 0,
         distance: 0,
         guidance: activeMission && activeMission.completed ? "Missão concluída" : "Sem missão ativa"
+      };
+    }
+
+    if (activeMission.data.challenge) {
+      const target = activeMissionTarget();
+      if (!target) {
+        return {
+          mode: "challenge",
+          heading,
+          bearing: null,
+          error: 0,
+          distance: 0,
+          guidance: "Alvos concluídos"
+        };
+      }
+
+      const targetPosition = target.object.position;
+      const bearing = bearingBetween(aircraft.position.x, aircraft.position.z, targetPosition.x, targetPosition.z);
+      const error = wrapDegrees(bearing - heading);
+      const distance = aircraft.position.distanceTo(targetPosition);
+      const altitudeError = targetPosition.y - aircraft.position.y;
+      let guidance = "Alvo aéreo: vire " + (error > 0 ? "direita " : "esquerda ") + Math.round(Math.abs(error)) + "°";
+
+      if (target.kind === "ring") {
+        guidance = "Argola " + (target.index + 1) + "/" + activeMission.targets.length;
+        if (Math.abs(error) > 10) guidance += ": vire " + (error > 0 ? "direita " : "esquerda ") + Math.round(Math.abs(error)) + "°";
+        if (Math.abs(altitudeError) > 60) guidance += altitudeError > 0 ? " e suba" : " e desça";
+      } else if (target.kind === "enemy") {
+        guidance = "PvP " + (activeMission.enemiesDown + 1) + "/" + activeMission.targets.length + ": mire e atire";
+        if (Math.abs(error) > 12) guidance += " pela " + (error > 0 ? "direita" : "esquerda");
+      }
+
+      return {
+        mode: "challenge",
+        heading,
+        bearing,
+        error,
+        distance,
+        targetPoint: targetPosition,
+        guidance
       };
     }
 
@@ -2179,40 +2805,62 @@
     }
 
     if (activeMission && !activeMission.completed) {
-      const target = toRadar(activeMission.to.x, activeMission.to.z);
-      const route = approachRouteForAirport(activeMission.to);
-      const routePoint = toRadar(route.x, route.z);
-      ctx.strokeStyle = "rgba(255, 216, 77, 0.85)";
-      ctx.lineWidth = 2.2;
-      ctx.beginPath();
-      ctx.moveTo(cx, cy);
-      ctx.lineTo(routePoint.x, routePoint.y);
-      ctx.lineTo(target.x, target.y);
-      ctx.stroke();
+      if (activeMission.data.challenge) {
+        const target = activeMissionTarget();
+        activeMission.targets.forEach(item => {
+          if ((item.kind === "ring" && item.passed) || (item.kind === "enemy" && !item.alive)) return;
+          const p = toRadar(item.object.position.x, item.object.position.z);
+          ctx.fillStyle = item === target ? "#ffd84d" : item.kind === "enemy" ? "#ff5a52" : "#66caff";
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, item === target ? 6 : 3.5, 0, Math.PI * 2);
+          ctx.fill();
+        });
 
-      ctx.fillStyle = "#66caff";
-      ctx.beginPath();
-      ctx.arc(routePoint.x, routePoint.y, routePoint.clipped ? 4 : 6, 0, Math.PI * 2);
-      ctx.fill();
-
-      ctx.fillStyle = activeMission.boarded ? "#ffd84d" : "#66caff";
-      ctx.beginPath();
-      ctx.arc(target.x, target.y, target.clipped ? 5 : 7, 0, Math.PI * 2);
-      ctx.fill();
-
-      const runway = activeMission.to;
-      const runwayPoint = toRadar(runway.x, runway.z);
-      if (!runwayPoint.clipped) {
-        const angle = THREE.Math.degToRad(runway.heading);
-        const len = clamp(runway.length / MINIMAP_RANGE * radius, 12, 32);
-        const dx = Math.sin(angle) * len;
-        const dy = -Math.cos(angle) * len;
-        ctx.strokeStyle = "rgba(255, 255, 255, 0.8)";
-        ctx.lineWidth = 3;
+        if (target) {
+          const p = toRadar(target.object.position.x, target.object.position.z);
+          ctx.strokeStyle = target.kind === "enemy" ? "rgba(255, 90, 82, 0.85)" : "rgba(255, 216, 77, 0.85)";
+          ctx.lineWidth = 2.4;
+          ctx.beginPath();
+          ctx.moveTo(cx, cy);
+          ctx.lineTo(p.x, p.y);
+          ctx.stroke();
+        }
+      } else {
+        const target = toRadar(activeMission.to.x, activeMission.to.z);
+        const route = approachRouteForAirport(activeMission.to);
+        const routePoint = toRadar(route.x, route.z);
+        ctx.strokeStyle = "rgba(255, 216, 77, 0.85)";
+        ctx.lineWidth = 2.2;
         ctx.beginPath();
-        ctx.moveTo(runwayPoint.x - dx, runwayPoint.y - dy);
-        ctx.lineTo(runwayPoint.x + dx, runwayPoint.y + dy);
+        ctx.moveTo(cx, cy);
+        ctx.lineTo(routePoint.x, routePoint.y);
+        ctx.lineTo(target.x, target.y);
         ctx.stroke();
+
+        ctx.fillStyle = "#66caff";
+        ctx.beginPath();
+        ctx.arc(routePoint.x, routePoint.y, routePoint.clipped ? 4 : 6, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = activeMission.boarded ? "#ffd84d" : "#66caff";
+        ctx.beginPath();
+        ctx.arc(target.x, target.y, target.clipped ? 5 : 7, 0, Math.PI * 2);
+        ctx.fill();
+
+        const runway = activeMission.to;
+        const runwayPoint = toRadar(runway.x, runway.z);
+        if (!runwayPoint.clipped) {
+          const angle = THREE.Math.degToRad(runway.heading);
+          const len = clamp(runway.length / MINIMAP_RANGE * radius, 12, 32);
+          const dx = Math.sin(angle) * len;
+          const dy = -Math.cos(angle) * len;
+          ctx.strokeStyle = "rgba(255, 255, 255, 0.8)";
+          ctx.lineWidth = 3;
+          ctx.beginPath();
+          ctx.moveTo(runwayPoint.x - dx, runwayPoint.y - dy);
+          ctx.lineTo(runwayPoint.x + dx, runwayPoint.y + dy);
+          ctx.stroke();
+        }
       }
     }
 
@@ -2274,6 +2922,7 @@
     el("playerLabel").textContent = playerName || "--";
     el("modeLabel").textContent = !gameStarted ? "Menu" : gameMode === "free" ? "Livre" : "Carreira";
     el("aircraftName").textContent = aircraftType.name;
+    el("weaponInfo").textContent = selectedWeaponLabel();
     el("fps").textContent = fpsValue;
     el("speed").textContent = Math.round(speedKmh());
     el("stallSpeed").textContent = aircraftType.stallSpeed;
@@ -2298,7 +2947,7 @@
     else if (aircraft.stall) status = "STALL abaixo de " + aircraftType.stallSpeed + " km/h";
     else if (lowSpeedWarning) status = "Velocidade baixa";
     else if (altitude() > 12) status = "Voando";
-    else if (speedKmh() > aircraftType.takeoff * 0.75) status = "Pronto para decolar";
+    else if (speedKmh() > aircraftType.takeoff * 0.92) status = "Pronto para decolar";
 
     if (Math.abs(aircraft.position.x) > HALF || Math.abs(aircraft.position.z) > HALF) {
       status += " / sobre oceano";
@@ -2318,15 +2967,22 @@
       el("missionTitle").textContent =
         activeMission.data.title + " — " + activeMission.from.name + " → " + activeMission.to.name;
 
-      el("missionText").textContent =
-        activeMission.completed ? "Concluída! Aperte N/M para outra." :
-          activeMission.boarded ? activeMission.data.text : "Aguardando embarque no aeroporto de origem.";
+      let missionText = activeMission.completed ? "Concluída! Aperte N/M para outra." :
+        activeMission.boarded ? activeMission.data.text : "Aguardando preparação no aeroporto de origem.";
+
+      if (!activeMission.completed && activeMission.data.challenge === "rings") {
+        missionText = "Passe pelas argolas: " + activeMission.targetIndex + "/" + activeMission.targets.length + ".";
+      } else if (!activeMission.completed && activeMission.data.challenge === "combat") {
+        missionText = "PvP aéreo: rivais derrubados " + activeMission.enemiesDown + "/" + activeMission.targets.length + ".";
+      }
+
+      el("missionText").textContent = missionText;
 
       el("missionManifest").textContent = missionManifest(activeMission.data);
       el("missionDistance").textContent = Math.round(nav.distance);
       el("targetBearing").textContent = nav.bearing === null
         ? "--"
-        : (nav.mode === "approach" ? "Pista " : nav.mode === "route" ? "Aprox " : "") + Math.round(nav.bearing).toString().padStart(3, "0") + "°";
+        : (nav.mode === "approach" ? "Pista " : nav.mode === "route" ? "Aprox " : "Alvo ") + Math.round(nav.bearing).toString().padStart(3, "0") + "°";
     } else {
       el("missionTitle").textContent = "Pressione N para iniciar";
       el("missionText").textContent = "Voe de um aeroporto para outro.";
@@ -2350,6 +3006,8 @@
     if (once("1")) switchAircraft(0);
     if (once("2")) switchAircraft(15);
     if (once("3")) switchAircraft(AIRCRAFT_TYPES.length - 1);
+    if (once("g")) cycleWeapon();
+    if (once(" ")) fireSelectedWeapon();
     if (once("l")) setShopOpen(!shopOpen);
     if (once("i")) setHudHidden(!hudHidden);
 
@@ -2423,9 +3081,10 @@
     if (gameStarted) {
       shortcuts();
       updatePhysics(dt);
-      updateMission();
+      updateMission(dt);
     }
     updateExplosions(dt);
+    updateProjectiles(dt);
     updateCamera(dt);
     updateHUD();
 

@@ -1,8 +1,8 @@
-# Flight Simulator OFC V8
+# Flight Simulator OFC V9
 
 Criado por Guilherme Trecenti.
 
-Versao com login de piloto, carreira salva no navegador, modo livre, loja de avioes, mapa maior, cidades urbanas e rurais, fisica de voo melhorada, radar com rota de aproximacao e camera terceira pessoa.
+Versao com login de piloto, carreira salva no navegador, modo livre, loja de avioes, mapa maior, cidades urbanas e rurais, fisica de voo melhorada, radar com rota de aproximacao, camera terceira pessoa, cacas armados, missoes PvP e desafios de argolas.
 
 ## Como jogar
 
@@ -16,6 +16,8 @@ Abra o jogo, coloque o nome do piloto, escolha um modo e use:
 - 1: Cessna inicial
 - 2: airliner medio
 - 3: caca final
+- Espaco: atirar com a arma selecionada
+- G: alternar entre misseis e canhao
 - L: loja de avioes
 - I: esconder/mostrar informacoes
 - C: camera
@@ -27,20 +29,24 @@ Abra o jogo, coloque o nome do piloto, escolha um modo e use:
 
 ## Modos
 
-- Modo livre: todos os 22 avioes ficam liberados de graca.
+- Modo livre: todos os 27 avioes ficam liberados de graca.
 - Modo carreira: o jogador comeca com o Cessna velho de aeroclube, faz missoes para ganhar dinheiro e compra avioes melhores na loja.
 
 ## Melhorias principais
 
-- 22 modelos de aviao, do Cessna velho ate o caca stealth inspirado no F-22
-- Precos rebalanceados: avioes baratos sao mais dificeis e avioes caros sao mais estaveis
+- 27 modelos de aviao, do Cessna velho ate cacas armados de alto desempenho
+- 6 cacas armados para PvP: F-22, F-15EX, Rafale, Typhoon, Su-57 e OFC-X
+- Precos rebalanceados: avioes baratos sao mais dificeis e avioes caros ficam mais estaveis
 - Carreira salva automaticamente por nome de piloto no navegador
 - Loja com comprar/equipar e estatisticas de velocidade, stall e decolagem
 - Mapa aumentado para 48 km x 48 km
 - 22 aeroportos espalhados pelo mundo
 - Cidades urbanas com torres, parques e ruas
 - Vilas rurais com casas, celeiros, silos e campos
-- 18 missoes de passageiros, carga, emergencia e operacao militar
+- 25 missoes: passageiros, carga, emergencia, operacao militar, argolas e PvP simulado
+- Missoes PvP so liberam quando o jogador desbloqueia qualquer um dos 6 cacas armados
+- Missoes de argolas usam checkpoints 3D no ceu guiados pelo radar
+- Sistema de armas com Espaco para atirar e G para alternar entre misseis e canhao
 - Mini mapa circular com rota ate um ponto de aproximacao antes da pista
 - Radar superior que orienta o jeito mais facil de chegar alinhado para pousar
 - Camera terceira pessoa presa atras do aviao, com suavizacao por rumo
@@ -50,7 +56,7 @@ Abra o jogo, coloque o nome do piloto, escolha um modo e use:
 - Hitboxes com mais camadas para predios, arvores, montanhas, terminais, torres, casas, celeiros e silos
 - Pouso pesado quebra o aviao, mas nao explode automaticamente
 - Fisica melhorada: nariz para cima perde energia, mergulho ganha velocidade, arrasto segura a velocidade maxima
-- Decolagem mais dificil: o aviao precisa chegar perto da velocidade certa para sair do chao
+- Decolagem mais dificil: o aviao precisa passar da velocidade certa para sair do chao
 - Stall baseado em velocidade minima especifica de cada aeronave, um pouco mais exigente
 - Modelos 3D com escala e cores por aeronave
 
