@@ -47,6 +47,8 @@ Abra o jogo, coloque o nome do piloto, escolha um modo e use:
 - Missoes PvP so liberam quando o jogador desbloqueia qualquer um dos 6 cacas armados
 - Missoes de argolas usam checkpoints 3D no ceu guiados pelo radar
 - Sistema de armas com Espaco para atirar e G para alternar entre misseis e canhao
+- Canhao com 520 balas por recarga e rajadas de tracers visiveis no ar
+- Nariz dos cacas remodelado para ficar mais reto e menos pontudo
 - Mini mapa circular com rota ate um ponto de aproximacao antes da pista
 - Radar superior que orienta o jeito mais facil de chegar alinhado para pousar
 - Camera terceira pessoa presa atras do aviao, com suavizacao por rumo

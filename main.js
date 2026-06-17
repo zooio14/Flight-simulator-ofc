@@ -321,6 +321,7 @@
   let missionObjects = [];
   let weaponCooldown = 0;
   let missileAmmo = 0;
+  let cannonAmmo = 0;
   let selectedWeapon = "missile";
   let plane = null;
   let lastLanding = null;
@@ -477,6 +478,7 @@
 
   function resetWeaponAmmo() {
     missileAmmo = aircraftType.weapons ? aircraftType.weapons.missiles : 0;
+    cannonAmmo = aircraftType.weapons ? 520 : 0;
     selectedWeapon = aircraftType.weapons ? "missile" : "cannon";
     weaponCooldown = 0;
   }
@@ -485,7 +487,7 @@
     if (!aircraftType.weapons) return "--";
     return selectedWeapon === "missile"
       ? "Mísseis (" + missileAmmo + ")"
-      : "Canhão";
+      : "Canhão (" + cannonAmmo + ")";
   }
 
   function cycleWeapon() {
@@ -1259,12 +1261,15 @@
     spine.position.set(0, 0.92, -1.8);
     g.add(spine);
 
-    const nose = new THREE.Mesh(new THREE.ConeGeometry(1.35, 4.8, 4), grey);
+    const nose = new THREE.Mesh(new THREE.CylinderGeometry(0.46, 1.36, 5.2, 4), grey);
     nose.rotation.x = Math.PI / 2;
-    nose.position.z = -11.3;
-    nose.position.y = 0.36;
     nose.rotation.z = Math.PI / 4;
+    nose.position.set(0, 0.36, -11.1);
     g.add(nose);
+
+    const noseCap = new THREE.Mesh(new THREE.BoxGeometry(0.62, 0.32, 0.46), edgeDark);
+    noseCap.position.set(0, 0.36, -13.82);
+    g.add(noseCap);
 
     const leftChine = new THREE.Mesh(new THREE.BoxGeometry(5.7, 0.18, 1.15), panelGrey);
     leftChine.position.set(-3.15, 0.36, -6.6);
@@ -1307,8 +1312,8 @@
     bayLine.position.set(0, -0.14, -0.2);
     g.add(bayLine);
 
-    const noseSensor = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.1, 0.62), edgeDark);
-    noseSensor.position.set(0, 0.72, -13.2);
+    const noseSensor = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.1, 0.42), edgeDark);
+    noseSensor.position.set(0, 0.7, -13.55);
     g.add(noseSensor);
 
     if (type.weapons) {
@@ -1984,28 +1989,68 @@
 
     const fwd = forwardVector();
     const isMissile = kind === "missile";
-    const mesh = new THREE.Mesh(
-      isMissile ? new THREE.CylinderGeometry(0.32, 0.32, 4.2, 12) : new THREE.SphereGeometry(0.34, 8, 6),
-      new THREE.MeshBasicMaterial({ color: isMissile ? 0xffdf64 : 0x66caff })
-    );
-    mesh.rotation.order = "YXZ";
-    mesh.rotation.y = aircraft.yaw;
-    mesh.rotation.x = Math.PI / 2 + aircraft.pitch;
-    mesh.position.copy(aircraft.position).addScaledVector(fwd, 18);
-    mesh.userData.vel = fwd.clone().multiplyScalar(isMissile ? 540 : 780).add(aircraft.velocity.clone());
-    mesh.userData.life = isMissile ? 5.2 : 1.25;
-    mesh.userData.kind = kind;
-    mesh.userData.damage = isMissile ? 2 : 1;
-    mesh.userData.radius = isMissile ? 155 : 58;
+    const baseEuler = new THREE.Euler(aircraft.pitch, aircraft.yaw, aircraft.roll, "YXZ");
+    const right = new THREE.Vector3(1, 0, 0).applyEuler(baseEuler).normalize();
+    const up = new THREE.Vector3(0, 1, 0).applyEuler(baseEuler).normalize();
+    const muzzle = aircraft.position.clone()
+      .addScaledVector(fwd, 18)
+      .addScaledVector(right, 0.72)
+      .addScaledVector(up, 0.12);
 
-    scene.add(mesh);
-    projectiles.push(mesh);
+    function addShot(mesh, direction, position, speed, life, damage, radius) {
+      mesh.quaternion.setFromUnitVectors(Y_AXIS, direction.clone().normalize());
+      mesh.position.copy(position);
+      mesh.userData.vel = direction.clone().multiplyScalar(speed).add(aircraft.velocity.clone());
+      mesh.userData.life = life;
+      mesh.userData.maxLife = life;
+      mesh.userData.kind = kind;
+      mesh.userData.damage = damage;
+      mesh.userData.radius = radius;
+      scene.add(mesh);
+      projectiles.push(mesh);
+    }
 
-    if (isMissile) missileAmmo--;
-    weaponCooldown = isMissile ? 0.72 : 0.15;
-    el("message").innerHTML = isMissile
-      ? "Míssil disparado. Restam " + missileAmmo + "."
-      : "Canhão disparado.";
+    if (isMissile) {
+      const mesh = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.32, 0.32, 4.2, 12),
+        new THREE.MeshBasicMaterial({ color: 0xffdf64 })
+      );
+      addShot(mesh, fwd, muzzle, 540, 5.2, 2, 155);
+      missileAmmo--;
+      weaponCooldown = 0.72;
+      el("message").innerHTML = "Míssil disparado. Restam " + missileAmmo + ".";
+      return;
+    }
+
+    if (cannonAmmo <= 0) {
+      el("message").innerHTML = "Canhão sem munição. Resete para recarregar.";
+      return;
+    }
+
+    const burst = Math.min(10, cannonAmmo);
+    for (let i = 0; i < burst; i++) {
+      const yawSpread = ((i % 5) - 2) * 0.0035 + (Math.random() - 0.5) * 0.002;
+      const pitchSpread = (Math.floor(i / 5) - 0.5) * 0.003 + (Math.random() - 0.5) * 0.002;
+      const direction = new THREE.Vector3(0, 0, -1)
+        .applyEuler(new THREE.Euler(aircraft.pitch + pitchSpread, aircraft.yaw + yawSpread, aircraft.roll, "YXZ"))
+        .normalize();
+      const tracer = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.07, 0.07, 6.2, 8),
+        new THREE.MeshBasicMaterial({
+          color: i % 2 === 0 ? 0xffe18a : 0x7ad7ff,
+          transparent: true,
+          opacity: 0.96
+        })
+      );
+      const position = muzzle.clone()
+        .addScaledVector(right, (i % 2 === 0 ? -0.12 : 0.12))
+        .addScaledVector(direction, i * 2.2);
+      addShot(tracer, direction, position, 860 + i * 8, 1.55, 0.34, 48);
+    }
+
+    cannonAmmo -= burst;
+    weaponCooldown = 0.09;
+    el("message").innerHTML = "Rajada do canhão: " + cannonAmmo + " balas restantes.";
   }
 
   function updateProjectiles(dt) {
@@ -2018,6 +2063,8 @@
 
       if (shot.userData.kind === "missile") {
         shot.rotation.z += dt * 8;
+      } else if (shot.userData.kind === "cannon" && shot.material) {
+        shot.material.opacity = clamp(shot.userData.life / shot.userData.maxLife, 0.18, 0.96);
       }
 
       let hit = false;
