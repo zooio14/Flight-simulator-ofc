@@ -1755,8 +1755,11 @@
     aircraft.stallPressure += (stallDemand - aircraft.stallPressure) * clamp(stallResponse * dt, 0, 1);
     aircraft.stall = aircraft.stallPressure > 0.68;
 
+    const rotatingForTakeoff = elevator > 0.05;
     const takeoffGate = aircraft.onGround
-      ? clamp((speedKmh - aircraftType.takeoff * 0.98) / (aircraftType.takeoff * 0.18), 0, 1)
+      ? rotatingForTakeoff
+        ? clamp((speedKmh - aircraftType.takeoff * 1.1) / (aircraftType.takeoff * 0.16), 0, 1)
+        : 0
       : 1;
     const speedLift = clamp((horizontalSpeed - stallSpeedMS * 0.62) / (stallSpeedMS * 1.2), 0, 1.62);
     const angleLift = clamp(0.55 + aircraft.pitch * 1.25 + aoa * 0.95, -0.25, 1.55);
@@ -1764,9 +1767,9 @@
     const liftAccel = speedLift * angleLift * aircraftType.lift * stallLiftPenalty * takeoffGate;
 
     aircraft.velocity.y += liftAccel * dt;
-    if (aircraft.onGround && speedKmh < aircraftType.takeoff * 1.08) {
+    if (aircraft.onGround && (!rotatingForTakeoff || speedKmh < aircraftType.takeoff * 1.18)) {
       aircraft.velocity.y = Math.min(aircraft.velocity.y, 0);
-      if (speedKmh < aircraftType.takeoff * 0.92) aircraft.pitch = Math.min(aircraft.pitch, 0.12);
+      aircraft.pitch = Math.min(aircraft.pitch, rotatingForTakeoff ? 0.16 : 0.04);
     }
 
     const authorityBase = clamp(horizontalSpeed / (stallSpeedMS * 0.9), 0.18, 1.55);
@@ -3044,7 +3047,8 @@
     else if (aircraft.stall) status = "STALL abaixo de " + aircraftType.stallSpeed + " km/h";
     else if (lowSpeedWarning) status = "Velocidade baixa";
     else if (altitude() > 12) status = "Voando";
-    else if (speedKmh() > aircraftType.takeoff * 0.92) status = "Pronto para decolar";
+    else if (aircraft.onGround && speedKmh() > aircraftType.takeoff * 1.12 && !down("arrowup")) status = "Puxe ↑ para decolar";
+    else if (aircraft.onGround && speedKmh() > aircraftType.takeoff * 1.12) status = "Rotação de decolagem";
 
     if (Math.abs(aircraft.position.x) > HALF || Math.abs(aircraft.position.z) > HALF) {
       status += " / sobre oceano";
