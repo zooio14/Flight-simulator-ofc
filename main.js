@@ -823,6 +823,20 @@
     return range.min + "-" + range.max + " km/h";
   }
 
+  function engineSpoolRate(type = aircraftType) {
+    if (isFighterType(type)) return 0.74;
+    if (["airliner", "regional", "business", "cargo"].includes(type.model)) return 0.36;
+    if (type.model === "turboprop") return 0.52;
+    return 0.62;
+  }
+
+  function lowSpeedThrustFactor(type = aircraftType) {
+    if (isFighterType(type)) return 0.38;
+    if (["airliner", "regional", "business", "cargo"].includes(type.model)) return 0.24;
+    if (type.model === "turboprop") return 0.3;
+    return 0.28;
+  }
+
   function landingGearLabel() {
     if (aircraft.gearBroken) return "Quebrado";
     return aircraft.gearDown ? "Baixado" : "Recolhido";
@@ -1863,6 +1877,7 @@
 
   const aircraft = {
     throttle: 0,
+    enginePower: 0,
     health: 100,
     position: new THREE.Vector3(),
     velocity: new THREE.Vector3(),
@@ -1886,6 +1901,7 @@
 
   function resetToAirport(a) {
     aircraft.throttle = 0;
+    aircraft.enginePower = 0;
     setTouchThrottleTarget(0);
     aircraft.health = 100;
     aircraft.position.set(a.x, 3, a.z);
@@ -2484,6 +2500,7 @@
     if (aircraft.crashed) {
       aircraft.velocity.multiplyScalar(Math.pow(0.18, dt));
       aircraft.throttle *= Math.pow(0.06, dt);
+      aircraft.enginePower *= Math.pow(0.08, dt);
       syncPlane();
       return;
     }
@@ -2495,11 +2512,16 @@
       : 0;
     if (input.throttleTarget !== null) {
       const targetThrottle = input.throttleDown ? 0 : clamp(input.throttleTarget, 0, 1);
-      aircraft.throttle += (targetThrottle - aircraft.throttle) * clamp(4.5 * dt, 0, 1);
+      aircraft.throttle += (targetThrottle - aircraft.throttle) * clamp(2.4 * dt, 0, 1);
     }
-    if (input.throttleUp) aircraft.throttle += 0.82 * dt;
-    if (input.throttleDown) aircraft.throttle -= 0.92 * dt;
+    if (input.throttleUp) aircraft.throttle += 0.55 * dt;
+    if (input.throttleDown) aircraft.throttle -= 0.82 * dt;
     aircraft.throttle = clamp(aircraft.throttle, 0, 1);
+
+    const spoolBase = engineSpoolRate(aircraftType);
+    const spoolRate = aircraft.enginePower < aircraft.throttle ? spoolBase : spoolBase * 1.85;
+    aircraft.enginePower += (aircraft.throttle - aircraft.enginePower) * clamp(spoolRate * dt, 0, 1);
+    if (aircraft.enginePower < 0.002) aircraft.enginePower = 0;
 
     const speedBrakeDemand = Math.max(
       input.throttleDownKey && aircraft.throttle <= 0.01 ? 1 : 0,
@@ -2538,7 +2560,9 @@
     const maxAllowedSpeed = maxSpeedMS() * (input.boost ? 1.08 : 1);
     const speedFraction = speed / Math.max(1, maxAllowedSpeed);
     const powerAvailable = clamp(1 - Math.pow(clamp(speedFraction, 0, 1.25), 3) * 0.76, 0.08, 1);
-    const thrustAccel = aircraft.throttle * aircraftType.thrust * boost * powerAvailable * (1 - engineFailure * 0.72);
+    const lowSpeedFactor = lowSpeedThrustFactor(aircraftType);
+    const airflowThrustFactor = clamp(lowSpeedFactor + speedFraction * (1 - lowSpeedFactor), lowSpeedFactor, 1);
+    const thrustAccel = aircraft.enginePower * aircraftType.thrust * boost * powerAvailable * airflowThrustFactor * (1 - engineFailure * 0.72);
     aircraft.velocity.addScaledVector(fwd, thrustAccel * dt);
     const landingWind = clamp((280 - altitude()) / 280, 0, 1) * (weather.landingDrift || 0);
     const windInfluence = aircraft.onGround
@@ -2546,18 +2570,23 @@
       : 0.038 + landingWind * 0.055;
     aircraft.velocity.addScaledVector(wind, dt * windInfluence);
 
-    if (!aircraft.onGround && fwd.y > 0.05) {
-      const climbBleed = fwd.y * (5.5 + speed * 0.09) * (1 + aircraft.stallPressure * 0.6);
+    if (!aircraft.onGround && fwd.y > 0.04) {
+      const pitchDemand = Math.max(0, aircraft.pitch - 0.08);
+      const climbBleed = fwd.y * (10.5 + speed * 0.22 + speed * speed * 0.0018) *
+        (1 + aircraft.stallPressure * 1.25 + pitchDemand * 1.9);
       aircraft.velocity.addScaledVector(fwd, -climbBleed * dt);
     }
 
     const overspeed = Math.max(0, speed / maxAllowedSpeed - 0.97);
     const overspeedDrag = overspeed * overspeed * speed * 2.6;
-    const inducedDrag = Math.max(0, aircraft.pitch) * Math.max(0, aircraft.pitch) * speed * 0.18;
+    const noseUpPitch = Math.max(0, aircraft.pitch);
+    const steepPitch = Math.max(0, noseUpPitch - 0.22);
+    const inducedDrag = noseUpPitch * noseUpPitch * speed * 0.34 +
+      steepPitch * steepPitch * (speed * 1.6 + speed * speed * 0.004);
     const weatherDrag = weather.dragBonus * speed * (1 + weather.rain + weather.snow);
     const speedBrakeDrag = aircraft.speedBrake * (speed * 0.09 + speed * speed * 0.00032);
     const gearDrag = aircraft.gearDown && !aircraft.gearBroken ? speed * 0.038 + speed * speed * 0.00018 : 0;
-    const powerOffGlide = !aircraft.onGround ? (1 - aircraft.throttle) * (1 - aircraft.speedBrake * 0.65) * 0.22 : 0;
+    const powerOffGlide = !aircraft.onGround ? (1 - aircraft.enginePower) * (1 - aircraft.speedBrake * 0.65) * 0.22 : 0;
     const baseDrag = aircraftType.drag * speed * speed + 0.022 * speed + overspeedDrag + inducedDrag + weatherDrag;
     const drag = baseDrag * (1 - powerOffGlide) + speedBrakeDrag + gearDrag;
     if (speed > 0.01) {
@@ -2601,6 +2630,11 @@
       stallDemand = Math.max(stallDemand, 0.32 + angleDemand * 0.48);
     }
 
+    if (!aircraft.onGround && aircraft.pitch > 0.34 && elevator > 0.15) {
+      const deepPitchDemand = clamp((aircraft.pitch - 0.34) / 0.5, 0, 1);
+      stallDemand = Math.max(stallDemand, 0.18 + deepPitchDemand * 0.34);
+    }
+
     const stallResponse = stallDemand > aircraft.stallPressure ? 1.85 : 3.3;
     aircraft.stallPressure += (stallDemand - aircraft.stallPressure) * clamp(stallResponse * dt, 0, 1);
     aircraft.stall = aircraft.stallPressure > 0.68;
@@ -2612,14 +2646,18 @@
         : 0
       : 1;
     const speedLift = clamp((horizontalSpeed - stallSpeedMS * 0.62) / (stallSpeedMS * 1.2), 0, 1.62);
-    const angleLift = clamp(0.55 + aircraft.pitch * 1.25 + aoa * 0.95, -0.25, 1.55);
+    const effectivePitch = aircraft.pitch > 0.34 ? 0.34 + (aircraft.pitch - 0.34) * 0.24 : aircraft.pitch;
+    const angleLift = clamp(0.55 + effectivePitch * 1.12 + aoa * 0.82, -0.25, 1.34);
     const stallLiftPenalty = 1 - aircraft.stallPressure * 0.42;
     const speedBrakeLiftPenalty = 1 - aircraft.speedBrake * 0.09;
     const gearLiftPenalty = aircraft.gearDown && !aircraft.gearBroken ? 0.985 : 1;
     const wingFailureLiftPenalty = 1 - wingFailure * 0.18;
-    const glideLiftBonus = !aircraft.onGround ? 1 + (1 - aircraft.throttle) * (1 - aircraft.speedBrake) * 0.11 : 1;
+    const highPitchLiftPenalty = 1 - clamp((Math.max(0, aircraft.pitch) - 0.36) / 0.5, 0, 0.55);
+    const climbingLiftPenalty = 1 - clamp(Math.max(0, aircraft.velocity.y - 8) / 110, 0, 0.28);
+    const glideLiftBonus = !aircraft.onGround ? 1 + (1 - aircraft.enginePower) * (1 - aircraft.speedBrake) * 0.11 : 1;
     const weatherLift = 1 - weather.liftPenalty;
-    const liftAccel = speedLift * angleLift * aircraftType.lift * stallLiftPenalty * speedBrakeLiftPenalty * gearLiftPenalty * wingFailureLiftPenalty * glideLiftBonus * takeoffGate * weatherLift;
+    const liftAccel = speedLift * angleLift * aircraftType.lift * stallLiftPenalty * speedBrakeLiftPenalty * gearLiftPenalty *
+      wingFailureLiftPenalty * highPitchLiftPenalty * climbingLiftPenalty * glideLiftBonus * takeoffGate * weatherLift;
 
     aircraft.velocity.y += liftAccel * dt;
     if (aircraft.onGround && (!rotatingForTakeoff || speedKmh < aircraftType.takeoff * 1.18)) {
@@ -2658,7 +2696,7 @@
       const levelLiftPower = Math.max(
         0.12,
         speedLift * aircraftType.lift * stallLiftPenalty * speedBrakeLiftPenalty * gearLiftPenalty *
-          wingFailureLiftPenalty * glideLiftBonus * takeoffGate * weatherLift
+          wingFailureLiftPenalty * highPitchLiftPenalty * climbingLiftPenalty * glideLiftBonus * takeoffGate * weatherLift
       );
       const levelAngle = clamp(9.81 / levelLiftPower, -0.1, 1.25);
       const aerodynamicTrim = (levelAngle - 0.55 - aoa * 0.95) / 1.25;
@@ -3082,10 +3120,10 @@
 
     if (plane.userData.props) {
       plane.userData.props.forEach(prop => {
-        prop.rotation.z += 0.18 + aircraft.throttle * 1.7;
+        prop.rotation.z += 0.18 + aircraft.enginePower * 1.7;
       });
     } else if (plane.userData.prop) {
-      plane.userData.prop.rotation.z += 0.18 + aircraft.throttle * 1.7;
+      plane.userData.prop.rotation.z += 0.18 + aircraft.enginePower * 1.7;
     }
 
     if (plane.userData.gearParts) {
@@ -4021,7 +4059,7 @@
     if (landingHint) landingHint.textContent = landingSpeedLabel();
     el("stallSpeed").textContent = aircraftType.stallSpeed;
     el("altitude").textContent = Math.round(altitude());
-    el("throttle").textContent = Math.round(aircraft.throttle * 100);
+    el("throttle").textContent = Math.round(aircraft.enginePower * 100);
     const hudInput = flightInput();
     el("speedBrake").textContent = aircraft.speedBrake > 0.03
       ? Math.round(aircraft.speedBrake * 100) + "%"
@@ -4108,7 +4146,7 @@
     el("compactSpeed").textContent = Math.round(speedKmh()) + " km/h";
     el("compactAircraft").textContent = aircraftType.name;
     el("compactAltitude").textContent = Math.round(altitude()) + " m";
-    el("compactThrottle").textContent = Math.round(aircraft.throttle * 100) + "%" +
+    el("compactThrottle").textContent = Math.round(aircraft.enginePower * 100) + "%" +
       (aircraft.speedBrake > 0.05 ? " | SB " + Math.round(aircraft.speedBrake * 100) + "%" : "") +
       (aircraft.gearBroken ? " | Trem quebrado" : aircraft.gearDown ? " | Trem" : "");
     const compactLandingSpeed = el("compactLandingSpeed");

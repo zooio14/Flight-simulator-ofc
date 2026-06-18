@@ -94,6 +94,8 @@ Abra o jogo, coloque o nome do piloto, escolha um modo e use:
 - Pouso ficou mais facil e justo: toque suave tolera mais banco, nariz, velocidade e impacto antes de quebrar o aviao
 - Pouso pesado quebra o aviao, mas nao explode automaticamente
 - Fisica melhorada: nariz para cima perde energia, mergulho ganha velocidade, arrasto segura a velocidade maxima
+- Motor com resposta progressiva: a alavanca pode ir para 100%, mas a potencia real demora para subir e o aviao ganha velocidade aos poucos
+- Nariz muito alto agora aumenta arrasto, reduz sustentacao eficiente e consome velocidade em vez de acelerar/subir rapido demais
 - Ponto zero do pitch: se o jogador soltar o manche, o aviao ajusta aos poucos para voo nivelado, sem subir sozinho nem mergulhar
 - Speed brake aerodinamico: segure S depois de zerar o motor ou negative a alavanca touch para frear no ar
 - Aviao plana melhor sem potencia, e voos mais altos ficam mais estaveis
