@@ -88,6 +88,13 @@
           <button type="button" data-pitch-inverted="false">Normal</button>
         </div>
       </div>
+      <div class="settings-section">
+        <label>Velocidade ideal de pouso</label>
+        <div id="landingSpeedHintGroup" class="segmented-control two-options">
+          <button type="button" data-landing-speed-hint="true">Mostrar</button>
+          <button type="button" data-landing-speed-hint="false">Ocultar</button>
+        </div>
+      </div>
       <div class="settings-section settings-row">
         <span>Câmera: <strong id="cameraModeLabel">Terceira pessoa</strong></span>
         <button id="cameraCycle" type="button">Trocar</button>
@@ -106,6 +113,7 @@
       A/D: yaw<br />
       1/2/3: atalhos de avião<br />
       Espaço: atirar | G: trocar arma<br />
+      U: trem de pouso | F: corrigir pane<br />
       L: loja | I: esconder info<br />
       C: configurações | V: câmera<br />
       Q: qualidade | H: hitboxes | R: reset<br />
@@ -125,6 +133,7 @@
       Vento: <span id="windInfo">Calmo</span><br />
       Turbulência: <span id="turbulenceInfo">0%</span><br />
       Velocidade: <span id="speed">0</span> km/h<br />
+      <span id="landingSpeedHintRow">Vel. pouso ideal: <span id="landingSpeedHint">--</span><br /></span>
       Stall abaixo de: <span id="stallSpeed">0</span> km/h<br />
       Altitude: <span id="altitude">0</span> m<br />
       Potência: <span id="throttle">0</span>%<br />
@@ -155,6 +164,7 @@
     <span>Avião <strong id="compactAircraft">--</strong></span>
     <span>Alt <strong id="compactAltitude">0 m</strong></span>
     <span>Motor <strong id="compactThrottle">0%</strong></span>
+    <span id="compactLandingSpeedRow">Pouso ideal <strong id="compactLandingSpeed">--</strong></span>
     <span>Pouso <strong id="compactLanding">--</strong></span>
   </div>
 

@@ -49,6 +49,7 @@ Abra o jogo, coloque o nome do piloto, escolha um modo e use:
 - Tela do modo livre para escolher clima e horario antes de iniciar
 - Centro de configuracoes aberto pela tecla C ou pelo botao Config
 - Configuracao de manche invertido ou normal para teclado, mouse e touch
+- Configuracao para mostrar ou ocultar a velocidade ideal de pouso de cada aviao
 - Controle por teclado, mouse ou touch para iPad, com sensibilidade ajustavel
 - Touch com joystick, leme e alavanca vertical de potencia na parte de baixo
 - No touch, puxar a alavanca de potencia abaixo de 0% abre o speed brake
@@ -79,7 +80,7 @@ Abra o jogo, coloque o nome do piloto, escolha um modo e use:
 - Canhao com 520 balas por recarga e rajadas de tracers visiveis no ar
 - Misseis teleguiados quando o alvo PvP esta na frente do aviao
 - Canhao mais facil de acertar por colisao maior, mas sem teleguiar
-- Nariz dos cacas remodelado para ficar mais reto e menos pontudo
+- Modelos 3D dos avioes remodelados com fuselagem mais reta, nariz mais limpo e acabamento melhor em monomotores, jatos e cacas
 - Mini mapa circular com rota ate um ponto de aproximacao antes da pista
 - Mini mapa coloca a bola azul mais longe da pista para dar mais tempo de alinhar
 - Radar superior que orienta o jeito mais facil de chegar alinhado para pousar
@@ -88,12 +89,14 @@ Abra o jogo, coloque o nome do piloto, escolha um modo e use:
 - Nota de pouso com bonus de missao
 - Cores fixas para oceano, grama, campos, floresta, areia, pistas, ruas, rios e montanhas, com camadas separadas para evitar piscadas
 - Hitboxes com mais camadas para predios, arvores, montanhas, terminais, torres, casas, celeiros e silos
-- Pouso ficou mais justo: toque suave tolera um pouco mais de banco, nariz e velocidade antes de quebrar o aviao
+- Pouso ficou mais facil e justo: toque suave tolera mais banco, nariz, velocidade e impacto antes de quebrar o aviao
 - Pouso pesado quebra o aviao, mas nao explode automaticamente
 - Fisica melhorada: nariz para cima perde energia, mergulho ganha velocidade, arrasto segura a velocidade maxima
+- Ponto zero do pitch: se o jogador soltar o manche, o aviao volta aos poucos para o meio entre subir e descer
 - Speed brake aerodinamico: segure S depois de zerar o motor ou negative a alavanca touch para frear no ar
 - Aviao plana melhor sem potencia, e voos mais altos ficam mais estaveis
-- Trem de pouso tem limite de velocidade por aviao; se quebrar, ainda da para pousar, mas precisa ser extremamente suave
+- Trem de pouso tem limite de velocidade por aviao; ele so quebra depois de 10 segundos acima do limite com o trem baixado
+- Se o trem quebrar, ainda da para pousar, mas precisa ser extremamente suave
 - Decolagem mais dificil: o aviao precisa passar da velocidade certa e puxar o manche para sair do chao
 - Stall baseado em velocidade minima especifica de cada aeronave, um pouco mais exigente
 - Modelos 3D com escala e cores por aeronave
