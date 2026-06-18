@@ -29,7 +29,8 @@
   const QUALITY = [
     { name: "Ultra leve", pixel: 0.42, buildings: 105, trees: 150, clouds: 8, fog: 23500, particles: 24 },
     { name: "Baixa", pixel: 0.62, buildings: 210, trees: 310, clouds: 15, fog: 30000, particles: 38 },
-    { name: "Alta", pixel: 0.9, buildings: 390, trees: 560, clouds: 28, fog: 39000, particles: 64 }
+    { name: "Alta", pixel: 1.05, buildings: 430, trees: 620, clouds: 34, fog: 43000, particles: 78 },
+    { name: "Ultra", pixel: 1.28, buildings: 560, trees: 840, clouds: 48, fog: 50000, particles: 110 }
   ];
 
   const WEATHER_TYPES = [
@@ -304,7 +305,7 @@
     }
   ];
 
-  let qualityIndex = 2;
+  let qualityIndex = 3;
   let quality = QUALITY[qualityIndex];
   let aircraftIndex = 0;
   let aircraftType = AIRCRAFT_TYPES[aircraftIndex];
@@ -338,6 +339,9 @@
   const sun = new THREE.DirectionalLight(0xfff4df, 1.85);
   sun.position.set(1200, 2200, 800);
   scene.add(sun);
+  const fillLight = new THREE.DirectionalLight(0xbddcff, 0.42);
+  fillLight.position.set(-900, 760, -650);
+  scene.add(fillLight);
 
   const weatherGroup = new THREE.Group();
   scene.add(weatherGroup);
@@ -637,6 +641,7 @@
     sun.position.set(sunPos[0], sunPos[1], sunPos[2]);
     sun.intensity = weatherLight * activeTimeOfDay.sun;
     hemisphereLight.intensity = activeTimeOfDay.hemi;
+    fillLight.intensity = clamp(0.42 * activeTimeOfDay.hemi - activeWeather.rain * 0.08 - activeWeather.snow * 0.04, 0.12, 0.5);
     renderer.toneMappingExposure = activeTimeOfDay.exposure;
   }
 
@@ -2648,9 +2653,20 @@
     const autoLevel = clamp((stability - 1) * 0.08, 0, 0.07);
     if (Math.abs(aileron) < 0.01) aircraft.angularRoll -= aircraft.roll * autoLevel * dt;
     const pitchNeutralActive = Math.abs(elevator) < 0.01 && !aircraft.onGround && !aircraft.stall;
+    let neutralPitchTarget = 0;
     if (pitchNeutralActive) {
+      const levelLiftPower = Math.max(
+        0.12,
+        speedLift * aircraftType.lift * stallLiftPenalty * speedBrakeLiftPenalty * gearLiftPenalty *
+          wingFailureLiftPenalty * glideLiftBonus * takeoffGate * weatherLift
+      );
+      const levelAngle = clamp(9.81 / levelLiftPower, -0.1, 1.25);
+      const aerodynamicTrim = (levelAngle - 0.55 - aoa * 0.95) / 1.25;
+      const verticalTrim = clamp(-aircraft.velocity.y * 0.022, -0.09, 0.09);
+      const lowSpeedLimit = clamp((speedKmh - aircraftType.stallSpeed * 1.18) / (aircraftType.stallSpeed * 0.9), 0, 1);
+      neutralPitchTarget = clamp(aerodynamicTrim + verticalTrim, -0.26, 0.06 + lowSpeedLimit * 0.08);
       const neutralStrength = clamp(0.12 + stability * 0.045 + priceAssist * 0.08, 0.12, 0.34) * (1 - controlsFailure * 0.32);
-      aircraft.angularPitch -= aircraft.pitch * neutralStrength * dt;
+      aircraft.angularPitch -= (aircraft.pitch - neutralPitchTarget) * neutralStrength * dt;
     }
 
     if (aircraft.stall) {
@@ -2679,7 +2695,7 @@
 
     if (pitchNeutralActive) {
       const neutralReturn = clamp(0.18 + stability * 0.08 + priceAssist * 0.08 + altitudeStability * 0.06, 0.18, 0.48) * (1 - controlsFailure * 0.3);
-      aircraft.pitch += (0 - aircraft.pitch) * clamp(neutralReturn * dt, 0, 1);
+      aircraft.pitch += (neutralPitchTarget - aircraft.pitch) * clamp(neutralReturn * dt, 0, 1);
     }
 
     aircraft.pitch = clamp(aircraft.pitch, -0.9, 0.9);

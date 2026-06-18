@@ -87,12 +87,14 @@ Abra o jogo, coloque o nome do piloto, escolha um modo e use:
 - Camera terceira pessoa presa atras do aviao, com suavizacao por rumo
 - HUD compacto quando as informacoes laterais sao escondidas
 - Nota de pouso com bonus de missao
+- Modo grafico Ultra como padrao, com mais densidade de cidades, arvores, nuvens, particulas e distancia de neblina
+- Luz de preenchimento nos modelos 3D para melhorar a leitura visual dos avioes sem clarear demais noite e tempestade
 - Cores fixas para oceano, grama, campos, floresta, areia, pistas, ruas, rios e montanhas, com camadas separadas para evitar piscadas
 - Hitboxes com mais camadas para predios, arvores, montanhas, terminais, torres, casas, celeiros e silos
 - Pouso ficou mais facil e justo: toque suave tolera mais banco, nariz, velocidade e impacto antes de quebrar o aviao
 - Pouso pesado quebra o aviao, mas nao explode automaticamente
 - Fisica melhorada: nariz para cima perde energia, mergulho ganha velocidade, arrasto segura a velocidade maxima
-- Ponto zero do pitch: se o jogador soltar o manche, o aviao volta aos poucos para o meio entre subir e descer
+- Ponto zero do pitch: se o jogador soltar o manche, o aviao ajusta aos poucos para voo nivelado, sem subir sozinho nem mergulhar
 - Speed brake aerodinamico: segure S depois de zerar o motor ou negative a alavanca touch para frear no ar
 - Aviao plana melhor sem potencia, e voos mais altos ficam mais estaveis
 - Trem de pouso tem limite de velocidade por aviao; ele so quebra depois de 10 segundos acima do limite com o trem baixado
